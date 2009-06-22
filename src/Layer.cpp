@@ -46,7 +46,7 @@ void Layer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
       // clear the FBO, necessary on at least some Macs
       fboPainter = new QPainter(fbo);
       fboPainter->setCompositionMode(QPainter::CompositionMode_Source);
-      fboPainter->fillRect(0, 0, size.width(), size.height(),
+      fboPainter->fillRect(-1, -1, size.width() + 1, size.height() + 1,
                            QColor(0, 0, 0, 0));
       fboPainter->setCompositionMode(QPainter::CompositionMode_SourceOver);
       qvpainter = new OpenGLPainter(fboPainter, context);
