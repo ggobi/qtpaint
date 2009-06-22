@@ -6,9 +6,11 @@
 
 qvMatrix <- function(p, inverted = FALSE) {
   if (inherits(p, "Painter"))
-    invisible(.Call("Painter_matrix", p, as.logical(inverted)))
+    .Call("Painter_matrix", p, as.logical(inverted))
   else if (inherits(p, "QGraphicsWidget")) # obviously need S3 dispatching
-    invisible(.Call("QGraphicsItem_matrix", p, as.logical(inverted)))
+    .Call("QGraphicsItem_matrix", p, as.logical(inverted))
+  else if (inherits(p, "QGraphicsView"))
+    .Call("qt_qmatrix_QGraphicsView", p, as.logical(inverted))
   else stop("argument 'p' has unknown type")
 }
 

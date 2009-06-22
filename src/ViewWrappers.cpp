@@ -34,6 +34,19 @@ extern "C" {
     return rview;
   }
 
+  SEXP
+  qt_qsetMatrix_QGraphicsView(SEXP extp, SEXP rmatrix)
+  {
+    QGraphicsView *view = unwrapQObject(extp, QGraphicsView);
+    view->setMatrix(asQMatrix(rmatrix));
+    return extp;
+  }
+  SEXP qt_qmatrix_QGraphicsView(SEXP extp, SEXP inverted)
+  {
+    QGraphicsView *view = unwrapQObject(extp, QGraphicsView);
+    return asRMatrix(view->matrix(), asLogical(inverted));
+  }
+
 }
 
 

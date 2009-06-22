@@ -13,4 +13,5 @@ extern "C" {
   
   QColor *asQColors(SEXP c);
   QColor asQColor(SEXP c);
+  QMatrix asQMatrix(SEXP m);
 }

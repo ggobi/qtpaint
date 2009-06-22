@@ -50,4 +50,9 @@ extern "C" {
     int *rcolor = INTEGER(c);
     return QColor(rcolor[0], rcolor[1], rcolor[2], rcolor[3]);
   }
+  QMatrix asQMatrix(SEXP m) {
+    double *rmatrix = REAL(m);
+    return QMatrix(rmatrix[0], rmatrix[3], rmatrix[1], rmatrix[4],
+                   rmatrix[2], rmatrix[5]);
+  }
 }

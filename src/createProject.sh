@@ -21,7 +21,7 @@ HEADERS += ScenePainter.hpp QtBasePainter.hpp TestWidget.hpp
 HEADERS += Layer.hpp PlotView.hpp RLayer.hpp conversion.h
 
 SOURCES += init.cpp
-SOURCES += viewwidget.cpp
+SOURCES += ViewWrappers.cpp
 SOURCES += QtPainter.cpp OpenGLPainter.cpp ScenePainter.cpp QtBasePainter.cpp
 SOURCES += Layer.cpp RLayer.cpp PlotView.cpp PaintUtils.cpp 
 SOURCES += PainterWrappers.cpp conversion.cpp
