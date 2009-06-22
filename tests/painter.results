@@ -1,0 +1,165 @@
+N = 300000, aliased/multisampled/antialiased, time in seconds
+Qt := QtPainter, software (X11)
+QGL := QtPainter, OpenGL
+OGL := QGL + custom pure OpenGL fastpaths, where relevant
+
+General notes:
+
+- the QGLWidget seems to receive two paint events per
+  resize, while the ordinary QWidget only receives one.
+- antialiasing for QGL is via the HighQualityAntialiasing render hint,
+  as the ordinary antialiasing does not appear to be so.
+- antialiased QGL has a significant pause (perhaps 7 seconds?) before
+  refreshing the screen, and this has no bearing on whether any graphics were
+  actually drawn antialiased. Might be due to multisampling...
+
+Open Circles (r = 5)
+--------------------
+Qt: 0.7/38, 2.4/38 non-aligned
+QGL: 1.2/1.2/4.9 
+OGL: 0.38/0.51/NA
+
+The Qt software is fastest with aliased circles when
+pixel-aligned. Otherwise, circles are slow and asymmetric. The QGL backend
+is a bit slower in aliased drawing, as expected since it is
+tesselating. The software antialiasing is very slow (but my guess is
+about twice as fast as Cairo). The shader-based antialiasing is a lot
+faster than software. Our OGL backend, with the aliased midpoint fast
+path, is about twice as fast as software.
+
+Open Circles (r = 30)
+---------------------
+Qt: 2.0/96, 3.8/96 non-aligned
+QGL: 1.8/5.6 
+OGL: 0.67/NA
+
+Here we expand radius to 30, to simulate e.g. a bubble plot. Somehow
+QGL has been able to overtake the X11 backend. For aliased circles,
+the OGL driver scales the best. For antialiased, the QGL shaders scale
+very well (must be a lot of vertex overhead).
+
+Filled Circles (r = 5)
+----------------------
+Qt: 1.5/67, 8/67 non-aligned
+QGL: 3.5/3.5/7
+OGL: NA/0.17
+
+When filling circles, we see Qt X11 at 1.5, which is a virtually exact
+match to Gdk's X11 backend from previous tests. Non-aligned drawing
+continues to suffer. Interestingly, with the QGL driver, antialiased
+drawing is only a bit slower than aliased. But this is blown out by
+the smooth-point trick, which, although antialiased, is 8X faster than
+the fastest aliased algorithm.
+
+Filled Circles (r = 30)
+-----------------------
+Qt: 3.5/135
+QGL: 4.3/6.5
+OGL: NA/0.18 (r = 35 : 0.9/NA)
+
+When expanding the radius, the GL-based methods scale very well,
+especially our optimized renderer. But there's a caveat: the trick
+does not work after radius 31. It then falls back to the aliased
+filled midpoint algorithm, which still blows away the competition.
+
+Points (single pixels)
+---------------------
+Qt: 0.03
+QGL: 0.03 (Qt 4.4: 0.007)
+
+One would expect OpenGL to do a lot better here, but for some reason,
+in Qt 4.5, they draw points as triangles.
+
+Polylines
+---------
+L = 10000 lines, 30 segments each, zigzag pattern
+
+Qt: 0.43/71
+QGL: 0.03/0.03/0.06
+
+The lines are obviously tough to profile due to their complexity. This
+test gets at something like a parallel coordinate plot. OpenGL clearly
+wins out here.
+
+Segments (N, diagonal across window)
+--------
+Qt: 0.6/319
+QGL: 0.02/0.06/0.08
+
+Again, OpenGL wins out. Qt/X11 slows down relative to polylines, as
+X11 lacks a fast path for segments.
+
+Open Rectangles
+---------------
+Qt: 1.2/36
+QGL: 0.37/2.6
+
+Filled Rectangles
+----------
+Qt: 4.5/55
+QGL: 0.61/7
+OGL: 0.03/NA
+
+Again, OpenGL on top. It's worth noting that if the rectangles were
+pixel-aligned, antialiasing would not be employed. There is relatively
+little difference between open and filled rectangles for OpenGL, but
+they are both a lot slower than the line drawing. OpenGL is not
+designed for drawing rectangles (it's faster to draw a rectangle with
+two triangles than a single explicit quad). But why not draw open
+rectangles with line segments? And what about GL_QUADS for filled?
+Initial test using GL_QUADS for filled rects (OGL) yields massive
+speedup.
+
+Open Polygons (triangles)
+--------------------
+Qt: 1.3/40
+QGL: 0.4/0.9
+
+Filled Polygons (triangles)
+--------------------
+Qt: 4.7/58
+QGL: 2.4/1.7
+
+The margin here for OpenGL is surprisingly small, but it may be
+explained by the individual drawing of polygons, rather than relying
+on the GL_TRIANGLES primitive (this is a potential optimization but
+probably not worth it). The rectangle drawing is actually a bit
+faster. Another surprise is the low cost of antialiasing -- it is in
+fact faster to draw antialiased filled triangles. Open polygons might
+be faster if drawn as segments. An important note: OpenGL will
+perform much worse on concave polyons, probably about as well as X11.
+
+=========
+Glyphs (10x10)
+=========
+
+Qt: 0.35 
+OGL: 0.007
+
+All glyphs of the same size are the same speed. Although the primitive
+tests above are not strictly directly comparable, it seems that
+blitting the glyphs is faster than drawing the primitives from
+scratch, even for simple glyphs like squares and triangles. The
+QtPainter backend uses client-side image compositing, which seems as
+fast as my tests with GdkPixbuf, which is reassuring. And yes, OpenGL
+is drawing 300000 circles in 7 ms, or over 40 million per
+second.
+
+There is significant overhead in initializing the glyph drawing. Thus,
+calling drawGlyphs repeatedly is far slower than drawing the glyphs
+directly. The basic problem is the latency of transferring pixel data
+(to the X server or the graphics card memory). Perhaps this could be
+optimized, but we should ask what are the use cases for repeated
+calls? Size gradients and color gradients. For size gradients, it will
+always be faster to draw the primitive directly. For color gradients,
+we could take a vector of colors as an argument.
+
+In conclusion, OpenGL beats out the software renderer in almost all
+categories. The slow-down from non-pixel-aligned circles in the X11
+renderer was surprising and notable. Our OpenGL fast paths blow away
+the default OpenGL renderer in Qt. I am not aware of any more obvious
+optimizations. Now on to linking this to R.
+
+UPDATE: turns out using multisampling antialiasing in OpenGL is almost
+free, and looks great! And it applies to anything drawn via OpenGL,
+including the midpoint circle.

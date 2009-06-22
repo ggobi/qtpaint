@@ -1,0 +1,25 @@
+
+TEMPLATE = lib
+
+QT += webkit
+QT += svg
+
+# Input
+HEADERS += qtRDevice.h
+HEADERS += qtTabbedViewer.h
+HEADERS += qtDataSelector.h
+HEADERS += RSyntaxHighlighter.h
+HEADERS += HtmlBrowser.h
+# HEADER += tabbedViewer.h
+
+SOURCES += qtRDevice.cpp init.cpp utils.cpp
+SOURCES += DataFrameView.cpp
+SOURCES += qtTabbedViewer.cpp
+SOURCES += qtDataSelector.cpp
+SOURCES += RSyntaxHighlighter.cpp
+SOURCES += HtmlBrowser.cpp
+
+INCLUDEPATH += c:/Rtools/Rhome/R-2-5-BRANCH/include
+LIBS += -Lc:/Rtools/Rhome/R-2-5-BRANCH/bin -lR
+
+

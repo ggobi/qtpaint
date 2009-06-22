@@ -1,0 +1,137 @@
+Immediate TODO:
+
+- Clean out the detritus.
+- Support setting background color on scene
+- Issues with examples: pixbin rounding, map zoomer and qvSetLimits.
+- Move to qtbase.
+- Rename qv* to qt*, reflecting package name change.
+- Support animation through timers in qtbase.
+- Documentation.
+- Support disabling FBO
+- Support overriding sizeHint() in a Layer. This allows, for example,
+  requesting a minimum height so that text can fit, given a width.
+- In API, use global state, like R graphics and processing language,
+  rather than passing references. Possibly belongs at high level.
+- Bind QActions so that we can have a pop-up menu in the plot.
+- Somehow adapt high-level plot/axis stuff to work with either the R
+  callback mechanism, or C-level display list. Basically, we need a
+  common low-level API in R that either pushes directly to the
+  painter, or builds a display list.
+- Fix memory management/ownership. This is mostly fixed now with a
+  reference counting scheme, but it could use some tightening, as
+  references are often held for the lifetime of the referer, even when
+  no longer required. Might need to just allow the R programmer to
+  forcibly delete an object.
+
+Long term thoughts:
+
+- Moving to using QGraphicsView for composing plots, instead of
+  widgets. Why?
+  
+  - QGraphicsWidget is lighter than QWidget and has all necessary features.
+    
+  - While having each glyph as an item is too much overhead,
+    layers would work great as items.
+
+  - Coordinate transformations
+    item -> scene  -> view
+    data -> planar -> screen
+  
+  - Caching: layers can be cached, to avoid redrawing static layers.
+  
+  - Collision detection: quick and easy mapping of user interaction to
+    items, and through use of off-screen scenes, glyphs/primitives.
+
+  - Flexible framework: Users can create their own items for specific
+    interactive graphics tasks (eventually).
+
+  This move requires the following:
+
+  - Layer, a QGraphicsItem subclass that:
+  
+    - Delegates painting to a method that takes a Painter.
+        
+    - Provides for fast element lookup, transparently, through
+      painting to an off-screen QGraphicsScene. This should be done
+      lazily. It may be that in highly dynamic scenes, this yields too
+      much overhead, and so needs to be disabled.
+      
+    - Implements boundingRect(), given the data extents. If margins
+      are desired, they are a property of the scene.
+
+- Interactive graphics pipeline
+
+  There is nothing inherent about a pipeline that requires
+  implementation in C++, but we probably should for the sake of
+  performance. The design of the pipeline is pretty well fleshed out
+  in GGobi. Here are the basic features:
+
+  - Tabular data model (get/set values at given column and row),
+    including column metadata and row ids.
+  
+  - Each stage acts as a proxy, drawing data from its parent and
+    passing changes on to its children.
+
+  - Efficient means of obtaining values for an entire column
+  
+  - Efficient communication of the changes (transformation of columns,
+    filtering of rows/columns, and introducing rows/columns) is
+    achieved by passing "pipeline messages" between stages.
+
+  - Handles missing values (NAs)
+
+  - Every stage has a name and can be looked up by it.
+
+  Can Qt satisfy these requirements with the QAbstractItemModel?
+
+  - The data could be stored in a class based on QAbstractTableModel
+  
+  - Row and column metadata could be stored in the headers. Perhaps
+    though we should take the AnnotatedDataFrame approach: have a
+    table of variable metadata somehow associated with the actual data
+    table. Each stage would need both, as stages manipulate the
+    metadata, as well as the data.
+
+  - For proxying, there's QAbstractProxyModel. It's not clear how
+    useful this would be, though, as it seems only concerned with
+    filtering/sorting. Filtering is useful, but for efficiency we may
+    want a custom solution.
+
+  - Would need to extend QAbstractItemModel to support column access
+
+  - Event aggregation would need to be written from scratch
+  
+  - Missing values: could use sentinel value from R, but want to
+    encode multiple types of missing. Is this necessary?
+
+  - QObject has nice support for searching a tree of objects by name.
+
+- Some sort of high-level interactive graphics application. This will
+  help us get a better grasp on the low-level requirements. And it
+  might be useful in its own right.
+
+  - Plot types:
+    - Scatterplots, scatterplot matrices
+    - Parallel coordinates
+    - Barcharts, mosaic plots, fluctuation diagrams (Di and Heike?)
+    - Conventional histograms, with draggable bins (Di and Heike?)
+    - 1D ASH plots (using ash package), or is another smoother better?
+    - Maps
+
+  - Interaction modes:
+    - Pan/zoom
+    - Querying/identification
+    - Linked brushing / selection
+      - simple plot for choosing glyph/size/color
+      - get schemes from RColorBrewer
+    - Jittering (scatterplots)
+    - Binning (histograms)
+    - Popup menu in plot for options (bind QActions)
+
+  - Integration with tourr (Hadley)
+  
+  - GUI (low priority):
+    - Variable list, with option for including visual attributes
+    - Some way to create new plots
+    - Some way to change variables of existing plots
+    - Some way to set interaction modes

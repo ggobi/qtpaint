@@ -1,0 +1,55 @@
+useDynLib(qtpaint)
+
+importFrom(qtbase, qshow, qclose, qfont)
+export(qshow, qclose, qfont)
+
+export(qvScene, qvView)
+
+export("qvAntialias<-",
+       qvCircle,
+       "qvDash<-",
+       "qvFillColor<-",
+       "qvFont<-",
+       qvGlyph,
+       "qvHasFill<-",
+       "qvHasStroke<-",
+       "qvLineWidth<-",
+       qvMatrix,
+       qvPath,
+       qvPathCircle,
+       qvPathPolygon,
+       qvPathRect,
+       qvPathSegment,
+       qvPathText,
+       qvPoint,
+       qvPolygon,
+       qvPolyline,
+       qvRect,
+       qvSegment,
+       "qvStrokeColor<-",
+       qvText,
+       qvTextExtents,
+       qvStrWidth
+       )
+
+export(qvOverlay,
+       qvLayer,
+       qvSetGeometry,
+       qvGeometry,
+       qvBoundingRect,
+       qvPaintingView,
+       qvLimits,
+       qvSetLimits,
+       qvDeviceMatrix,
+       qvMap,
+       qvAddGraphicsWidget,
+       qvItems,
+       qvUpdate,
+       "qvCacheMode<-",
+       qvCacheMode,
+       qvFocus,
+       "qvBackground<-")
+
+S3method("[<-", Layer)
+S3method(dim, QGraphicsItem)
+S3method(dim, QGraphicsView)

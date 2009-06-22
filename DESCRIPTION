@@ -1,0 +1,12 @@
+Package: qtpaint
+Version: 0.2.9
+Title: Qt-based painting infrastructure
+Author: Deepayan Sarkar, Michael Lawrence
+Depends: R (>= 2.6.0), utils
+Imports: qtbase (>= 0.0-2)
+Maintainer: Deepayan Sarkar <deepayan.sarkar@gmail.com>,
+            Michael Lawrence <mflawren@fhcrc.org>
+Description: Low-level interface to functionality in Qt for efficiently drawing
+             dynamic graphics and handling basic user input.
+License: GPL version 2 or later
+LinkingTo: qtbase

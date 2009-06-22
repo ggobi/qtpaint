@@ -1,0 +1,16 @@
+
+## use predefined project file (don't create one).  Needs include path hard coded.
+
+all:
+	echo "Using Makefile.win" 
+	cp qtpaint.pro.win qtpaint.pro
+	qmake -o Makefile.qtpaint
+	sh ./replace.sh Makefile.qtpaint
+	sh ./replace.sh Makefile.qtpaint.Release
+	sh ./replace.sh Makefile.qtpaint.Debug
+	make -f Makefile.qtpaint
+	cp release/* .
+
+clean:
+	echo "Using Makefile.win" 
+	rm -rf *.so *.o *.a *.dll Makefile.qt* qtpaint.pro libqt* moc*.cpp debug release *~
