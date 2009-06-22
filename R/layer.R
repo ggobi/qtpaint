@@ -53,6 +53,7 @@ test <- function(p, s) {
 qvSetGeometry <- function(p, x0, y0, x1, y1) {
 ### FIXME: technically QGraphicsLayoutItem, but that's not a QObject
   stopifnot(inherits(p, "QGraphicsWidget"))
+  x <- x0
   if (!is.matrix(x)) {
     x <- matrix(c(as.numeric(x0), as.numeric(x1),
                   as.numeric(y0), as.numeric(y1)),
