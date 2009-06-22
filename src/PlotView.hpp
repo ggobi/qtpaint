@@ -60,7 +60,9 @@ namespace QViz {
         Qt::ScrollBarPolicy policy = Qt::ScrollBarAlwaysOn;
         setHorizontalScrollBarPolicy(policy);
         setVerticalScrollBarPolicy(policy);
-        setResizeAnchor(QGraphicsView::NoAnchor);
+        if (rescaleMode == ViewTransform)
+          setResizeAnchor(QGraphicsView::AnchorViewCenter);
+        else setResizeAnchor(QGraphicsView::NoAnchor);
       }
       _rescaleMode = rescaleMode;
     }

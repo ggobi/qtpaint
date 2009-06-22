@@ -2,6 +2,7 @@
 
 #include <QResizeEvent>
 #include <QStyleOptionGraphicsItem>
+#include <QScrollBar>
 #include <QtCore/qmath.h>
 
 using namespace QViz;
@@ -78,8 +79,13 @@ void PlotView::resizeEvent (QResizeEvent * event)
         oldSize = viewport()->size();
       } else if (size.width() > 0 && size.height() > 0) {
         // if size non-zero, scale, and record (to recover after zero)
-        scale((float)size.width() / oldSize.width(),
-              (float)size.height() / oldSize.height());
+        double sx = (float)size.width() / oldSize.width(),
+          sy = (float)size.height() / oldSize.height();
+        QGraphicsView::ViewportAnchor anchor = transformationAnchor();
+        // FIXME: this scaling isn't perfect, but it's close...
+        setTransformationAnchor(QGraphicsView::NoAnchor);
+        scale(sx, sy);
+        setTransformationAnchor(anchor);
         oldSize = size;
       }
     } else if (_rescaleMode == WidgetGeometry) {
