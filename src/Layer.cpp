@@ -44,10 +44,11 @@ void Layer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
       qglWidget->makeCurrent();
       fbo = new QGLFramebufferObject(size);
       // clear the FBO, necessary on at least some Macs
+      printf("clearing FBO!\n");
       fboPainter = new QPainter(fbo);
       fboPainter->setCompositionMode(QPainter::CompositionMode_Source);
-      fboPainter->fillRect(-1, -1, size.width() + 1, size.height() + 1,
-                           QColor(0, 0, 0, 0));
+      fboPainter->fillRect(0, 0, size.width(), size.height(),
+                           QColor(0, 255, 0, 255));
       fboPainter->setCompositionMode(QPainter::CompositionMode_SourceOver);
       qvpainter = new OpenGLPainter(fboPainter, context);
       qvpainter->setMatrix(painter->worldMatrix());
@@ -62,7 +63,8 @@ void Layer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
   delete qvpainter;
   if (fbo) { // silliness: download to image, only to upload to texture
     painter->setWorldMatrixEnabled(false);
-    painter->drawImage(QRectF(QPointF(0, 0), fbo->size()), fbo->toImage());
+    // Not sure why this can't be (0, 0)...
+    painter->drawImage(QPointF(1, -1), fbo->toImage());
     delete fboPainter;
     delete fbo;
   }
