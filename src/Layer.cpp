@@ -44,11 +44,10 @@ void Layer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
       qglWidget->makeCurrent();
       fbo = new QGLFramebufferObject(size);
       // clear the FBO, necessary on at least some Macs
-      printf("clearing FBO!\n");
       fboPainter = new QPainter(fbo);
       fboPainter->setCompositionMode(QPainter::CompositionMode_Source);
       fboPainter->fillRect(0, 0, size.width(), size.height(),
-                           QColor(0, 255, 0, 255));
+                           QColor(0, 0, 0, 0));
       fboPainter->setCompositionMode(QPainter::CompositionMode_SourceOver);
       qvpainter = new OpenGLPainter(fboPainter, context);
       qvpainter->setMatrix(painter->worldMatrix());
