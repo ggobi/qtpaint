@@ -1,7 +1,7 @@
 #include "PlotView.hpp"
-#include <QGraphicsScene>
-
 #include "conversion.h"
+
+using namespace QViz;
 
 extern "C" {
 
@@ -45,6 +45,24 @@ extern "C" {
   {
     QGraphicsView *view = unwrapQObject(extp, QGraphicsView);
     return asRMatrix(view->matrix(), asLogical(inverted));
+  }
+
+  
+  SEXP qt_qupdate_QGraphicsView(SEXP rself) {
+    QGraphicsView *view = unwrapQObject(rself, QGraphicsView);
+    view->scene()->update();
+    view->viewport()->repaint();
+    return rself;
+  }
+  
+  SEXP qt_qviewportRect_QGraphicsView(SEXP rself) {
+    QGraphicsView *view = unwrapQObject(rself, QGraphicsView);
+    return asRRect(view->viewport()->rect());
+  }
+
+  SEXP qt_qoverlay_PlotView(SEXP rself) {
+    PlotView *self = unwrapQObject(rself, PlotView);
+    return wrapQGraphicsScene(self->overlay());
   }
 
 }

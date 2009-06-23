@@ -15,3 +15,6 @@ extern "C" {
   QColor asQColor(SEXP c);
   QMatrix asQMatrix(SEXP m);
 }
+
+// at some point might want to do something special
+#define wrapQGraphicsScene wrapQObject
