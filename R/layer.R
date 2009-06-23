@@ -1,11 +1,11 @@
 ## Low level wrappers around (R)Layer
   
-qvLayer <- function(parent = NULL, paintFun = NULL, keyPressFun = NULL,
-                    keyReleaseFun = NULL, mouseDoubleClickFun = NULL,
-                    mouseMoveFun = NULL, mousePressFun = NULL,
-                    mouseReleaseFun = NULL, wheelFun = NULL)
+qlayer <- function(parent = NULL, paintFun = NULL, keyPressFun = NULL,
+                   keyReleaseFun = NULL, mouseDoubleClickFun = NULL,
+                   mouseMoveFun = NULL, mousePressFun = NULL,
+                   mouseReleaseFun = NULL, wheelFun = NULL)
 {
-  layer <- .Call("newRLayer",
+  layer <- .Call("qt_qlayer",
                  .normArgCallback(paintFun),
                  .normArgCallback(keyPressFun),
                  .normArgCallback(keyReleaseFun),
@@ -15,11 +15,11 @@ qvLayer <- function(parent = NULL, paintFun = NULL, keyPressFun = NULL,
                  .normArgCallback(mouseReleaseFun),
                  .normArgCallback(wheelFun))
   if (inherits(parent, "QViz::Layer")) {
-    qvAddLayer(parent, layer, 0, 0, 1, 1)
+    qaddLayer(parent, layer, 0, 0, 1, 1)
   } else if (inherits(parent, "QGraphicsScene"))
-    qvAddLayer(parent, layer)
+    qaddLayer(parent, layer)
   else if (!is.null(parent)) stop("Unsupported parent type")
-  qvCacheMode(layer) <- "device"
+  qcacheMode(layer) <- "device"
   layer
 }
 
@@ -29,7 +29,7 @@ qvLayer <- function(parent = NULL, paintFun = NULL, keyPressFun = NULL,
   callback
 }
 
-qvSetLimits <- function(p, xlim, ylim) {
+qsetLimits <- function(p, xlim, ylim) {
   stopifnot(inherits(p, "QViz::Layer"))
   if (is.matrix(xlim)) {
     ylim <- xlim[,2]
@@ -37,12 +37,12 @@ qvSetLimits <- function(p, xlim, ylim) {
   }
   stopifnot(length(xlim) == 2)
   stopifnot(length(ylim) == 2)
-  invisible(.Call("Layer_setLimits", p, as.numeric(xlim), as.numeric(ylim)))
+  invisible(.Call("qt_qsetLimits_Layer", p, as.numeric(xlim), as.numeric(ylim)))
 }
 
-qvLimits <- function(p) {
+qlimits <- function(p) {
   stopifnot(inherits(p, "QViz::Layer"))
-  .Call("Layer_limits", p)
+  .Call("qt_qlimits_Layer", p)
 }
 
 test <- function(p, s) {
@@ -50,7 +50,7 @@ test <- function(p, s) {
 }
 
 ### NOTE: really only makes sense if layer is top-level
-qvSetGeometry <- function(p, x0, y0, x1, y1) {
+qsetGeometry <- function(p, x0, y0, x1, y1) {
 ### FIXME: technically QGraphicsLayoutItem, but that's not a QObject
   stopifnot(inherits(p, "QGraphicsWidget"))
   x <- x0
@@ -59,147 +59,147 @@ qvSetGeometry <- function(p, x0, y0, x1, y1) {
                   as.numeric(y0), as.numeric(y1)),
                 2, 2)
   } else stopifnot(is.numeric(x) && ncol(x) == 2 && nrow(x) == 2)
-  invisible(.Call("QGraphicsWidget_setGeometry", p, x))
+  invisible(.Call("qt_qsetGeometry_QGraphicsWidget", p, x))
 }
 
-qvGeometry <- function(p) {
+qgeometry <- function(p) {
   stopifnot(inherits(p, "QGraphicsWidget"))
-  .Call("QGraphicsWidget_geometry", p)
+  .Call("qt_qgeometry_QGraphicsWidget", p)
 }
 
-qvBoundingRect <- function(p) {
+qboundingRect <- function(p) {
   if (inherits(p, "QGraphicsWidget"))
-    .Call("QGraphicsItem_boundingRect", p)
+    .Call("qt_qboundingRect_QGraphicsItem", p)
   else if (inherits(p, "QGraphicsView"))
-    .Call("QGraphicsView_viewportRect", p)
+    .Call("qt_qviewportRect_QGraphicsView", p)
   else stop("Invalid parameter 'p'")
 }
 
-qvPaintingView <- function(p) {
+qpaintingView <- function(p) {
   stopifnot(inherits(p, "QGraphicsWidget"))
-  .Call("QGraphicsItem_paintingView", p)
+  .Call("qt_qpaintingView_QGraphicsItem", p)
 }
 
-qvDeviceMatrix <- function(p, view = qvPaintingView(p), inverted = TRUE) {
+qdeviceMatrix <- function(p, view = qpaintingView(p), inverted = TRUE) {
   stopifnot(inherits(p, "QGraphicsWidget"))
   stopifnot(inherits(view, "QGraphicsView"))
-  .Call("QGraphicsItem_deviceMatrix", p, view, as.logical(inverted))
+  .Call("qt_qdeviceMatrix_QGraphicsItem", p, view, as.logical(inverted))
 }
 
-qvOverlay <- function(p) {
+qoverlay <- function(p) {
   if (!inherits(p, "QViz::PlotView"))
     p <- p$extp
   stopifnot(inherits(p, "QViz::PlotView"))
-  .Call("PlotView_overlay", p)
+  .Call("qt_qoverlay_PlotView", p)
 }
 
-qvAddGraphicsWidget <- function(p, child, row = 0, col = 0, nrow = 1, ncol = 1)
+qaddGraphicsWidget <- function(p, child, row = 0, col = 0, nrow = 1, ncol = 1)
 {
   stopifnot(inherits(child, "QGraphicsWidget"))
   if (inherits(p, "QGraphicsScene")) {
-    invisible(.Call("QGraphicsScene_addWidget", p, child))
+    invisible(.Call("qt_qaddWidget_QGraphicsScene", p, child))
   } else {
     stopifnot(inherits(p, "QViz::Layer"))
-    invisible(.Call("Layer_addChildItem", p, child, as.integer(row),
+    invisible(.Call("qt_qaddChildItem_Layer", p, child, as.integer(row),
                     as.integer(col), as.integer(nrow), as.integer(ncol)))
   }
 }
-qvAddLayer <- qvAddGraphicsWidget
+qaddLayer <- qaddGraphicsWidget
 
-qvRowStretch <- function(p) {
+qrowStretch <- function(p) {
   stopifnot(inherits(p, "QViz::Layer"))
-  .Call("Layer_rowStretch", p)
+  .Call("qt_qrowStretch_Layer", p)
 }
 
-qvColStretch <- function(p) {
+qcolStretch <- function(p) {
   stopifnot(inherits(p, "QViz::Layer"))
-  .Call("Layer_colStretch", p)
+  .Call("qt_qcolStretch_Layer", p)
 }
 
-`qvRowStretch<-` <- function(p, value) {
+`qrowStretch<-` <- function(p, value) {
   stopifnot(inherits(p, "QViz::Layer"))
-  invisible(.Call("Layer_setRowStretch", p, as.integer(value)))
+  invisible(.Call("qt_qsetRowStretch_Layer", p, as.integer(value)))
 }
 
-`qvColStretch<-` <- function(p, value) {
+`qcolStretch<-` <- function(p, value) {
   stopifnot(inherits(p, "QViz::Layer"))
-  invisible(.Call("Layer_setColStretch", p, as.integer(value)))
+  invisible(.Call("qt_qsetColStretch_Layer", p, as.integer(value)))
 }
 
-`qvHSpacing<-` <- function(p, value) {
+`qhSpacing<-` <- function(p, value) {
   stopifnot(inherits(p, "QViz::Layer"))
-  invisible(.Call("Layer_setHorizontalSpacing", p, as.numeric(value)))
+  invisible(.Call("qt_qsetHorizontalSpacing_Layer", p, as.numeric(value)))
 }
 
-`qvVSpacing<-` <- function(p, value) {
+`qvSpacing<-` <- function(p, value) {
   stopifnot(inherits(p, "QViz::Layer"))
-  invisible(.Call("Layer_setVerticalSpacing", p, as.numeric(value)))
+  invisible(.Call("qt_qsetVerticalSpacing_Layer", p, as.numeric(value)))
 }
 
 "[<-.Layer" <-
   function (x, i, j, ..., value)
 {
-  qvAddGraphicsWidget(x, value, row = i, col = j, ...)
+  qaddGraphicsWidget(x, value, row = i, col = j, ...)
 }
 
-qvUpdate <- function(p) {
+qupdate <- function(p) {
   if (inherits(p, "QGraphicsScene"))
-    invisible(.Call("QGraphicsScene_update", p))
+    invisible(.Call("qt_qupdate_QGraphicsScene", p))
   else if (inherits(p, "QGraphicsWidget"))
-    invisible(.Call("QGraphicsItem_update", p))
+    invisible(.Call("qt_qupdate_QGraphicsItem", p))
   else stop("Invalid parameter 'p'")
 }
 
 ### FIXME: seems this would benefit from some formal classes
-qvItems <- function(p, x, y) {
+qitems <- function(p, x, y) {
   stopifnot(inherits(p, "QViz::Layer"))
   if (is.matrix(x)) {
     stopifnot(is.numeric(x) && ncol(x) == 2 && nrow(x) == 2)
-    .Call("Layer_itemsInRect", p, x)
+    .Call("qt_qitemsInRect_Layer", p, x)
   } else if (is.numeric(x)) {
     if (length(x) == 2)
-      .Call("Layer_itemsAtPoint", p, x[1], x[2])
+      .Call("qt_qitemsAtPoint_Layer", p, x[1], x[2])
     else {
       y <- as.numeric(y)
       if (length(x) == 1)
-        .Call("Layer_itemsAtPoint", p, x, y)
-      else .Call("Layer_itemsInPolygon", p, x, y)
+        .Call("qt_qitemsAtPoint_Layer", p, x, y)
+      else .Call("qt_qitemsInPolygon_Layer", p, x, y)
     }
   } else if (inherits(x, "QPainterPath"))
-    .Call("Layer_itemsInPath", p, x)
+    .Call("qt_qitemsInPath_Layer", p, x)
   else stop("invalid arguments")
 }
 
-`qvCacheMode<-` <- function(x, value) {
+`qcacheMode<-` <- function(x, value) {
   stopifnot(inherits(x, "QGraphicsWidget"))
   modes <- c(none = 0L, item = 1L, device = 2L)
   mode <- modes[value]
   if (is.na(mode))
     stop("'value' must be one of ", paste(names(modes), collapse = ", "))
-  invisible(.Call("QGraphicsItem_setCacheMode", x, mode))
+  invisible(.Call("qt_qsetCacheMode_QGraphicsItem", x, mode))
 }
 
-qvCacheMode <- function(x) {
+qcacheMode <- function(x) {
   stopifnot(inherits(x, "QGraphicsWidget"))
   modes <- c("none", "item", "device")
-  modes[.Call("QGraphicsItem_cacheMode", x, PACKAGE="qtpaint") + 1]
+  modes[.Call("qt_qcacheMode_QGraphicsItem", x, PACKAGE="qtpaint") + 1]
 }
 
-qvFocus <- function(x) {
+qfocus <- function(x) {
   stopifnot(inherits(x, "QGraphicsWidget"))
-  .Call("QGraphicsItem_setFocus", x, PACKAGE="qtpaint")
+  .Call("qt_qsetFocus_QGraphicsItem", x, PACKAGE="qtpaint")
 }
 
 .boundingDim <- function(x) {
-  r <- qvBoundingRect(x)
+  r <- qboundingRect(x)
   r[2,] - r[1,]
 }
 
 dim.QGraphicsItem <- .boundingDim
 dim.QGraphicsView <- .boundingDim
 
-`qvBackground<-` <- function(x, value) {
+`qbackground<-` <- function(x, value) {
   stopifnot(inherits(x, "QGraphicsScene"))
-  .Call("QGraphicsScene_setBackground", x, .normArgColor(value),
+  .Call("qt_qsetBackground_QGraphicsScene", x, .normArgColor(value),
         PACKAGE="qtpaint")
 }

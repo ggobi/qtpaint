@@ -1,6 +1,6 @@
 ### some utilities to help make drawing easier
 
-qvMap <- function(m, x, y) {
+qmap <- function(m, x, y) {
   if (missing(y)) {
     if (!is.matrix(x))
       x <- matrix(x, ncol = 2, byrow = TRUE)

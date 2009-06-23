@@ -6,7 +6,7 @@
 extern "C" {
 
   SEXP
-  newViewWidget(SEXP rscene, SEXP rescaleMode, SEXP ropengl)
+  qt_qview(SEXP rscene, SEXP rescaleMode, SEXP ropengl)
   {
     SEXP ans;
     QGraphicsScene *scene = unwrapQObject(rscene, QGraphicsScene);
@@ -28,7 +28,7 @@ extern "C" {
   }
 
   SEXP
-  QGraphicsView_fitScene(SEXP rview) {
+  qt_qfitScene_QGraphicsView(SEXP rview) {
     QGraphicsView *view = unwrapQObject(rview, QGraphicsView);
     view->fitInView(view->sceneRect());
     return rview;

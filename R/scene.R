@@ -1,5 +1,5 @@
-qvScene <- function()
+qscene <- function()
 {
-  .Call("newQGraphicsScene", PACKAGE = "qtpaint")
+  .Call("qt_qscene", PACKAGE = "qtpaint")
 }
 

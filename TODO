@@ -1,22 +1,19 @@
 Immediate TODO:
 
-- Clean out the detritus.
-- Support setting background color on scene
-- Issues with examples: pixbin rounding, map zoomer and qvSetLimits.
-- Move to qtbase.
-- Rename qv* to qt*, reflecting package name change.
+- Layers should always flip the Y axis, using geometry if no limits
+  are set. This should be hidden from the user, so that transforming
+  to device coordinates does not flip, and neither does transforming
+  to data coordinates.
+- Prevent calling callbacks while in code browser (worksforme).
+- Issues with examples: map zoomer weird clipping (worksforme).
+- Follow qtbase naming conventions.
 - Support animation through timers in qtbase.
 - Documentation.
-- Support disabling FBO
 - Support overriding sizeHint() in a Layer. This allows, for example,
   requesting a minimum height so that text can fit, given a width.
 - In API, use global state, like R graphics and processing language,
   rather than passing references. Possibly belongs at high level.
-- Bind QActions so that we can have a pop-up menu in the plot.
-- Somehow adapt high-level plot/axis stuff to work with either the R
-  callback mechanism, or C-level display list. Basically, we need a
-  common low-level API in R that either pushes directly to the
-  painter, or builds a display list.
+- Support adding QActions to QGraphicsWidgets.
 - Fix memory management/ownership. This is mostly fixed now with a
   reference counting scheme, but it could use some tightening, as
   references are often held for the lifetime of the referer, even when

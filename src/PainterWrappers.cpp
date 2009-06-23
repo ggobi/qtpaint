@@ -32,35 +32,35 @@ extern "C" {
 #define PAINTER_P() Painter *p = unwrapPointer(rp, Painter)
 
   // retrieve transformation (when pixels matter)
-  SEXP Painter_matrix(SEXP rp, SEXP rinverted) {
+  SEXP qt_qmatrix_Painter(SEXP rp, SEXP rinverted) {
     PAINTER_P();
     return asRMatrix(p->matrix(), asLogical(rinverted));
   }
   
-  SEXP Painter_setMatrixEnabled(SEXP rp, SEXP renabled) {
+  SEXP qt_qsetMatrixEnabled_Painter(SEXP rp, SEXP renabled) {
     PAINTER_P();
     p->setMatrixEnabled(asLogical(renabled));
     return rp;
   }
   
   // colors
-  SEXP Painter_setHasStroke(SEXP rp, SEXP rstroke) {
+  SEXP qt_qsetHasStroke_Painter(SEXP rp, SEXP rstroke) {
     PAINTER_P();
     p->setHasStroke(asLogical(rstroke));
     return rp;
   }
-  SEXP Painter_setHasFill(SEXP rp, SEXP rfill) {
+  SEXP qt_qsetHasFill_Painter(SEXP rp, SEXP rfill) {
     PAINTER_P();
     p->setHasFill(asLogical(rfill));
     return rp;
   }
-  SEXP Painter_setStrokeColor(SEXP rp, SEXP rcolor)
+  SEXP qt_qsetStrokeColor_Painter(SEXP rp, SEXP rcolor)
   {
     PAINTER_P();
     p->setStrokeColor(asQColor(rcolor));
     return rp;
   }
-  SEXP Painter_setFillColor(SEXP rp, SEXP rcolor)
+  SEXP qt_qsetFillColor_Painter(SEXP rp, SEXP rcolor)
   {
     PAINTER_P();
     p->setFillColor(asQColor(rcolor));
@@ -68,14 +68,14 @@ extern "C" {
   }
 
   // font
-  SEXP Painter_setFont(SEXP rp, SEXP family, SEXP ps, SEXP weight, SEXP italic)
+  SEXP qt_qsetFont_Painter(SEXP rp, SEXP family, SEXP ps, SEXP weight, SEXP italic)
   {
     PAINTER_P();
     p->setFont(QFont(sexp2qstring(family), asInteger(ps), asInteger(weight),
                      asLogical(italic)));
     return rp;
   }
-  SEXP Painter_fontMetrics(SEXP rp) {
+  SEXP qt_qfontMetrics_Painter(SEXP rp) {
     PAINTER_P();
     float ascent, descent;
     p->fontMetrics(&ascent, &descent);
@@ -86,7 +86,7 @@ extern "C" {
     UNPROTECT(1);
     return ans;
   }
-  SEXP Painter_textExtents(SEXP rp, SEXP rstrs) {
+  SEXP qt_qtextExtents_Painter(SEXP rp, SEXP rstrs) {
     PAINTER_P();
     int n = length(rstrs);
     QVector<QRectF> rects = p->textExtents(asStringArray(rstrs), n);
@@ -101,34 +101,34 @@ extern "C" {
   }
   
   // line aesthetics
-  SEXP Painter_setLineWidth(SEXP rp, SEXP rwidth) {
+  SEXP qt_qsetLineWidth_Painter(SEXP rp, SEXP rwidth) {
     PAINTER_P();
     p->setLineWidth(asInteger(rwidth));
     return rp;
   }
-  SEXP Painter_setDashes(SEXP rp, SEXP rdashes) {
+  SEXP qt_qsetDashes_Painter(SEXP rp, SEXP rdashes) {
     PAINTER_P();
     p->setDashes(REAL(rdashes), length(rdashes));
     return rp;
   }
   
   // antialiasing option
-  SEXP Painter_setAntialias(SEXP rp, SEXP rantialias) {
+  SEXP qt_qsetAntialias_Painter(SEXP rp, SEXP rantialias) {
     PAINTER_P();
     p->setAntialias(asLogical(rantialias));
     return rp;
   }
   
   // draw lines
-  SEXP Painter_drawPolyline(SEXP rp, SEXP rx, SEXP ry, SEXP rstroke)
+  SEXP qt_qdrawPolyline_Painter(SEXP rp, SEXP rx, SEXP ry, SEXP rstroke)
   {
     PAINTER_P();
     PaintUtils::drawPolylines(p, REAL(rx), REAL(ry), COLOR(rstroke),
                               length(rx));
     return rp;
   }
-  SEXP Painter_drawSegments(SEXP rp, SEXP rx0, SEXP ry0, SEXP rx1, SEXP ry1,
-                            SEXP rstroke)
+  SEXP qt_qdrawSegments_Painter(SEXP rp, SEXP rx0, SEXP ry0, SEXP rx1, SEXP ry1,
+                                SEXP rstroke)
   {
     PAINTER_P();
     DRAW_PRIMITIVES(drawSegments(REAL(rx0) + j, REAL(ry0) + j, REAL(rx1) + j,
@@ -137,7 +137,7 @@ extern "C" {
   }
    
   // draw points (pixels)
-  SEXP Painter_drawPoints(SEXP rp, SEXP rx, SEXP ry, SEXP rstroke) {
+  SEXP qt_qdrawPoints_Painter(SEXP rp, SEXP rx, SEXP ry, SEXP rstroke) {
     PAINTER_P();
     DRAW_PRIMITIVES(drawPoints(REAL(rx) + j, REAL(ry) + j, i - j), length(rx));
     return rp;
@@ -146,7 +146,7 @@ extern "C" {
   // draw shapes
   // NOTE: if drawing many shapes of same size, use drawGlyphs
   // NOTE: this follows the top left, width, height convention
-  SEXP Painter_drawRectangles(SEXP rp, SEXP rx, SEXP ry, SEXP rw, SEXP rh,
+  SEXP qt_qdrawRectangles_Painter(SEXP rp, SEXP rx, SEXP ry, SEXP rw, SEXP rh,
                               SEXP rstroke, SEXP rfill)
   {
     PAINTER_P();
@@ -182,7 +182,7 @@ extern "C" {
                       REAL(rh) + j, i - j);
     return rp;
   }
-  SEXP Painter_drawCircle(SEXP rp, SEXP rx, SEXP ry, SEXP rr,
+  SEXP qt_qdrawCircle_Painter(SEXP rp, SEXP rx, SEXP ry, SEXP rr,
                           SEXP rstroke, SEXP rfill)
   {
     PAINTER_P();
@@ -206,7 +206,8 @@ extern "C" {
     }
     return rp;
   }
-  SEXP Painter_drawPolygon(SEXP rp, SEXP rx, SEXP ry, SEXP rstroke, SEXP rfill)
+  SEXP qt_qdrawPolygon_Painter(SEXP rp, SEXP rx, SEXP ry, SEXP rstroke,
+                               SEXP rfill)
   {
     PAINTER_P();
     PaintUtils::drawPolygons(p, REAL(rx), REAL(ry), COLOR(rstroke),
@@ -215,7 +216,7 @@ extern "C" {
   }
   
   // draw text
-  SEXP Painter_drawText(SEXP rp, SEXP rstrs, SEXP rx, SEXP ry, SEXP rflags,
+  SEXP qt_qdrawText_Painter(SEXP rp, SEXP rstrs, SEXP rx, SEXP ry, SEXP rflags,
                         SEXP rrot)
   {
     PAINTER_P();
@@ -225,7 +226,7 @@ extern "C" {
   }
 
   // drawing glyphs (same path, many places)
-  SEXP Painter_drawGlyphs(SEXP rp, SEXP rpath, SEXP rx, SEXP ry, SEXP rsize,
+  SEXP qt_qdrawGlyphs_Painter(SEXP rp, SEXP rpath, SEXP rx, SEXP ry, SEXP rsize,
                           SEXP rstroke, SEXP rfill)
   {
     PAINTER_P();
@@ -236,7 +237,7 @@ extern "C" {
   }
   
   // This should go away, after we have ways to construct QImage
-  SEXP Painter_drawImageRaw(SEXP rp, SEXP rcol, SEXP rwidth, SEXP rheight,
+  SEXP qt_qdrawImageRaw_Painter(SEXP rp, SEXP rcol, SEXP rwidth, SEXP rheight,
                             SEXP rx, SEXP ry)
   {
     PAINTER_P();
@@ -254,24 +255,24 @@ extern "C" {
     delete path;
   }
   
-  SEXP newQPainterPath(void) {
+  SEXP qt_qpath(void) {
     QPainterPath *path = new QPainterPath();
     return wrapPointer(path, "QPainterPath", finalizePainterPath);
   }
 
-  SEXP QPainterPath_addCircle(SEXP rp, SEXP rx, SEXP ry, SEXP rr) {
+  SEXP qt_qaddCircle_QPainterPath(SEXP rp, SEXP rx, SEXP ry, SEXP rr) {
     QPAINTERPATH_P();
     p->addEllipse(QPointF(asReal(rx), asReal(ry)), asReal(rr), asReal(rr));
     return rp;
   }
 
-  SEXP QPainterPath_addRect(SEXP rp, SEXP rx, SEXP ry, SEXP dx, SEXP dy) {
+  SEXP qt_qaddRect_QPainterPath(SEXP rp, SEXP rx, SEXP ry, SEXP dx, SEXP dy) {
     QPAINTERPATH_P();
     p->addRect(asReal(rx), asReal(ry), asReal(dx), asReal(dy));
     return rp;
   }
 
-  SEXP QPainterPath_addPolygon(SEXP rp, SEXP rx, SEXP ry) {
+  SEXP qt_qaddPolygon_QPainterPath(SEXP rp, SEXP rx, SEXP ry) {
     QPAINTERPATH_P();
     QPolygonF polygon;
     double *x = REAL(rx);
@@ -282,8 +283,9 @@ extern "C" {
     return rp;
   }
 
-  SEXP QPainterPath_addText(SEXP rp, SEXP rtext, SEXP rx, SEXP ry, SEXP rfamily,
-                            SEXP rps, SEXP rweight, SEXP ritalic)
+  SEXP qt_qaddText_QPainterPath(SEXP rp, SEXP rtext, SEXP rx, SEXP ry,
+                                SEXP rfamily, SEXP rps, SEXP rweight,
+                                SEXP ritalic)
   {
     QPAINTERPATH_P();
     QFont font(sexp2qstring(rfamily), asInteger(rps), asInteger(rweight),
@@ -292,7 +294,9 @@ extern "C" {
     return rp;
   }
 
-  SEXP QPainterPath_addLine(SEXP rp, SEXP rx0, SEXP ry0, SEXP rx1, SEXP ry1) {
+  SEXP qt_qaddLine_QPainterPath(SEXP rp, SEXP rx0, SEXP ry0, SEXP rx1,
+                                SEXP ry1)
+  {
     QPAINTERPATH_P();
     p->moveTo(asReal(rx0), asReal(ry0));
     p->lineTo(asReal(rx1), asReal(ry1));
