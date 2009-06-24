@@ -2,10 +2,6 @@
 #define LAYER_H
 
 #include <QGraphicsWidget>
-#include <QGraphicsGridLayout>
-#include <QGLContext>
-//#include <QGraphicsView>
-#include "Painter.hpp"
 #include "ScenePainter.hpp"
 
 namespace QViz {
@@ -24,42 +20,15 @@ namespace QViz {
     // user to specify the data limits, and then synchronize the item
     // transform so that everything ends up in the geometry specified
     // by the layout.
-    
-    void updatePlotMatrix() {
-      QTransform plotMatrix;
-      if (!_limits.isNull()) {
-        QRectF bounds = rect();
-        plotMatrix.scale(bounds.width() / _limits.width(),
-                         -bounds.height() / _limits.height());
-        plotMatrix.translate(-_limits.left(), -_limits.bottom());
-      }
-      setTransform(plotMatrix);
-    }
 
-    QVector<int> itemIndices(QList<QGraphicsItem *> items) {
-      QVector<int> inds(items.size());
-      for (int i = 0; i < items.size(); i++)
-        inds[i] = scenePainter->itemIndex(items[i]);
-      return inds;
-    }
+    void updatePlotMatrix();
+    
+    QVector<int> itemIndices(QList<QGraphicsItem *> items);
     
     public:
     
-    Layer() : indexScene(new QGraphicsScene()), scenePainter(NULL) {
-      QGraphicsGridLayout *layout = new QGraphicsGridLayout;
-      layout->setContentsMargins(0, 0, 0, 0);
-      setLayout(layout);
-      setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding,
-                    QSizePolicy::DefaultType);
-      setFlags(QGraphicsItem::ItemClipsToShape |
-               QGraphicsItem::ItemClipsChildrenToShape);
-    }
-    ~Layer() {
-      delete indexScene;
-      if (scenePainter)
-        delete scenePainter;
-    }
-
+    Layer();
+    virtual ~Layer();
     
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                QWidget *widget);
@@ -108,20 +77,9 @@ namespace QViz {
       return indexScene->itemIndexMethod();
     }
     
-    void ensureIndex() {
-      if (scenePainter)
-        return;
-      indexScene->clear();
-      scenePainter = new ScenePainter(indexScene);
-      scenePainter->setIndexMode(true);
-      paintPlot(scenePainter, boundingRect());
-    }
-    
-    void invalidateIndex() {
-      delete scenePainter;
-      scenePainter = NULL;
-    }
-    
+    void ensureIndex();
+    void invalidateIndex();
+
     QVector<int> items(const QPointF & pos)
     {
       ensureIndex();

@@ -1,4 +1,5 @@
 #include <QStyleOptionGraphicsItem>
+#include <QGraphicsGridLayout>
 
 #include "OpenGLPainter.hpp"
 #include "Layer.hpp"
@@ -56,7 +57,8 @@ void Layer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
   
   if (!qvpainter) // fallback to Qt renderer
     qvpainter = new QtPainter(painter);
-  
+
+  // NOTE: in QT 4.6 exposedRect will just be the bounding rect, by default
   paintPlot(qvpainter, option->exposedRect);
 
   delete qvpainter;
@@ -67,4 +69,58 @@ void Layer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     delete fboPainter;
     delete fbo;
   }
+}
+
+// QGraphicsWidget assumes a (0, 0, width, height) bounding
+// rectangle, where width and height are from the geometry.
+// We want to draw into data space, so we allow the
+// user to specify the data limits, and then synchronize the item
+// transform so that everything ends up in the geometry specified
+// by the layout.
+
+void Layer::updatePlotMatrix() {
+  QMatrix plotMatrix;
+  QRectF bounds = rect();
+  if (!_limits.isNull()) {
+    plotMatrix.scale(bounds.width() / _limits.width(),
+                     -bounds.height() / _limits.height());
+    plotMatrix.translate(-_limits.left(), -_limits.bottom());
+  }
+  setMatrix(plotMatrix);
+}
+
+QVector<int> Layer::itemIndices(QList<QGraphicsItem *> items) {
+  QVector<int> inds(items.size());
+  for (int i = 0; i < items.size(); i++)
+    inds[i] = scenePainter->itemIndex(items[i]);
+  return inds;
+}
+    
+Layer::Layer() : indexScene(new QGraphicsScene()), scenePainter(NULL) {
+  QGraphicsGridLayout *layout = new QGraphicsGridLayout;
+  layout->setContentsMargins(0, 0, 0, 0);
+  setLayout(layout);
+  setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding,
+                QSizePolicy::DefaultType);
+  setFlags(QGraphicsItem::ItemClipsToShape |
+           QGraphicsItem::ItemClipsChildrenToShape);
+}
+Layer::~Layer() {
+  delete indexScene;
+  if (scenePainter)
+    delete scenePainter;
+}
+    
+void Layer::ensureIndex() {
+  if (scenePainter)
+    return;
+  indexScene->clear();
+  scenePainter = new ScenePainter(indexScene);
+  scenePainter->setIndexMode(true);
+  paintPlot(scenePainter, boundingRect());
+}
+    
+void Layer::invalidateIndex() {
+  delete scenePainter;
+  scenePainter = NULL;
 }
