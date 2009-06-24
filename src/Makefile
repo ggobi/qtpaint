@@ -1,6 +1,6 @@
 
 all:
-	./createProject.sh
+	bash createProject.sh
 	make -f Makefile.qtpaint
 	if test -e libqtpaint.so; then cp libqtpaint.so qtpaint.so; fi
 	## for macx:
