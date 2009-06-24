@@ -1,6 +1,6 @@
 useDynLib(qtpaint)
 
-#importFrom(qtbase, qshow, qclose, qfont)
+importFrom(qtgui, qshow, qclose)
 importFrom(qtbase, qfont)
 export(qshow, qclose, qfont)
 
