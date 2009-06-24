@@ -36,7 +36,13 @@ extern "C" {
     PAINTER_P();
     return asRMatrix(p->matrix(), asLogical(rinverted));
   }
-  
+
+  SEXP qt_qsetMatrix_Painter(SEXP rp, SEXP rmatrix) {
+    PAINTER_P();
+    p->setMatrix(asQMatrix(rmatrix));
+    return rp;
+  }
+
   SEXP qt_qsetMatrixEnabled_Painter(SEXP rp, SEXP renabled) {
     PAINTER_P();
     p->setMatrixEnabled(asLogical(renabled));

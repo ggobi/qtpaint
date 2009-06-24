@@ -1,3 +1,5 @@
+#include <QGLWidget>
+
 #include "PlotView.hpp"
 #include "conversion.h"
 

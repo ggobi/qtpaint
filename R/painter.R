@@ -4,14 +4,17 @@
 ## TODO: maybe move to a model where 'p' is obtained from a hidden
 ## variable in the parent (callback) frame.
 
-qmatrix <- function(p, inverted = FALSE) {
+qmatrix <- function(p = matrix(c(1, 0, 0, 0, 1, 0), ncol=2), inverted = FALSE) {
   if (inherits(p, "Painter"))
-    .Call("qt_qmatrix_Painter", p, as.logical(inverted))
+    p <- .Call("qt_qmatrix_Painter", p, as.logical(inverted))
   else if (inherits(p, "QGraphicsWidget")) # obviously need S3 dispatching
-    .Call("qt_qmatrix_QGraphicsItem", p, as.logical(inverted))
+    p <- .Call("qt_qmatrix_QGraphicsItem", p, as.logical(inverted))
   else if (inherits(p, "QGraphicsView"))
-    .Call("qt_qqGraphicsView_qt_qmatrix", p, as.logical(inverted))
-  else stop("argument 'p' has unknown type")
+    p <- .Call("qt_qmatrix_GraphicsView", p, as.logical(inverted))
+  else if (!is.matrix(p) || !is.numeric(p) || !identical(dim(p), c(3L, 2L)))
+    stop("argument 'p' has unknown type")
+  class(p) <- "QMatrix"
+  p
 }
 
 `qmatrixEnabled<-` <- function(p, value) {

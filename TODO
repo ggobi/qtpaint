@@ -1,19 +1,13 @@
 Immediate TODO:
 
-- Layers should always flip the Y axis, using geometry if no limits
-  are set. This should be hidden from the user, so that transforming
-  to device coordinates does not flip, and neither does transforming
-  to data coordinates.
-- Prevent calling callbacks while in code browser (worksforme).
-- Issues with examples: map zoomer weird clipping (worksforme).
-- Follow qtbase naming conventions.
 - Support animation through timers in qtbase.
+- Support adding QActions to QGraphicsWidgets.
 - Documentation.
+- Issues with examples: map zoomer weird clipping (worksforme).
 - Support overriding sizeHint() in a Layer. This allows, for example,
   requesting a minimum height so that text can fit, given a width.
-- In API, use global state, like R graphics and processing language,
-  rather than passing references. Possibly belongs at high level.
-- Support adding QActions to QGraphicsWidgets.
+- Prevent calling callbacks while in code browser on Mac and Windows.
+  Need to somehow block (queue up) events while in the browser.
 - Fix memory management/ownership. This is mostly fixed now with a
   reference counting scheme, but it could use some tightening, as
   references are often held for the lifetime of the referer, even when

@@ -17,7 +17,6 @@ df <- data.frame(X = x, Y = y)
 fill <- col2rgb(rgb(1, seq(0, 1, length=nrow(df)), 0, 1), TRUE)
 
 scatterplot <- function(item, painter, exposed) {
-  browser()
   ## qfillColor(painter) <- "red"
   ##qpoint(painter, df[,1], df[,2], stroke = fill)
   qglyph(painter, circle, df[,1], df[,2], stroke = fill, fill = fill)

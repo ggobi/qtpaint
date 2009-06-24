@@ -2,6 +2,7 @@
 #include "PlotView.hpp"
 #include "conversion.h"
 
+#include <QGraphicsGridLayout>
 #include <QGraphicsView>
 
 using namespace QViz;
@@ -58,18 +59,23 @@ extern "C" {
   // data in event callbacks
   SEXP qt_qdeviceMatrix_QGraphicsItem(SEXP rself, SEXP rview, SEXP rinverted) {
     QGraphicsWidget *self = unwrapQObject(rself, QGraphicsWidget);
-    QGraphicsView *view = unwrapQObject(rview, QGraphicsView);
+    PlotView *view = unwrapQObject(rview, PlotView);
     // This method is buggy (assumes 'self' ignores transformations)
     //QMatrix mat = self->deviceTransform(view->viewportTransform()).toAffine();
-    QMatrix mat = (self->sceneTransform() *
-                   view->viewportTransform()).toAffine();
-    return asRMatrix(mat, asLogical(rinverted));
+    QTransform mat = self->sceneTransform() * view->viewportTransform();
+    return asRMatrix(mat.toAffine(), asLogical(rinverted));
   }
 
   // just data to parent (layout/scene) coordinates, for size calculations
   SEXP qt_qmatrix_QGraphicsItem(SEXP rself, SEXP rinverted) {
     QGraphicsWidget *self = unwrapQObject(rself, QGraphicsWidget);
     return asRMatrix(self->transform().toAffine(), asLogical(rinverted));
+  }
+
+  SEXP qt_qsetMatrix_QGraphicsItem(SEXP rself, SEXP rmatrix) {
+    QGraphicsWidget *self = unwrapQObject(rself, QGraphicsWidget);
+    self->setTransform(QTransform(asQMatrix(rmatrix)));
+    return rself;
   }
   
   SEXP qt_qsetGeometry_QGraphicsWidget(SEXP rself, SEXP rx)

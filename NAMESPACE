@@ -52,7 +52,7 @@ export(qoverlay,
        qfocus,
        "qbackground<-")
 
-export(qmap, qscale, qtranslate, qrotate)
+export(qmap, qscale, qtranslate, qrotate, qflipY)
 
 S3method("[<-", Layer)
 S3method(dim, QGraphicsItem)

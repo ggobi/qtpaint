@@ -16,8 +16,12 @@ qfitScene <- function(x) {
   .Call("qt_qfitScene_QGraphicsView", x)
 }
 
-
 `qmatrix<-` <- function(x, value) {
-  stopifnot(inherits(x, "QGraphicsView"))
-  .Call("qt_qqGraphicsView_qt_qsetMatrix", x, value, PACKAGE = "qtpaint")
+  if (inherits(x, "QGraphicsView"))
+    .Call("qt_qsetMatrix_QGraphicsView", x, value, PACKAGE = "qtpaint")
+  else if (inherits(x, "QGraphicsWidget"))
+    .Call("qt_qsetMatrix_QGraphicsItem", x, value, PACKAGE = "qtpaint")
+  else if (inherits(x, "QPainter"))
+    .Call("qt_qsetMatrix_QPainter", x, value, PACKAGE = "qtpaint")
+  else stop("unknown type of 'x'")
 }

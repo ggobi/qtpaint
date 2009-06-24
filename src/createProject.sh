@@ -16,13 +16,13 @@ TEMPLATE = lib
 QT += opengl
 
 # Input
-HEADERS += Painter.hpp QtPainter.hpp OpenGLPainter.hpp PaintUtils.hpp
+HEADERS += Painter.hpp QtPainter.hpp OpenGLPainter.hpp paintUtils.hpp
 HEADERS += ScenePainter.hpp QtBasePainter.hpp TestWidget.hpp
 HEADERS += Layer.hpp PlotView.hpp RLayer.hpp conversion.h
 
 SOURCES += init.cpp
 SOURCES += QtPainter.cpp OpenGLPainter.cpp ScenePainter.cpp QtBasePainter.cpp
-SOURCES += Layer.cpp RLayer.cpp PlotView.cpp PaintUtils.cpp 
+SOURCES += Layer.cpp RLayer.cpp PlotView.cpp paintUtils.cpp 
 SOURCES += ViewWrappers.cpp LayerWrappers.cpp SceneWrappers.cpp
 SOURCES += PainterWrappers.cpp conversion.cpp
 SOURCES += TestWidget.cpp
