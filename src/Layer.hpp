@@ -63,9 +63,6 @@ namespace QViz {
         updatePlotMatrix();
       }
     }
-    void setLimits(qreal x0, qreal y0, qreal x1, qreal y1) {
-      setLimits(QRectF(x0, y0, x1 - x0, y1 - y0));
-    }
     QRectF limits() const {
       return _limits;
     }
@@ -80,29 +77,32 @@ namespace QViz {
     void ensureIndex();
     void invalidateIndex();
 
-    QVector<int> items(const QPointF & pos)
+    QVector<int> primitives(const QPointF & pos)
     {
       ensureIndex();
       return itemIndices(indexScene->items(pos));
     }
     
-    QVector<int> items(const QRectF & rectangle,
-                       Qt::ItemSelectionMode mode = Qt::IntersectsItemShape)
+    QVector<int> primitives(const QRectF & rectangle,
+                            Qt::ItemSelectionMode mode =
+                            Qt::IntersectsItemShape)
     {
       ensureIndex();
       return itemIndices(indexScene->items(rectangle, mode));
     }
 
     
-    QVector<int> items(const QPolygonF & polygon,
-                       Qt::ItemSelectionMode mode = Qt::IntersectsItemShape)
+    QVector<int> primitives(const QPolygonF & polygon,
+                            Qt::ItemSelectionMode mode =
+                            Qt::IntersectsItemShape)
     {
       ensureIndex();
       return itemIndices(indexScene->items(polygon, mode));
     }
     
-    QVector<int> items(const QPainterPath & path,
-                       Qt::ItemSelectionMode mode = Qt::IntersectsItemShape)
+    QVector<int> primitives(const QPainterPath & path,
+                            Qt::ItemSelectionMode mode =
+                            Qt::IntersectsItemShape)
     {
       ensureIndex();
       return itemIndices(indexScene->items(path, mode));

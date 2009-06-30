@@ -1,9 +1,10 @@
 #include "RLayer.hpp"
 #include "PlotView.hpp"
-#include "conversion.h"
 
 #include <QGraphicsGridLayout>
 #include <QGraphicsView>
+
+#include <qtbase.h>
 
 using namespace QViz;
 
@@ -21,27 +22,14 @@ extern "C" {
   */
   
   SEXP qt_qlayer(SEXP paint, SEXP keyPress, SEXP keyRelease,
-                   SEXP mouseDoubleClick, SEXP mouseMove, SEXP mousePress,
-                   SEXP mouseRelease, SEXP wheel)
+                 SEXP mouseDoubleClick, SEXP mouseMove, SEXP mousePress,
+                 SEXP mouseRelease, SEXP wheel)
   {
     RLayer *layer = new RLayer(paint, keyPress, keyRelease, mouseDoubleClick,
               mouseMove, mousePress, mouseRelease, wheel);
     return wrapQGraphicsWidget(layer);
   }
-  
-  SEXP qt_qupdate_QGraphicsItem(SEXP rself) {
-    QGraphicsWidget *item = unwrapQObject(rself, QGraphicsWidget);
-    // HACK: purge the cache before updating. QGraphicsScene does not
-    // seem to update the cache properly when there are multiple
-    // views. This is not very efficient, but usually one is not
-    // caching layers that are frequently updated.
-    QGraphicsItem::CacheMode mode = item->cacheMode();
-    item->setCacheMode(QGraphicsItem::NoCache);
-    item->setCacheMode(mode);
-    item->update();
-    return rself;
-  }
-  
+    
   // FIXME: should be function of the scene
   SEXP qt_qpaintingView_QGraphicsItem(SEXP rself) {
     QGraphicsWidget *self = unwrapQObject(rself, QGraphicsWidget);
@@ -57,57 +45,50 @@ extern "C" {
 
   // all the way to the viewport, useful for moving between pixels and
   // data in event callbacks
+  // REMOVE when able to get scene and viewport tform, multiply and invert
   SEXP qt_qdeviceMatrix_QGraphicsItem(SEXP rself, SEXP rview, SEXP rinverted) {
-    QGraphicsWidget *self = unwrapQObject(rself, QGraphicsWidget);
-    PlotView *view = unwrapQObject(rview, PlotView);
+    QGraphicsItem *self = unwrapQGraphicsItem(rself, QGraphicsItem);
+    QGraphicsView *view = unwrapQObject(rview, QGraphicsView);
     // This method is buggy (assumes 'self' ignores transformations)
     //QMatrix mat = self->deviceTransform(view->viewportTransform()).toAffine();
     QTransform mat = self->sceneTransform() * view->viewportTransform();
     return asRMatrix(mat.toAffine(), asLogical(rinverted));
   }
-
-  // just data to parent (layout/scene) coordinates, for size calculations
-  SEXP qt_qmatrix_QGraphicsItem(SEXP rself, SEXP rinverted) {
-    QGraphicsWidget *self = unwrapQObject(rself, QGraphicsWidget);
-    return asRMatrix(self->transform().toAffine(), asLogical(rinverted));
-  }
-
-  SEXP qt_qsetMatrix_QGraphicsItem(SEXP rself, SEXP rmatrix) {
-    QGraphicsWidget *self = unwrapQObject(rself, QGraphicsWidget);
-    self->setTransform(QTransform(asQMatrix(rmatrix)));
-    return rself;
-  }
   
-  SEXP qt_qsetGeometry_QGraphicsWidget(SEXP rself, SEXP rx)
-  {
-    QGraphicsWidget *widget = unwrapQObject(rself, QGraphicsWidget);
-    widget->setGeometry(QRectF(QPointF(REAL(rx)[0], REAL(rx)[2]),
-                               QPointF(REAL(rx)[1], REAL(rx)[3])));
-    return rself;
-  }
-
-  SEXP qt_qgeometry_QGraphicsWidget(SEXP rself) {
-    QGraphicsWidget *widget = unwrapQObject(rself, QGraphicsWidget);
-    return asRRect(widget->geometry());
-  }
-
-  SEXP qt_qboundingRect_QGraphicsItem(SEXP rself) {
-    QGraphicsWidget *widget = unwrapQObject(rself, QGraphicsWidget);
-    return asRRect(widget->boundingRect());
-  }
-  
-  SEXP qt_qsetLimits_Layer(SEXP rself, SEXP xlim, SEXP ylim) {
+  SEXP qt_qsetLimits_Layer(SEXP rself, SEXP rrect) {
     Layer *layer = unwrapQObject(rself, Layer);
-    layer->setLimits(REAL(xlim)[0], REAL(ylim)[0], REAL(xlim)[1],
-                     REAL(ylim)[1]);
+    layer->setLimits(asQRectF(rrect));
     return rself;
   }
 
   SEXP qt_qlimits_Layer(SEXP rself) {
     Layer *layer = unwrapQObject(rself, Layer);
-    return asRRect(layer->limits());
+    return asRRectF(layer->limits());
   }
 
+  SEXP qt_qprimitivesAtPoint_Layer(SEXP rself, SEXP rpoint) {
+    Layer *self = unwrapQObject(rself, Layer);
+    SEXP ans;
+    QVector<int> primitives = self->primitives(asQPointF(rpoint));
+    ans = allocVector(INTSXP, primitives.size());
+    for (int i = 0; i < length(ans); i++)
+      INTEGER(ans)[i] = primitives[i] + 1;
+    return ans;
+  }
+
+  SEXP qt_qprimitivesInRect_Layer(SEXP rself, SEXP rrect) {
+    Layer *self = unwrapQObject(rself, Layer);
+    SEXP ans;
+    QVector<int> primitives = self->primitives(asQRectF(rrect));
+    ans = allocVector(INTSXP, primitives.size());
+    for (int i = 0; i < length(ans); i++) {
+      INTEGER(ans)[i] = primitives[i] + 1;
+    }
+    return ans;
+  }
+  
+  // REMOVE these functions after we can work with QGraphicsGridLayout
+  // in qtgui.
   SEXP qt_qcolStretch_Layer(SEXP rself) {
     Layer *layer = unwrapQObject(rself, Layer);
     QGraphicsGridLayout *layout = (QGraphicsGridLayout *)layer->layout();
@@ -157,8 +138,8 @@ extern "C" {
     return rself;
   }
   
-  SEXP qt_qaddChildItem_Layer(SEXP rself, SEXP ritem, SEXP rrow, SEXP rcol,
-                              SEXP rrowSpan, SEXP rcolSpan)
+  SEXP qt_qaddItem_Layer(SEXP rself, SEXP ritem, SEXP rrow, SEXP rcol,
+                         SEXP rrowSpan, SEXP rcolSpan)
   {
     Layer *layer = unwrapQObject(rself, Layer);
     QGraphicsWidget *item = unwrapQObject(ritem, QGraphicsWidget);
@@ -168,44 +149,6 @@ extern "C" {
     layout->addItem(item, asInteger(rrow), asInteger(rcol), asInteger(rrowSpan),
                     asInteger(rcolSpan));
     //layout->addItem(new QGraphicsWidget, 1, 1);
-    return rself;
-  }
-
-  SEXP qt_qitemsAtPoint_Layer(SEXP rself, SEXP rx, SEXP ry) {
-    Layer *self = unwrapQObject(rself, Layer);
-    SEXP ans;
-    QVector<int> items = self->items(QPointF(asReal(rx), asReal(ry)));
-    ans = allocVector(INTSXP, items.size());
-    for (int i = 0; i < length(ans); i++)
-      INTEGER(ans)[i] = items[i] + 1;
-    return ans;
-  }
-
-  SEXP qt_qitemsInRect_Layer(SEXP rself, SEXP rx) {
-    Layer *self = unwrapQObject(rself, Layer);
-    SEXP ans;
-    QVector<int> items = self->items(QRectF(QPointF(REAL(rx)[0], REAL(rx)[2]),
-                   QPointF(REAL(rx)[1], REAL(rx)[3])));
-    ans = allocVector(INTSXP, items.size());
-    for (int i = 0; i < length(ans); i++) {
-      INTEGER(ans)[i] = items[i] + 1;
-    }
-    return ans;
-  }
-
-  SEXP qt_qsetCacheMode_QGraphicsItem(SEXP rself, SEXP rmode) {
-    QGraphicsWidget *item = unwrapQObject(rself, QGraphicsWidget);
-    item->setCacheMode((QGraphicsItem::CacheMode)asInteger(rmode));
-    return rself;
-  }
-  SEXP qt_qcacheMode_QGraphicsItem(SEXP rself) {
-    QGraphicsWidget *item = unwrapQObject(rself, QGraphicsWidget);
-    return ScalarInteger(item->cacheMode());
-  }
-
-  SEXP qt_qsetFocus_QGraphicsItem(SEXP rself) {
-    QGraphicsWidget *item = unwrapQObject(rself, QGraphicsWidget);
-    item->setFocus();
     return rself;
   }
 }

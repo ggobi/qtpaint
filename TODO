@@ -1,7 +1,11 @@
 Immediate TODO:
 
 - Support animation through timers in qtbase.
-- Support adding QActions to QGraphicsWidgets.
+- Y origin in device coordinates should be at bottom. Painter should
+  transparently do the flipping, as it is for painting data, while
+  flipping at the Layer has undesirable consequences. Also, the event
+  coordinates need to be flipped. But as we move away from painting,
+  we start to bump into reality.
 - Documentation.
 - Issues with examples: map zoomer weird clipping (worksforme).
 - Support overriding sizeHint() in a Layer. This allows, for example,

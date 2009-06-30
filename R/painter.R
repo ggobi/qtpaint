@@ -4,17 +4,12 @@
 ## TODO: maybe move to a model where 'p' is obtained from a hidden
 ## variable in the parent (callback) frame.
 
-qmatrix <- function(p = matrix(c(1, 0, 0, 0, 1, 0), ncol=2), inverted = FALSE) {
-  if (inherits(p, "Painter"))
-    p <- .Call("qt_qmatrix_Painter", p, as.logical(inverted))
-  else if (inherits(p, "QGraphicsWidget")) # obviously need S3 dispatching
-    p <- .Call("qt_qmatrix_QGraphicsItem", p, as.logical(inverted))
-  else if (inherits(p, "QGraphicsView"))
-    p <- .Call("qt_qmatrix_GraphicsView", p, as.logical(inverted))
-  else if (!is.matrix(p) || !is.numeric(p) || !identical(dim(p), c(3L, 2L)))
-    stop("argument 'p' has unknown type")
-  class(p) <- "QMatrix"
-  p
+
+qmatrix.Painter <- function(x, inverted = FALSE) 
+  .Call("qt_qmatrix_Painter", x, as.logical(inverted))
+
+`qmatrix<-.Painter` <- function(x, value) {
+  .Call("qt_qsetMatrix_Painter", x, value, PACKAGE = "qtpaint")
 }
 
 `qmatrixEnabled<-` <- function(p, value) {
@@ -32,10 +27,14 @@ qmatrix <- function(p = matrix(c(1, 0, 0, 0, 1, 0), ncol=2), inverted = FALSE) {
   invisible(.Call("qt_qsetHasFill_Painter", p, as.logical(value)))
 }
 
-.normArgColor <- function(color) {
-  if (is.matrix(color) && is.integer(color) && nrow(color) == 4)
-    color
-  else col2rgb(color, TRUE)
+.normArgColor <- function(color, len) {
+  if (is.null(color))
+    return(NULL)
+  if (!is.matrix(color) || !is.integer(color) || nrow(color) != 4)
+    color <- col2rgb(color, TRUE)
+  if (!missing(len)) # might drop to vector here, much faster, C code is OK
+    color <- recycleVector(color, 4L*len) 
+  color
 }
 
 `qstrokeColor<-` <- function(p, value) {
@@ -74,44 +73,69 @@ qmatrix <- function(p = matrix(c(1, 0, 0, 0, 1, 0), ncol=2), inverted = FALSE) {
   invisible(.Call("qt_qsetAntialias_Painter", p, as.logical(value)))
 }
 
-qpolyline <- function(p, x, y, stroke = NULL) {
+qdrawLine <- function(p, x, y, stroke = NULL) {
   stopifnot(inherits(p, "Painter"))
+  m <- max(length(x), length(y))
+  x <- recycleVector(x, m)
+  y <- recycleVector(y, m)
   invisible(.Call("qt_qdrawPolyline_Painter", p, as.numeric(x), as.numeric(y),
-                  .normArgColor(stroke)))
+                  .normArgColor(stroke, m)))
 }
 
-qsegment <- function(p, x0, y0, x1, y1, stroke = NULL) {
+qdrawSegment <- function(p, x0, y0, x1, y1, stroke = NULL) {
   stopifnot(inherits(p, "Painter"))
+  m <- max(length(x0), length(y0), length(x1), length(y1))
+  x0 <- recycleVector(x0, m)
+  y0 <- recycleVector(y0, m)
+  x1 <- recycleVector(x1, m)
+  y1 <- recycleVector(y1, m)
   invisible(.Call("qt_qdrawSegments_Painter", p, as.numeric(x0), as.numeric(y0),
                   as.numeric(x1), as.numeric(y1),
-                  .normArgColor(stroke)))
+                  .normArgColor(stroke, m)))
 }
 
-qpoint <- function(p, x, y, stroke = NULL) {
+qdrawPoint <- function(p, x, y, stroke = NULL) {
   stopifnot(inherits(p, "Painter"))
+  m <- max(length(x), length(y))
+  x <- recycleVector(x, m)
+  y <- recycleVector(y, m)
   invisible(.Call("qt_qdrawPoints_Painter", p, as.numeric(x), as.numeric(y),
-                  .normArgColor(stroke)))
+                  .normArgColor(stroke, m)))
 }
 
-qrect <- function(p, xleft, ybottom, xright, ytop, stroke = NULL, fill = NULL)
+qdrawRect <- function(p, xleft, ybottom, xright, ytop, stroke = NULL,
+                      fill = NULL)
 {
   stopifnot(inherits(p, "Painter"))
+  m <- max(length(xleft), length(ybottom), length(xright), length(ytop))
+  xleft <- recycleVector(xleft, m)
+  ybottom <- recycleVector(ybottom, m)
+  xright <- recycleVector(xright, m)
+  ytop <- recycleVector(ytop, m)
   invisible(.Call("qt_qdrawRectangles_Painter", p, as.numeric(xleft),
                   as.numeric(ybottom), as.numeric(xright - xleft),
-                  as.numeric(ytop - ybottom), .normArgColor(stroke),
-                  .normArgColor(fill)))
+                  as.numeric(ytop - ybottom), .normArgColor(stroke, m),
+                  .normArgColor(fill, m)))
 }
 
-qcircle <- function(p, x, y, r, stroke = NULL, fill = NULL) {
+qdrawCircle <- function(p, x, y, r, stroke = NULL, fill = NULL) {
   stopifnot(inherits(p, "Painter"))
+  m <- max(length(x), length(y), length(r))
+  x <- recycleVector(x, m)
+  y <- recycleVector(y, m)
+  r <- recycleVector(r, m)
   invisible(.Call("qt_qdrawCircle_Painter", p, as.numeric(x), as.numeric(y),
-                  as.integer(r), .normArgColor(stroke), .normArgColor(fill)))
+                  as.integer(r), .normArgColor(stroke, m),
+                  .normArgColor(fill, m)))
 }
 
-qpolygon <- function(p, x, y, stroke = NULL, fill = NULL) {
+qdrawPolygon <- function(p, x, y, stroke = NULL, fill = NULL) {
   stopifnot(inherits(p, "Painter"))
+  m <- max(length(x), length(y))
+  x <- recycleVector(x, m)
+  y <- recycleVector(y, m)
   invisible(.Call("qt_qdrawPolygon_Painter", p, as.numeric(x), as.numeric(y),
-                  .normArgColor(stroke), .normArgColor(fill)))
+                  .normArgColor(stroke, m), .normArgColor(fill, m)))
 }
 
 ## Text drawing: a mess
@@ -137,14 +161,19 @@ qpolygon <- function(p, x, y, stroke = NULL, fill = NULL) {
 
 ## For multiple lines, each line is aligned the same as the block.
 
-qtext <- function(p, text, x, y, halign = c("center", "left", "right"),
-                   valign = c("center", "basecenter", "baseline", "bottom",
-                     "top"),
-                   rot = 0)
+qdrawText <- function(p, text, x, y, halign = c("center", "left", "right"),
+                      valign = c("center", "basecenter", "baseline", "bottom",
+                        "top"),
+                      rot = 0)
 {
+  m <- max(length(text), length(x), length(y))
+  text <- recycleVector(text, m)
+  x <- recycleVector(x, m)
+  y <- recycleVector(y, m)
   drawText <- function(text)
-    invisible(.Call("qt_qdrawText_Painter", p, as.character(text), as.numeric(x),
-                    as.numeric(y), as.integer(hflag + vflag), as.numeric(rot)))
+    invisible(.Call("qt_qdrawText_Painter", p, as.character(text),
+                    as.numeric(x), as.numeric(y), as.integer(hflag + vflag),
+                    as.numeric(rot)))
   stopifnot(inherits(p, "Painter"))
   hflags <- c(left = 0x1, right = 0x2, center = 0x4)
   halign <- match.arg(halign)
@@ -238,22 +267,29 @@ qstrWidth <- function(p, text) {
   extents[,3] - extents[,1]
 }
 
-qimage <- function(p, col, width, height, x = 0, y = height-1) {
+qdrawImage <- function(p, col, width, height, x = 0, y = height-1) {
   stopifnot(inherits(p, "Painter"))
   stopifnot(length(col) == width*height)
+  m <- max(length(x), length(y))
+  x <- recycleVector(x, m)
+  y <- recycleVector(y, m)
 ### FIXME: could also accept a matrix, like that returned here
   rgb <- as.raw(.normArgColor(col))
   invisible(.Call("qt_qdrawImage_Painter", p, rgb, as.integer(width),
                   as.integer(height)), as.numeric(x), as.numeric(y))
 }
 
-qglyph <- function(p, path, x, y, cex = NULL, stroke = NULL, fill = NULL) {
+qdrawGlyph <- function(p, path, x, y, cex = NULL, stroke = NULL, fill = NULL) {
   stopifnot(inherits(p, "Painter"))
   stopifnot(inherits(path, "QPainterPath"))
+  m <- max(length(x), length(y))
+  x <- recycleVector(x, m)
+  y <- recycleVector(y, m)
   if (!is.null(cex))
-    cex <- as.numeric(cex)
-  invisible(.Call("qt_qdrawGlyphs_Painter", p, path, as.numeric(x), as.numeric(y),
-                  cex, .normArgColor(stroke), .normArgColor(fill)))
+    cex <- recycleVector(as.numeric(cex), m)
+  invisible(.Call("qt_qdrawGlyphs_Painter", p, path, as.numeric(x),
+                  as.numeric(y), cex, .normArgColor(stroke, m),
+                  .normArgColor(fill, m)))
 }
 
 qpath <- function() {
@@ -267,8 +303,8 @@ qpath <- function() {
 
 qpathCircle <- function(x, y, r, path = qpath()) {
   stopifnot(inherits(path, "QPainterPath"))
-  invisible(.Call("qt_qaddCircle_QPainterPath", path, as.numeric(x), as.numeric(y),
-                  as.numeric(r)))
+  invisible(.Call("qt_qaddCircle_QPainterPath", path, as.numeric(x),
+                  as.numeric(y), as.numeric(r)))
 }
 qpathRect <- function(xleft, ybottom, xright, ytop, path = qpath()) {
   stopifnot(inherits(path, "QPainterPath"))

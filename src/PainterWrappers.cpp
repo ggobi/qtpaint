@@ -1,8 +1,7 @@
-#include "conversion.h"
 #include "Painter.hpp"
 #include "paintUtils.hpp"
 
-#include "Rinternals.h"
+#include <qtbase.h>
 
 using namespace QViz;
 
@@ -262,8 +261,9 @@ extern "C" {
   }
   
   SEXP qt_qpath(void) {
+    static const char *classes[] = { "QPainterPath", NULL };
     QPainterPath *path = new QPainterPath();
-    return wrapPointer(path, "QPainterPath", finalizePainterPath);
+    return wrapPointer(path, classes, finalizePainterPath);
   }
 
   SEXP qt_qaddCircle_QPainterPath(SEXP rp, SEXP rx, SEXP ry, SEXP rr) {

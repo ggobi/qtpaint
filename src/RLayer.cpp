@@ -4,7 +4,7 @@
 #include <QGraphicsView>
 
 #include "RLayer.hpp"
-#include "conversion.h"
+#include <qtbase.h>
 
 using namespace QViz;
 
@@ -75,7 +75,7 @@ static SEXP asRModifiers(Qt::KeyboardModifiers modifiers) {
 
 // the 'screenPos' is global, we want viewport-relative
 #define viewPosForEvent(event) \
-  asRPoint(event->widget()->mapFromGlobal(event->screenPos()))
+  asRPointF(event->widget()->mapFromGlobal(event->screenPos()))
 
 
 void invalidatePtr(SEXP ptr) {
@@ -84,6 +84,7 @@ void invalidatePtr(SEXP ptr) {
 
 void RLayer::paintPlot(Painter *painter, QRectF exposed)
 {
+  static const char * painterClasses[] = { "Painter", NULL };
   SEXP e, etmp, rpainter;
 
   if (paintEvent_R == R_NilValue)
@@ -94,10 +95,10 @@ void RLayer::paintPlot(Painter *painter, QRectF exposed)
   etmp = CDR(e);
   SETCAR(etmp, wrapQGraphicsWidget(this));
   etmp = CDR(etmp);
-  rpainter = wrapPointer(painter, "Painter", NULL);
+  rpainter = wrapPointer(painter, painterClasses, NULL);
   SETCAR(etmp, rpainter);
   etmp = CDR(etmp);
-  SETCAR(etmp, asRRect(exposed));
+  SETCAR(etmp, asRRectF(exposed));
 
   R_tryEval(e, R_GlobalEnv, NULL);
 
@@ -188,7 +189,7 @@ void RLayer::dispatchMouseEvent(SEXP closure, QGraphicsSceneMouseEvent *event) {
   SETCAR(etmp, revent);
   
   SET_VECTOR_ELT(revent, 0, wrapQGraphicsWidget(this));
-  SET_VECTOR_ELT(revent, 1, asRPoint(event->pos()));
+  SET_VECTOR_ELT(revent, 1, asRPointF(event->pos()));
   SET_VECTOR_ELT(revent, 2, viewPosForEvent(event));
   SET_VECTOR_ELT(revent, 3, ScalarInteger(event->buttons()));
   SET_VECTOR_ELT(revent, 4, asRModifiers(event->modifiers()));
@@ -217,7 +218,7 @@ void RLayer::dispatchHoverEvent(SEXP closure, QGraphicsSceneHoverEvent *event) {
   SETCAR(etmp, revent);
   
   SET_VECTOR_ELT(revent, 0, wrapQGraphicsWidget(this));
-  SET_VECTOR_ELT(revent, 1, asRPoint(event->pos()));
+  SET_VECTOR_ELT(revent, 1, asRPointF(event->pos()));
   SET_VECTOR_ELT(revent, 2, viewPosForEvent(event));
   SET_VECTOR_ELT(revent, 4, asRModifiers(event->modifiers()));
   SET_VECTOR_ELT(revent, 5, viewForEvent(event));
@@ -282,7 +283,7 @@ void RLayer::wheelEvent ( QGraphicsSceneWheelEvent * event ) {
   SETCAR(etmp, revent);
 
   SET_VECTOR_ELT(revent, 0, wrapQGraphicsWidget(this));
-  SET_VECTOR_ELT(revent, 1, asRPoint(event->pos()));
+  SET_VECTOR_ELT(revent, 1, asRPointF(event->pos()));
   SET_VECTOR_ELT(revent, 2, viewPosForEvent(event));
   SET_VECTOR_ELT(revent, 3, ScalarInteger(event->delta()));
   SET_VECTOR_ELT(revent, 4, asRModifiers(event->modifiers()));

@@ -1,14 +1,18 @@
 ### some utilities to help make drawing easier
 
 qmap <- function(m, x, y) {
+  cl <- NULL
   if (missing(y)) {
+    cl <- class(x) # if only 'x' specified, preserve its class
     if (!is.matrix(x))
       x <- matrix(x, ncol = 2, byrow = TRUE)
     y <- x[,2]
     x <- x[,1]
   }
-  cbind(x * m[1,1] + y * m[2,1] + m[3,1],
-        y * m[2,2] + x * m[1,2] + m[3,2])
+  mapped <- cbind(x * m[1,1] + y * m[2,1] + m[3,1],
+                  y * m[2,2] + x * m[1,2] + m[3,2])
+  class(mapped) <- cl
+  mapped
 }
 
 qscale <- function(m = qmatrix(), s = c(x, y), x = 1, y = 1) {

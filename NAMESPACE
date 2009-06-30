@@ -1,22 +1,24 @@
 useDynLib(qtpaint)
 
-importFrom(qtgui, qshow, qclose)
-importFrom(qtbase, qfont)
-export(qshow, qclose, qfont)
+importFrom(qtgui, qshow, qclose, qgraphicsScene, "qmatrix<-", "qmatrix",
+           "qgeometry<-", qaddItem, qgeometry, qboundingRect, qitems, qupdate,
+           qcacheMode, "qcacheMode<-", qfocus, qfitScene)
+export(qgraphicsScene, qplotView, "qmatrix<-", "qmatrix", "qgeometry<-",
+       qgeometry, qaddItem, qboundingRect, qitems, qupdate, qcacheMode,
+       "qcacheMode<-", qfocus)
 
-export(qscene, qview)
+importFrom(qtbase, qfont, qrect, qpoint, qsize, qcolor)
+export(qshow, qclose, qfont, qrect, qpoint, qsize, qcolor)
 
 export("qantialias<-",
-       qcircle,
+       qdrawCircle,
        "qdash<-",
        "qfillColor<-",
        "qfont<-",
-       qglyph,
+       qdrawGlyph,
        "qhasFill<-",
        "qhasStroke<-",
        "qlineWidth<-",
-       qmatrix,
-       "qmatrix<-",
        "qmatrixEnabled<-",
        qpath,
        qpathCircle,
@@ -24,36 +26,34 @@ export("qantialias<-",
        qpathRect,
        qpathSegment,
        qpathText,
-       qpoint,
-       qpolygon,
-       qpolyline,
-       qrect,
-       qsegment,
+       qdrawPoint,
+       qdrawPolygon,
+       qdrawLine,
+       qdrawRect,
+       qdrawSegment,
        "qstrokeColor<-",
-       qtext,
+       qdrawText,
        qtextExtents,
-       qstrWidth
+       qstrWidth,
+       qdrawImage
        )
+
+S3method(qmatrix, Painter)
+S3method("qmatrix<-", Painter)
 
 export(qoverlay,
        qlayer,
-       qsetGeometry,
-       qgeometry,
-       qboundingRect,
        qpaintingView,
        qlimits,
-       qsetLimits,
+       "qlimits<-",
        qdeviceMatrix,
-       qaddGraphicsWidget,
-       qitems,
-       qupdate,
-       "qcacheMode<-",
-       qcacheMode,
-       qfocus,
-       "qbackground<-")
+       "qbackgroundColor<-",
+       qprimitives)
+
+S3method(qboundingRect, QGraphicsView)
+S3method(qaddItem, QViz::Layer)
 
 export(qmap, qscale, qtranslate, qrotate, qflipY)
 
-S3method("[<-", Layer)
-S3method(dim, QGraphicsItem)
+S3method("[<-", "QViz::Layer")
 S3method(dim, QGraphicsView)

@@ -1,6 +1,9 @@
 ## tests/demonstrations for the interactive canvas
 library(qtpaint)
 
+options(warn=2)
+options(error=recover)
+
 circle <- qpathCircle(0, 0, 5)
 
 n <- 100000
@@ -19,7 +22,7 @@ fill <- col2rgb(rgb(1, seq(0, 1, length=nrow(df)), 0, 1), TRUE)
 scatterplot <- function(item, painter, exposed) {
   ## qfillColor(painter) <- "red"
   ##qpoint(painter, df[,1], df[,2], stroke = fill)
-  qglyph(painter, circle, df[,1], df[,2], stroke = fill, fill = fill)
+  qdrawGlyph(painter, circle, df[,1], df[,2], stroke = fill, fill = fill)
    ## qcircle(painter, df[,1], df[,2], rep(5, n),
    ##          stroke = fill, fill = fill)
   ## qrect(painter, df[,1], df[,2], df[,1] + 2, df[,2] + 2)
@@ -30,7 +33,8 @@ labeler <- function(item, painter, exposed) {
   mat <- qdeviceMatrix(item, inverted=TRUE)
   off <- qmap(mat, c(5, 5)) - qmap(mat, c(0, 0))
   df <- df[labeled,]
-  qtext(painter, rownames(df), df[,1]+off[1], df[,2]+off[2], "left", "bottom")
+  qdrawText(painter, rownames(df), df[,1]+off[1], df[,2]+off[2], "left",
+            "bottom")
 }
 
 margin <- 5
@@ -47,8 +51,8 @@ adjust <- c(margin, -margin)
 axes <- function(item, painter, exposed) {
   qfont(painter) <- qfont(pointsize=12)
   pos <- qgeometry(item) + adjust
-  qtext(painter, colnames(df)[1], pos[2], pos[4], "right", "bottom")
-  qtext(painter, colnames(df)[2], pos[1], pos[3], "left", "top")
+  qdrawText(painter, colnames(df)[1], pos[2], pos[4], "right", "bottom")
+  qdrawText(painter, colnames(df)[2], pos[1], pos[3], "left", "top")
 }
 
 pointAdder <- function(event) {
@@ -58,10 +62,12 @@ pointAdder <- function(event) {
 
 pointIdentifier <- function(event) {
   off <- 20
-  rect <- matrix(event$screenPos, 2, 2, byrow=TRUE) + rep(c(-off, off), 2)
+  offv <- c(-off, off)
+  pos <- event$screenPos
+  rect <- qrect(pos[1] + offv, pos[2] + offv)
   mat <- qdeviceMatrix(event$item, event$view)
   rect <- qmap(mat, rect)
-  hits <- qitems(event$item, rect)
+  hits <- qprimitives(event$item, rect)
   hitmat <- as.matrix(df[hits,])
   posmat <- matrix(event$pos, ncol=2)
   labeled <<- rep(FALSE, nrow(df))
@@ -72,20 +78,20 @@ pointIdentifier <- function(event) {
 boundsPainter <- function(item, painter, exposed) {
   lims <- qboundingRect(item)
   qstrokeColor(painter) <- "red"
-  qrect(painter, lims[1,1], lims[1,2], lims[2,1], lims[2,2])
+  qdrawRect(painter, lims[1,1], lims[1,2], lims[2,1], lims[2,2])
 }
 
-scene <- qscene()
+scene <- qgraphicsScene()
 ##qbackground(scene) <- "black"
 root <- qlayer(scene)
 points <- qlayer(root, scatterplot, mouseMove = pointIdentifier)
-qsetLimits(points, range(df[,1]), range(df[,2]))
+qlimits(points) <- qrect(range(df[,1]), range(df[,2]))
 labels <- qlayer(root, labeler)
 qcacheMode(labels) <- "none"
-qsetLimits(labels, qlimits(points))
+qlimits(labels) <- qlimits(points)
 ##bounds <- qlayer(boundsPainter)
 ##qaddGraphicsWidget(root, bounds, 1, 1)
-view <- qview(scene = scene, opengl = TRUE)
+view <- qplotView(scene = scene, opengl = TRUE)
 overlay <- qoverlay(view)
 axesOverlay <- qlayer(overlay, axes)
 print(view)
