@@ -37,40 +37,40 @@ qmatrix.Painter <- function(x, inverted = FALSE)
   color
 }
 
-`qstrokeColor<-` <- function(p, value) {
+`qstrokeColor<-` <- function(x, value) {
   stopifnot(inherits(p, "Painter"))
   color <- .normArgColor(value)
-  invisible(.Call("qt_qsetStrokeColor_Painter", p, color))
+  invisible(.Call("qt_qsetStrokeColor_Painter", x, color))
 }
 
-`qfillColor<-` <- function(p, value) {
+`qfillColor<-` <- function(x, value) {
   stopifnot(inherits(p, "Painter"))
   color <- .normArgColor(value)
-  invisible(.Call("qt_qsetFillColor_Painter", p, color))
+  invisible(.Call("qt_qsetFillColor_Painter", x, color))
 }
 
 ## 'font' as returned by 'qfont'
-`qfont<-` <- function(p, value)
+`qfont<-` <- function(x, value)
 {
   stopifnot(inherits(p, "Painter"))
-  invisible(.Call("qt_qsetFont_Painter", p, as.character(value$family),
+  invisible(.Call("qt_qsetFont_Painter", x, as.character(value$family),
                   as.integer(value$pointsize), as.integer(value$weight),
                   as.logical(value$italic)))
 }
 
-`qlineWidth<-` <- function(p, value) {
-  stopifnot(inherits(p, "Painter"))
-  invisible(.Call("qt_qsetLineWidth_Painter", p, as.integer(value)))
+`qlineWidth<-` <- function(x, value) {
+  stopifnot(inherits(x, "Painter"))
+  invisible(.Call("qt_qsetLineWidth_Painter", x, as.integer(value)))
 }
 
-`qdash<-` <- function(p, value) {
-  stopifnot(inherits(p, "Painter"))
-  invisible(.Call("qt_qsetDashes_Painter", p, as.numeric(value)))
+`qdash<-` <- function(x, value) {
+  stopifnot(inherits(x, "Painter"))
+  invisible(.Call("qt_qsetDashes_Painter", x, as.numeric(value)))
 }
 
-`qantialias<-` <- function(p, value) {
-  stopifnot(inherits(p, "Painter"))
-  invisible(.Call("qt_qsetAntialias_Painter", p, as.logical(value)))
+`qantialias<-` <- function(x, value) {
+  stopifnot(inherits(x, "Painter"))
+  invisible(.Call("qt_qsetAntialias_Painter", x, as.logical(value)))
 }
 
 qdrawLine <- function(p, x, y, stroke = NULL) {
