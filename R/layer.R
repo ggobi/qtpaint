@@ -85,24 +85,24 @@ qcolStretch <- function(p) {
   .Call("qt_qcolStretch_Layer", p)
 }
 
-`qrowStretch<-` <- function(p, value) {
-  stopifnot(inherits(p, "QViz::Layer"))
-  invisible(.Call("qt_qsetRowStretch_Layer", p, as.integer(value)))
+`qrowStretch<-` <- function(x, value) {
+  stopifnot(inherits(x, "QViz::Layer"))
+  invisible(.Call("qt_qsetRowStretch_Layer", x, as.integer(value)))
 }
 
-`qcolStretch<-` <- function(p, value) {
-  stopifnot(inherits(p, "QViz::Layer"))
-  invisible(.Call("qt_qsetColStretch_Layer", p, as.integer(value)))
+`qcolStretch<-` <- function(x, value) {
+  stopifnot(inherits(x, "QViz::Layer"))
+  invisible(.Call("qt_qsetColStretch_Layer", x, as.integer(value)))
 }
 
-`qhSpacing<-` <- function(p, value) {
-  stopifnot(inherits(p, "QViz::Layer"))
-  invisible(.Call("qt_qsetHorizontalSpacing_Layer", p, as.numeric(value)))
+`qhSpacing<-` <- function(x, value) {
+  stopifnot(inherits(x, "QViz::Layer"))
+  invisible(.Call("qt_qsetHorizontalSpacing_Layer", x, as.numeric(value)))
 }
 
-`qvSpacing<-` <- function(p, value) {
+`qvSpacing<-` <- function(x, value) {
   stopifnot(inherits(p, "QViz::Layer"))
-  invisible(.Call("qt_qsetVerticalSpacing_Layer", p, as.numeric(value)))
+  invisible(.Call("qt_qsetVerticalSpacing_Layer", x, as.numeric(value)))
 }
 
 "[<-.QViz::Layer" <-
