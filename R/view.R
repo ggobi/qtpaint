@@ -9,3 +9,7 @@ qplotView <- function(scene, rescale = c("geometry", "transform", "none"),
 }
 
 dim.QGraphicsView <- function(x) dim(qboundingRect(x))
+
+`qopengl<-` <- function(x, value) {
+  .Call("qt_qsetOpengl", x, value)
+}

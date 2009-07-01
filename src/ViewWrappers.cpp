@@ -33,6 +33,13 @@ extern "C" {
     return wrapQObject(self->overlay());
   }
 
+  SEXP qt_qsetOpengl(SEXP rself, SEXP renabled) {
+    QGraphicsView *view = unwrapQObject(rself, QGraphicsView);
+    if (asLogical(renabled))
+      view->setViewport(new QGLWidget);
+    else view->setViewport(new QWidget);
+    return rself;
+  }
 }
 
 

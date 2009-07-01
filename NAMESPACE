@@ -48,7 +48,8 @@ export(qoverlay,
        "qlimits<-",
        qdeviceMatrix,
        "qbackgroundColor<-",
-       qprimitives)
+       qprimitives,
+       "qopengl<-")
 
 S3method(qboundingRect, QGraphicsView)
 S3method(qaddItem, QViz::Layer)
