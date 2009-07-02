@@ -38,13 +38,13 @@ qmatrix.Painter <- function(x, inverted = FALSE)
 }
 
 `qstrokeColor<-` <- function(x, value) {
-  stopifnot(inherits(p, "Painter"))
+  stopifnot(inherits(x, "Painter"))
   color <- .normArgColor(value)
   invisible(.Call("qt_qsetStrokeColor_Painter", x, color))
 }
 
 `qfillColor<-` <- function(x, value) {
-  stopifnot(inherits(p, "Painter"))
+  stopifnot(inherits(x, "Painter"))
   color <- .normArgColor(value)
   invisible(.Call("qt_qsetFillColor_Painter", x, color))
 }
@@ -52,7 +52,7 @@ qmatrix.Painter <- function(x, inverted = FALSE)
 ## 'font' as returned by 'qfont'
 `qfont<-` <- function(x, value)
 {
-  stopifnot(inherits(p, "Painter"))
+  stopifnot(inherits(x, "Painter"))
   invisible(.Call("qt_qsetFont_Painter", x, as.character(value$family),
                   as.integer(value$pointsize), as.integer(value$weight),
                   as.logical(value$italic)))
