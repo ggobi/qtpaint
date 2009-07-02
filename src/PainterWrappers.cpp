@@ -191,21 +191,25 @@ extern "C" {
                           SEXP rstroke, SEXP rfill)
   {
     PAINTER_P();
+    int i, n = length(rx);
     QColor *stroke = COLOR(rstroke);
     QColor *fill = COLOR(rfill);
-    QColor prevStroke = stroke ? p->strokeColor() : QColor(),
-      prevFill = fill ? p->fillColor() : QColor();
+    if (stroke && n)
+      p->setStrokeColor(stroke[i]);
+    if (fill && n)
+      p->setFillColor(fill[i]);
+    QColor prevStroke = p->strokeColor(), prevFill = p->fillColor();
     double *x = REAL(rx);
     double *y = REAL(ry);
     int *r = INTEGER(rr);
-    for (int i = 0; i < length(rx); i++) {
+    for (i = 0; i < n; i++) {
       if (stroke && stroke[i] != prevStroke) {
-        p->setStrokeColor(stroke[i-1]);
-        prevStroke = stroke[i-1];
+        p->setStrokeColor(stroke[i]);
+        prevStroke = stroke[i];
       }
       if (fill && fill[i] != prevFill) {
-        p->setFillColor(fill[i-1]);
-        prevFill = fill[i-1];
+        p->setFillColor(fill[i]);
+        prevFill = fill[i];
       }
       p->drawCircle(x[i], y[i], r[i]);
     }

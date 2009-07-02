@@ -1,4 +1,5 @@
-#include <R.h>
+#include <QGLWidget>
+
 #include <R_ext/Rdynload.h>
 
 #define CALLDEF(name, n)  {#name, (DL_FUNC) &name, n}

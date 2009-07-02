@@ -44,6 +44,9 @@ namespace QViz {
       : QtPainter(painter), context(context) { }
 
     virtual ~OpenGLPainter() { }
+
+    // Qt 4.5 would benefit from a fast path
+    void drawPoints(double *x, double *y, int n);
     
     // if drawing many circles of same size, use drawGlyphs
     void drawCircle(double x, double y, int r);

@@ -15,7 +15,7 @@ namespace QViz {
     QVector<qreal> dashPattern;
     
   public:
-
+    
     // stroke/fill
     bool hasStroke() const {
       return pen().style() != Qt::NoPen;

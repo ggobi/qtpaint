@@ -43,6 +43,7 @@ void Layer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
       QSize size(painter->device()->width(), painter->device()->height());
       QGLContext *context = const_cast<QGLContext *>(qglWidget->context());
       qglWidget->makeCurrent();
+      // NOTE: antialiasing is not supported with FBOs, until Qt 4.6
       fbo = new QGLFramebufferObject(size);
       // clear the FBO, necessary on at least some Macs
       fboPainter = new QPainter(fbo);

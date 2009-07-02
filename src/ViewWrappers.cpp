@@ -7,6 +7,10 @@ using namespace QViz;
 
 extern "C" {
 
+  static QGLWidget *createGLWidget() {
+    return new QGLWidget(QGLFormat(QGL::SampleBuffers));
+  }
+  
   SEXP
   qt_qplotView(SEXP rscene, SEXP rescaleMode, SEXP ropengl)
   {
@@ -15,9 +19,8 @@ extern "C" {
     QGraphicsView *view =
       new QViz::PlotView(scene, 0,
                          (QViz::PlotView::RescaleMode)asInteger(rescaleMode));
-    // Do we want to make OpenGL an option?
     if (asLogical(ropengl))
-      view->setViewport(new QGLWidget);
+      view->setViewport(createGLWidget());
     ans = wrapQWidget(view);
     addQObjectReference(scene, view); // leaky -- view may change scene
     return ans;
@@ -36,7 +39,7 @@ extern "C" {
   SEXP qt_qsetOpengl(SEXP rself, SEXP renabled) {
     QGraphicsView *view = unwrapQObject(rself, QGraphicsView);
     if (asLogical(renabled))
-      view->setViewport(new QGLWidget);
+      view->setViewport(createGLWidget());
     else view->setViewport(new QWidget);
     return rself;
   }

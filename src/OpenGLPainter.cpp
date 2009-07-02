@@ -10,7 +10,7 @@ using namespace QViz;
    2) Line drawing: drawing polyines and segments will not be much
    faster here. OpenGL draws lines in a weird way, and QtPainter
    corrects for that.
-   3) Points: probably no difference
+   3) Points: probably no difference (but in Qt 4.5, there is)
    4) Rectangles: QtPainter is a bit faster
    5) Circles: the midpoint algorithm is a hack, but the anti-aliased
    point is a nice trick -- but most of the time we use drawGlyphs. It
@@ -29,6 +29,16 @@ using namespace QViz;
    text. Just need to add glyph blitting as a fast path, and optimize
    circles.
  */
+
+void OpenGLPainter::drawPoints(double *x, double *y, int n) {
+  glPushAttrib(GL_ENABLE_BIT | GL_POINT_BIT);
+  if (antialias())
+    glEnable(GL_POINT_SMOOTH);
+  glPointSize(1);
+  setColor(strokeColor());  
+  drawVertices(GL_POINTS, x, y, n);
+  glPopAttrib();
+}
 
 // if drawing many circles of same size, use drawGlyphs
 void OpenGLPainter::drawCircle(double x, double y, int r) {
@@ -64,7 +74,7 @@ void OpenGLPainter::drawCircle(double x, double y, int r) {
     d += lineWidth;
 
   if (pen.style() == Qt::CustomDashLine || (has_pen && has_fill && !same_color)
-      || (!has_fill && (lineWidth > 1)))
+      || ((!has_fill || mps < d) && (lineWidth > 1 || antialias())))
     QtPainter::drawCircle(x, y, r);
   else if (has_fill && mps >= d) {
     enableTransform();
@@ -75,7 +85,8 @@ void OpenGLPainter::drawCircle(double x, double y, int r) {
     glVertex2f(x, y);
     glEnd();
     glDisable(GL_POINT_SMOOTH);
-  } else {
+  } else if (has_pen || has_fill) { // does not antialias!
+    printf("midpoint!\n");
     enableTransform(false);
     QPointF p = matrix().map(QPointF(x, y));
     if (has_pen)
@@ -245,8 +256,7 @@ void OpenGLPainter::drawSomeGlyphs(const QImage &image, double *x, double *y,
   glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
   glPointSize(image.width());
   glPointParameteri(GL_POINT_SPRITE_COORD_ORIGIN, GL_LOWER_LEFT);
-  glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-  setColor(fillColor());
+  setColor(QColor(0, 0, 0, 255));
   
   drawVertices(GL_POINTS, x, y, n);
 
