@@ -223,23 +223,40 @@ void OpenGLPainter::drawGlyphs(const QPainterPath &path, double *x, double *y,
                                double *size, QColor *stroke,
                                QColor *fill, int n)
 {
-  if (!size && stroke && fill) {
-    bool equal = true;
-    int i;
-    for (i = 0; i < n && equal; i++)
-      equal = stroke[i] == fill[i];
-    if (i == n) {
+  if (!size && (stroke || fill)) {
+    bool do_stroke = stroke || hasStroke(), do_fill = fill || hasFill();
+    bool fast = !do_stroke || !do_fill;
+    if (!fast) {
+      int i = 0;
+      bool equal = true;
+      if (stroke && fill) {
+        for (i = 0; i < n && equal; i++)
+          equal = stroke[i] == fill[i];
+      } else if (stroke && do_fill) {
+        QColor fill = fillColor();
+        for (i = 0; i < n && equal; i++)
+          equal = stroke[i] == fill;
+      } else if (fill && do_stroke) {
+        QColor stroke = strokeColor();
+        for (i = 0; i < n && equal; i++)
+          equal = stroke == fill[i];
+      }
+      fast = i == n;
+    }
+    if (fast) {
       QColor prevStroke = strokeColor(), prevFill = fillColor();
-      setStrokeColor(Qt::white);
-      setFillColor(Qt::white);
+      if (do_stroke) setStrokeColor(Qt::white);
+      if (do_fill) setFillColor(Qt::white);
       QImage glyph = rasterizeGlyph(path);
-      setStrokeColor(prevStroke);
-      setFillColor(prevFill);
+      if (do_stroke) setStrokeColor(prevStroke);
+      if (do_fill) setFillColor(prevFill);
       prepareDrawGlyphs();
       // override the env mode for modulation
       glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
       QVarLengthArray<float, 4096> colors(n*4);
       float *tmp = colors.data();
+      if (!stroke)
+        stroke = fill;
       for (int i = 0; i < n; i++, tmp += 4) {
         tmp[3] = stroke[i].alphaF();
         tmp[2] = stroke[i].blueF();
