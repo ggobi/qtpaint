@@ -12,7 +12,7 @@ using namespace QViz;
   QColor *stroke = COLOR(rstroke);                                      \
   int j = 0, i = n;                                                     \
   if (n && stroke) {                                                    \
-    QColor prevStroke = stroke[0];                                      \
+    QColor prevStroke = stroke[i];                                      \
     for (i = 0; i < n; i++) {                                           \
       if (stroke[i] != prevStroke) {                                    \
         p->setStrokeColor(stroke[i-1]);                                 \
@@ -160,8 +160,15 @@ extern "C" {
     int n = length(rx);
     int j = 0, i = n;
     if (n && (stroke || fill)) {
-      QColor prevStroke = stroke ? stroke[0] : QColor(),
-        prevFill = fill ? fill[0] : QColor();
+      QColor prevStroke, prevFill;
+      if (stroke) {
+        p->setStrokeColor(stroke[0]);
+        prevStroke = stroke[0];
+      }
+      if (fill) {
+        p->setFillColor(fill[0]);
+        prevFill = fill[0];
+      }
       for (i = 0; i < n; i++) {
         bool changed = false;
         if (stroke && stroke[i] != prevStroke) {
@@ -194,14 +201,18 @@ extern "C" {
     int i, n = length(rx);
     QColor *stroke = COLOR(rstroke);
     QColor *fill = COLOR(rfill);
-    if (stroke && n)
-      p->setStrokeColor(stroke[i]);
-    if (fill && n)
-      p->setFillColor(fill[i]);
-    QColor prevStroke = p->strokeColor(), prevFill = p->fillColor();
+    QColor prevStroke, prevFill;
     double *x = REAL(rx);
     double *y = REAL(ry);
     int *r = INTEGER(rr);
+    if (stroke && n) {
+      p->setStrokeColor(stroke[0]);
+      prevStroke = stroke[0];
+    }
+    if (fill && n) {
+      p->setFillColor(fill[0]);
+      prevFill = fill[0];
+    }
     for (i = 0; i < n; i++) {
       if (stroke && stroke[i] != prevStroke) {
         p->setStrokeColor(stroke[i]);

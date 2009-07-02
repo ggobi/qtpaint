@@ -32,8 +32,17 @@ void PaintUtils::drawPolygons(Painter *p, double *x, double *y, QColor *stroke,
                               QColor *fill, int n)
 {
   int j = 0, i = 0, k = 0;
-  QColor prev_stroke = stroke ? stroke[0] : QColor(),
-    prev_fill = fill ? fill[0] : QColor();
+  QColor prev_stroke, prev_fill;
+  if (n) {
+    if (stroke) {
+      p->setStrokeColor(stroke[0]);
+      prev_stroke = stroke[0];
+    }
+    if (fill) {
+      p->setFillColor(fill[0]);
+      prev_fill = fill[0];
+    }
+  }
   for (i = 0; i < n; i++) {
     if (x[i] == NA_REAL || y[i] == NA_REAL) {
       UPDATE_ATTR(stroke, setStrokeColor);

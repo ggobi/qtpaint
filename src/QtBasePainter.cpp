@@ -17,6 +17,9 @@ void QtBasePainter::setHasStroke(bool enabled) {
   setPen(pen);
 }
 
+// FIXME: disabling the stroke/fill when alpha is passed as zero is a
+// bad idea, as it introduces inconsistency: using setHasStroke/Fill,
+// one can disable drawing without setting the alpha to zero.
 void QtBasePainter::setStrokeColor(QColor color) {
   setHasStroke(color.alpha());
   QPen pen = this->pen();
@@ -117,9 +120,20 @@ void QtBasePainter::drawGlyphs(const QPainterPath &path, double *x, double *y,
   prepareDrawGlyphs();
   int j = 0, i = n;
   if (n && (stroke || fill || size)) {
-    QColor prevStroke = stroke ? stroke[0] : QColor(),
-      prevFill = fill ? fill[0] : QColor();
-    double prevSize = size ? size[0] : 0;
+    QColor prevStroke, prevFill;
+    double prevSize = 0;
+    if (stroke) {
+      setStrokeColor(stroke[0]);
+      prevStroke = stroke[0];
+    }
+    if (fill) {
+      setFillColor(fill[0]);
+      prevFill = fill[0];
+    }
+    if (size) {
+      setGlyphSize(size[0]);
+      prevSize = size[0];
+    }
     for (i = 0; i < n; i++) {
       bool changed = false;
       if (stroke && stroke[i] != prevStroke) {
