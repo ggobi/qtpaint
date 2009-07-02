@@ -86,7 +86,6 @@ void OpenGLPainter::drawCircle(double x, double y, int r) {
     glEnd();
     glDisable(GL_POINT_SMOOTH);
   } else if (has_pen || has_fill) { // does not antialias!
-    printf("midpoint!\n");
     enableTransform(false);
     QPointF p = matrix().map(QPointF(x, y));
     if (has_pen)
@@ -199,7 +198,6 @@ void OpenGLPainter::drawRectangles(double *x, double *y, double *w, double *h,
                         pen().style() == Qt::SolidLine &&
                         lineWidth() == 0)))
     {
-      setColor(fillColor());
       QVarLengthArray<double, 4096> vertices(n*8);
       double *v = vertices.data();
       for (int i = 0; i < n; i++) {
@@ -209,6 +207,7 @@ void OpenGLPainter::drawRectangles(double *x, double *y, double *w, double *h,
         v[6] = x[i]; v[7] = y[i] + h[i];
         v += 8;
       }
+      setColor(fillColor());
       glEnableClientState(GL_VERTEX_ARRAY);
       glVertexPointer(2, GL_DOUBLE, 0, vertices.data());
       glDrawArrays(GL_QUADS, 0, 4*n);
@@ -217,52 +216,67 @@ void OpenGLPainter::drawRectangles(double *x, double *y, double *w, double *h,
 }
 
 // possible fast path for multiple colors, if stroke/fill the same:
-// push colors into array, use indexed image -> alpha texture
-// OOPS: apparently point sprites do not support alpha textures
-/*
+// push colors into array, draw picture in white, use texture modulation
+// we only draw the glyph once
+
 void OpenGLPainter::drawGlyphs(const QPainterPath &path, double *x, double *y,
                                double *size, QColor *stroke,
                                QColor *fill, int n)
 {
-  if (!size) {
+  if (!size && stroke && fill) {
     bool equal = true;
     int i;
     for (i = 0; i < n && equal; i++)
       equal = stroke[i] == fill[i];
     if (i == n) {
-      QImage alpha = rasterizeGlyph(path).alphaChannel();
-      drawGlyphs(alpha, x, y, n);
+      QColor prevStroke = strokeColor(), prevFill = fillColor();
+      setStrokeColor(Qt::white);
+      setFillColor(Qt::white);
+      QImage glyph = rasterizeGlyph(path);
+      setStrokeColor(prevStroke);
+      setFillColor(prevFill);
+      prepareDrawGlyphs();
+      // override the env mode for modulation
+      glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+      QVarLengthArray<float, 4096> colors(n*4);
+      float *tmp = colors.data();
+      for (int i = 0; i < n; i++, tmp += 4) {
+        tmp[3] = stroke[i].alphaF();
+        tmp[2] = stroke[i].blueF();
+        tmp[1] = stroke[i].greenF();
+        tmp[0] = stroke[i].redF();
+      }
+      glColorPointer(4, GL_FLOAT, 0, colors.data());
+      glEnableClientState(GL_COLOR_ARRAY);
+      drawSomeGlyphs(glyph, x, y, n);
+      glDisableClientState(GL_COLOR_ARRAY);
+      finishDrawGlyphs();
       return;
     }
   }
   QtBasePainter::drawGlyphs(path, x, y, size, stroke, fill, n);
 }
-*/
+
+void OpenGLPainter::prepareDrawGlyphs(void) {
+  glPushAttrib(GL_TEXTURE_BIT | GL_ENABLE_BIT | GL_POINT_BIT);
+  glEnable(GL_TEXTURE_2D);
+  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+  glEnable(GL_POINT_SPRITE);
+  glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
+  glPointParameteri(GL_POINT_SPRITE_COORD_ORIGIN, GL_LOWER_LEFT);
+  enableTransform();
+}
+void OpenGLPainter::finishDrawGlyphs(void) {
+  glPopAttrib();
+}
 
 void OpenGLPainter::drawSomeGlyphs(const QImage &image, double *x, double *y,
                                    int n)
 {
-  glPushAttrib(GL_ENABLE_BIT | GL_POINT_BIT);
-  
-  glEnable(GL_TEXTURE_2D);
-  /*
-  GLint format = image.depth() == 32 ? GL_RGBA : GL_ALPHA;
-  GLuint tex = context->bindTexture(image, GL_TEXTURE_2D, format);
-  */
   GLuint tex = context->bindTexture(image);
-  enableTransform();
-  
-  glEnable(GL_POINT_SPRITE);
-  glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
   glPointSize(image.width());
-  glPointParameteri(GL_POINT_SPRITE_COORD_ORIGIN, GL_LOWER_LEFT);
-  setColor(QColor(0, 0, 0, 255));
-  
   drawVertices(GL_POINTS, x, y, n);
-
   context->deleteTexture(tex);
-  
-  glPopAttrib();  
 }
 
 void OpenGLPainter::drawVertices(GLenum mode, double *x, double *y, int n) {

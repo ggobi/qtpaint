@@ -54,19 +54,18 @@ namespace QViz {
     // GL_QUADS optimization for filled rectangles
     void drawRectangles(double *x, double *y, double *w, double *h, int n);
 
-    /*
+    
     void drawGlyphs(const QPainterPath &path, double *x, double *y,
                     double *size, QColor *stroke,
                     QColor *fill, int n);
     void drawGlyphs(const QImage &image, double *x, double *y, int n) {
       QtBasePainter::drawGlyphs(image, x, y, n);
     }
-    */
-  protected:
-    void prepareDrawGlyphs(void) {}
-    void finishDrawGlyphs(void) {}
-    void drawSomeGlyphs(const QImage &image, double *x, double *y, int n);
     
+  protected:
+    void prepareDrawGlyphs(void);
+    void finishDrawGlyphs(void);
+    void drawSomeGlyphs(const QImage &image, double *x, double *y, int n);
   };
 }
 
