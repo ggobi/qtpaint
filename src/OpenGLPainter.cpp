@@ -248,20 +248,31 @@ void OpenGLPainter::drawGlyphs(const QPainterPath &path, double *x, double *y,
       if (do_stroke) setStrokeColor(Qt::white);
       if (do_fill) setFillColor(Qt::white);
       QImage glyph = rasterizeGlyph(path);
+      /*
+      for (int i = 0; i < glyph.height(); i++)
+        for (int j = 0; j < glyph.bytesPerLine()/4; j++)
+          printf("%x,", glyph.pixel(j, i));
+      */
       if (do_stroke) setStrokeColor(prevStroke);
       if (do_fill) setFillColor(prevFill);
       prepareDrawGlyphs();
       // override the env mode for modulation
       glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-      QVarLengthArray<float, 4096> colors(n*4);
+      /*
+      glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
+                          GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+      */
+      QVector<float> colors(n*4);
       float *tmp = colors.data();
       if (!stroke)
         stroke = fill;
       for (int i = 0; i < n; i++, tmp += 4) {
-        tmp[3] = stroke[i].alphaF();
-        tmp[2] = stroke[i].blueF();
-        tmp[1] = stroke[i].greenF();
-        tmp[0] = stroke[i].redF();
+        //printf("%x\n", stroke[i].rgba());
+        float alpha = stroke[i].alphaF();
+        tmp[3] = alpha;
+        tmp[2] = stroke[i].blueF() * alpha;
+        tmp[1] = stroke[i].greenF() * alpha;
+        tmp[0] = stroke[i].redF() * alpha;
       }
       glColorPointer(4, GL_FLOAT, 0, colors.data());
       glEnableClientState(GL_COLOR_ARRAY);
