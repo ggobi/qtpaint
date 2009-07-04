@@ -27,6 +27,20 @@ qmatrix.Painter <- function(x, inverted = FALSE)
   invisible(.Call("qt_qsetHasFill_Painter", p, as.logical(value)))
 }
 
+.normArgStroke <- function(p, color, len) {
+  if (length(color) == 1) {
+    qstrokeColor(p) <- .normArgColor(color)
+    NULL
+  } else .normArgColor(color, len)
+}
+
+.normArgFill <- function(p, color, len) {
+  if (length(color) == 1) {
+    qfillColor(p) <- .normArgColor(color)
+    NULL
+  } else .normArgColor(color, len)
+}
+
 .normArgColor <- function(color, len) {
   if (is.null(color))
     return(NULL)
@@ -79,7 +93,7 @@ qdrawLine <- function(p, x, y, stroke = NULL) {
   x <- recycleVector(x, m)
   y <- recycleVector(y, m)
   invisible(.Call("qt_qdrawPolyline_Painter", p, as.numeric(x), as.numeric(y),
-                  .normArgColor(stroke, m)))
+                  .normArgStroke(p, stroke, m)))
 }
 
 qdrawSegment <- function(p, x0, y0, x1, y1, stroke = NULL) {
@@ -91,7 +105,7 @@ qdrawSegment <- function(p, x0, y0, x1, y1, stroke = NULL) {
   y1 <- recycleVector(y1, m)
   invisible(.Call("qt_qdrawSegments_Painter", p, as.numeric(x0), as.numeric(y0),
                   as.numeric(x1), as.numeric(y1),
-                  .normArgColor(stroke, m)))
+                  .normArgStroke(p, stroke, m)))
 }
 
 qdrawPoint <- function(p, x, y, stroke = NULL) {
@@ -100,7 +114,7 @@ qdrawPoint <- function(p, x, y, stroke = NULL) {
   x <- recycleVector(x, m)
   y <- recycleVector(y, m)
   invisible(.Call("qt_qdrawPoints_Painter", p, as.numeric(x), as.numeric(y),
-                  .normArgColor(stroke, m)))
+                  .normArgStroke(p, stroke, m)))
 }
 
 qdrawRect <- function(p, xleft, ybottom, xright, ytop, stroke = NULL,
@@ -114,8 +128,8 @@ qdrawRect <- function(p, xleft, ybottom, xright, ytop, stroke = NULL,
   ytop <- recycleVector(ytop, m)
   invisible(.Call("qt_qdrawRectangles_Painter", p, as.numeric(xleft),
                   as.numeric(ybottom), as.numeric(xright - xleft),
-                  as.numeric(ytop - ybottom), .normArgColor(stroke, m),
-                  .normArgColor(fill, m)))
+                  as.numeric(ytop - ybottom), .normArgStroke(p, stroke, m),
+                  .normArgFill(p, fill, m)))
 }
 
 qdrawCircle <- function(p, x, y, r, stroke = NULL, fill = NULL) {
@@ -125,8 +139,8 @@ qdrawCircle <- function(p, x, y, r, stroke = NULL, fill = NULL) {
   y <- recycleVector(y, m)
   r <- recycleVector(r, m)
   invisible(.Call("qt_qdrawCircle_Painter", p, as.numeric(x), as.numeric(y),
-                  as.integer(r), .normArgColor(stroke, m),
-                  .normArgColor(fill, m)))
+                  as.integer(r), .normArgStroke(p, stroke, m),
+                  .normArgFill(p, fill, m)))
 }
 
 qdrawPolygon <- function(p, x, y, stroke = NULL, fill = NULL) {
@@ -135,7 +149,7 @@ qdrawPolygon <- function(p, x, y, stroke = NULL, fill = NULL) {
   x <- recycleVector(x, m)
   y <- recycleVector(y, m)
   invisible(.Call("qt_qdrawPolygon_Painter", p, as.numeric(x), as.numeric(y),
-                  .normArgColor(stroke, m), .normArgColor(fill, m)))
+                  .normArgStroke(p, stroke, m), .normArgFill(p, fill, m)))
 }
 
 ## Text drawing: a mess
@@ -288,8 +302,8 @@ qdrawGlyph <- function(p, path, x, y, cex = NULL, stroke = NULL, fill = NULL) {
   if (!is.null(cex))
     cex <- recycleVector(as.numeric(cex), m)
   invisible(.Call("qt_qdrawGlyphs_Painter", p, path, as.numeric(x),
-                  as.numeric(y), cex, .normArgColor(stroke, m),
-                  .normArgColor(fill, m)))
+                  as.numeric(y), cex, .normArgStroke(p, stroke, m),
+                  .normArgFill(p, fill, m)))
 }
 
 qpath <- function() {
