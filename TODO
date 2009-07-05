@@ -1,5 +1,6 @@
 Immediate TODO:
 
+- The identify in the demo seems to be off for points with low Y values.
 - Painter's drawLine and drawPolygon need to be vectorized, by taking
   a sentinel value as a parameter.
 - Each primitive function in Painter should have a vectorized (over
