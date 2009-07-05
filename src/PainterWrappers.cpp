@@ -276,7 +276,8 @@ extern "C" {
   }
   
   SEXP qt_qpath(void) {
-    static const char *classes[] = { "QPainterPath", NULL };
+    QList<QString> classes;
+    classes.append("QPainterPath");
     QPainterPath *path = new QPainterPath();
     return wrapPointer(path, classes, finalizePainterPath);
   }

@@ -84,9 +84,10 @@ void invalidatePtr(SEXP ptr) {
 
 void RLayer::paintPlot(Painter *painter, QRectF exposed)
 {
-  static const char * painterClasses[] = { "Painter", NULL };
   SEXP e, etmp, rpainter;
-
+  QList<QString> painterClasses;
+  painterClasses.append("Painter");
+  
   if (paintEvent_R == R_NilValue)
     return; // not painting (just for layout)
 
