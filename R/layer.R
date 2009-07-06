@@ -3,7 +3,8 @@
 qlayer <- function(parent = NULL, paintFun = NULL, keyPressFun = NULL,
                    keyReleaseFun = NULL, mouseDoubleClickFun = NULL,
                    mouseMoveFun = NULL, mousePressFun = NULL,
-                   mouseReleaseFun = NULL, wheelFun = NULL)
+                   mouseReleaseFun = NULL, wheelFun = NULL,
+                   geometry = qrect(0, 0, 600, 400))
 {
   layer <- .Call("qt_qlayer",
                  .normArgCallback(paintFun),
@@ -19,6 +20,7 @@ qlayer <- function(parent = NULL, paintFun = NULL, keyPressFun = NULL,
   } else if (inherits(parent, "QGraphicsScene"))
     qaddItem(parent, layer)
   else if (!is.null(parent)) stop("Unsupported parent type")
+  qgeometry(layer) <- geometry
   qcacheMode(layer) <- "device"
   layer
 }
