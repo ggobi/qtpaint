@@ -11,7 +11,7 @@ namespace QViz {
   private:
     SEXP paintEvent_R, keyPressEvent_R, keyReleaseEvent_R,
       mouseDoubleClickEvent_R, mouseMoveEvent_R, mousePressEvent_R,
-      mouseReleaseEvent_R, wheelEvent_R;
+      mouseReleaseEvent_R, wheelEvent_R, sizeHint_R;
 
     void dispatchKeyEvent(SEXP closure, QKeyEvent *event);
     void dispatchMouseEvent(SEXP closure, QGraphicsSceneMouseEvent *event);
@@ -21,12 +21,14 @@ namespace QViz {
 
     RLayer(SEXP paintEvent, SEXP keyPressEvent, SEXP keyReleaseEvent,
            SEXP mouseDoubleClickEvent, SEXP mouseMoveEvent,
-           SEXP mousePressEvent, SEXP mouseReleaseEvent, SEXP wheelEvent);
+           SEXP mousePressEvent, SEXP mouseReleaseEvent, SEXP wheelEvent,
+           SEXP sizeHint);
 
     virtual ~RLayer();
     
     void paintPlot(Painter *painter, QRectF exposed);
-
+    QSizeF sizeHint (Qt::SizeHint hint, QSizeF &constraint);
+    
   protected:
     void hoverMoveEvent ( QGraphicsSceneHoverEvent * event );
     void mousePressEvent ( QGraphicsSceneMouseEvent * event );

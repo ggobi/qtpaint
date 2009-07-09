@@ -3,7 +3,7 @@
 qlayer <- function(parent = NULL, paintFun = NULL, keyPressFun = NULL,
                    keyReleaseFun = NULL, mouseDoubleClickFun = NULL,
                    mouseMoveFun = NULL, mousePressFun = NULL,
-                   mouseReleaseFun = NULL, wheelFun = NULL,
+                   mouseReleaseFun = NULL, wheelFun = NULL, sizeHintFun = NULL,
                    geometry = qrect(0, 0, 600, 400))
 {
   layer <- .Call("qt_qlayer",
@@ -14,7 +14,8 @@ qlayer <- function(parent = NULL, paintFun = NULL, keyPressFun = NULL,
                  .normArgCallback(mouseMoveFun),
                  .normArgCallback(mousePressFun),
                  .normArgCallback(mouseReleaseFun),
-                 .normArgCallback(wheelFun))
+                 .normArgCallback(wheelFun),
+                 .normArgCallback(sizeHintFun))
   if (inherits(parent, "QViz::Layer")) {
     qaddItem(parent, layer, 0, 0, 1, 1)
   } else if (inherits(parent, "QGraphicsScene"))
@@ -22,6 +23,7 @@ qlayer <- function(parent = NULL, paintFun = NULL, keyPressFun = NULL,
   else if (!is.null(parent)) stop("Unsupported parent type")
   qgeometry(layer) <- geometry
   qcacheMode(layer) <- "device"
+  qminimumSize(layer) <- qsize(1, 1) # so layout works
   layer
 }
 

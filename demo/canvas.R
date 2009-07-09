@@ -92,7 +92,7 @@ qcacheMode(labels) <- "none"
 qlimits(labels) <- qlimits(points)
 ##bounds <- qlayer(boundsPainter)
 ##qaddGraphicsWidget(root, bounds, 1, 1)
-view <- qplotView(scene = scene, opengl = TRUE)
+view <- qplotView(scene = scene, opengl = TRUE, rescale = "none")
 overlay <- qoverlay(view)
 axesOverlay <- qlayer(overlay, axes)
 print(view)

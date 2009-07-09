@@ -2,10 +2,11 @@ useDynLib(qtpaint)
 
 importFrom(qtgui, qshow, qclose, qgraphicsScene, "qmatrix<-", "qmatrix",
            "qgeometry<-", qaddItem, qgeometry, qboundingRect, qitems, qupdate,
-           qcacheMode, "qcacheMode<-", qfocus, qfitScene)
+           qcacheMode, "qcacheMode<-", qfocus, qfitScene, qminimumSize,
+           "qminimumSize<-")
 export(qgraphicsScene, qplotView, "qmatrix<-", "qmatrix", "qgeometry<-",
        qgeometry, qaddItem, qboundingRect, qitems, qupdate, qcacheMode,
-       "qcacheMode<-", qfocus)
+       "qcacheMode<-", qfocus, qminimumSize, "qminimumSize<-")
 
 importFrom(qtbase, qfont, qrect, qpoint, qsize, qcolor)
 export(qshow, qclose, qfont, qrect, qpoint, qsize, qcolor)
@@ -58,3 +59,5 @@ export(qmap, qscale, qtranslate, qrotate, qflipY)
 
 S3method("[<-", "QViz::Layer")
 S3method(dim, QGraphicsView)
+
+export("qrowStretch<-")

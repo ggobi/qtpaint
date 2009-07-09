@@ -14,12 +14,14 @@ using namespace QViz;
 
 RLayer::RLayer(SEXP paintEvent, SEXP keyPressEvent, SEXP keyReleaseEvent,
                SEXP mouseDoubleClickEvent, SEXP mouseMoveEvent,
-               SEXP mousePressEvent, SEXP mouseReleaseEvent, SEXP wheelEvent)
+               SEXP mousePressEvent, SEXP mouseReleaseEvent, SEXP wheelEvent,
+               SEXP sizeHint)
   : paintEvent_R(paintEvent), keyPressEvent_R(keyPressEvent),
     keyReleaseEvent_R(keyReleaseEvent),
     mouseDoubleClickEvent_R(mouseDoubleClickEvent),
     mouseMoveEvent_R(mouseMoveEvent), mousePressEvent_R(mousePressEvent),
-    mouseReleaseEvent_R(mouseReleaseEvent), wheelEvent_R(wheelEvent)
+    mouseReleaseEvent_R(mouseReleaseEvent), wheelEvent_R(wheelEvent),
+    sizeHint_R(sizeHint)
 {
   if (keyPressEvent != R_NilValue || keyReleaseEvent != R_NilValue)
     setFocusPolicy(Qt::StrongFocus);
@@ -34,6 +36,7 @@ RLayer::RLayer(SEXP paintEvent, SEXP keyPressEvent, SEXP keyReleaseEvent,
   PRESERVE_CALLBACK(mousePressEvent);
   PRESERVE_CALLBACK(mouseReleaseEvent);
   PRESERVE_CALLBACK(wheelEvent);
+  PRESERVE_CALLBACK(sizeHint);
 }
 
 RLayer::~RLayer() {
@@ -46,6 +49,7 @@ RLayer::~RLayer() {
   RELEASE_CALLBACK(mousePressEvent);
   RELEASE_CALLBACK(mouseReleaseEvent);
   RELEASE_CALLBACK(wheelEvent);
+  RELEASE_CALLBACK(sizeHint);
 }
 
 static SEXP viewForEvent(QGraphicsSceneEvent *event) {
@@ -297,6 +301,40 @@ void RLayer::wheelEvent ( QGraphicsSceneWheelEvent * event ) {
   UNPROTECT(1);
 }
 
+QSizeF RLayer::sizeHint ( Qt::SizeHint hint, QSizeF &constraint ) {
+  SEXP e, etmp, ans;
+
+  if (sizeHint_R == R_NilValue) {
+    return QGraphicsWidget::sizeHint(hint, constraint);
+  }
+
+  const char *hintName;
+  switch(hint) {
+  case Qt::MinimumSize:
+    hintName = "MinimumSize"; break;
+  case Qt::PreferredSize:
+    hintName = "PreferredSize"; break;
+  case Qt::MaximumSize:
+    hintName = "MaximumSize"; break;
+  case Qt::MinimumDescent:
+    hintName = "MinimumDescent"; break;
+  default:
+    error("Unknown size hint");
+  }
+
+  PROTECT(e = allocVector(LANGSXP, 3));
+  SETCAR(e, sizeHint_R);
+  etmp = CDR(e);
+  SETCAR(etmp, mkString(hintName));
+  etmp = CDR(e);
+  SETCAR(etmp, asRSizeF(constraint));
+  ans = R_tryEval(e, R_GlobalEnv, NULL);
+
+  UNPROTECT(1);
+
+  return(asQSizeF(ans));
+}
+  
 static const char * keyToString(int key) {
   switch(key) {
   case Qt::Key_Escape: return "escape";

@@ -23,10 +23,11 @@ extern "C" {
   
   SEXP qt_qlayer(SEXP paint, SEXP keyPress, SEXP keyRelease,
                  SEXP mouseDoubleClick, SEXP mouseMove, SEXP mousePress,
-                 SEXP mouseRelease, SEXP wheel)
+                 SEXP mouseRelease, SEXP wheel, SEXP sizeHint)
   {
     RLayer *layer = new RLayer(paint, keyPress, keyRelease, mouseDoubleClick,
-              mouseMove, mousePress, mouseRelease, wheel);
+                               mouseMove, mousePress, mouseRelease, wheel,
+                               sizeHint);
     return wrapQGraphicsWidget(layer);
   }
     
