@@ -34,13 +34,14 @@ export("qantialias<-",
        qdrawSegment,
        "qstrokeColor<-",
        qdrawText,
-       qtextExtents,
        qstrWidth,
        qdrawImage
        )
 
 S3method(qmatrix, Painter)
 S3method("qmatrix<-", Painter)
+
+S3method(qtextExtents, Painter)
 
 export(qoverlay,
        qlayer,

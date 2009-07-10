@@ -268,9 +268,8 @@ qfontMetrics <- function(p) {
   ans
 }
 
-qtextExtents <- function(p, text) {
-  stopifnot(inherits(p, "Painter"))
-  ans <- .Call("qt_qtextExtents_Painter", p, as.character(text))
+qtextExtents.Painter <- function(x, text) {
+  ans <- .Call("qt_qtextExtents_Painter", x, as.character(text))
   colnames(ans) <- c("x0", "y0", "x1", "y1")
   ans
 }

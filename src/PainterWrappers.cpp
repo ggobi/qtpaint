@@ -91,6 +91,7 @@ extern "C" {
     UNPROTECT(1);
     return ans;
   }
+    
   SEXP qt_qtextExtents_Painter(SEXP rp, SEXP rstrs) {
     PAINTER_P();
     int n = length(rstrs);
