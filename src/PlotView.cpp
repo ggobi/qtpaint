@@ -64,7 +64,7 @@ void PlotView::resizeEvent (QResizeEvent * event)
 {
   QGraphicsView::resizeEvent(event);
   if (_rescaleMode > None) {
-    // initial size event, make sure scrollbars are on
+    // initial size event, make sure scrollbars are on when needed
     if (event->oldSize().width() < 0) {
       Qt::ScrollBarPolicy policy = _rescaleMode == ViewTransform ?
         Qt::ScrollBarAlwaysOn : Qt::ScrollBarAlwaysOff;

@@ -100,11 +100,14 @@ QVector<int> Layer::itemIndices(QList<QGraphicsItem *> items) {
 Layer::Layer() : indexScene(new QGraphicsScene()), scenePainter(NULL) {
   QGraphicsGridLayout *layout = new QGraphicsGridLayout;
   layout->setContentsMargins(0, 0, 0, 0);
+  layout->setSpacing(0.0);
   setLayout(layout);
   setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding,
                 QSizePolicy::DefaultType);
-  setFlags(QGraphicsItem::ItemClipsToShape |
-           QGraphicsItem::ItemClipsChildrenToShape);
+  setFlags(QGraphicsItem::ItemClipsToShape); 
+  // WAS: setFlags(QGraphicsItem::ItemClipsToShape, QGraphicsItem::ItemClipsChildrenToShape);
+  // I think this is the right choice (good for panels, strips); actually, we
+  // want to be able to disable this too (for axes etc)
 }
 Layer::~Layer() {
   delete indexScene;

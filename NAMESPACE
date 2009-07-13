@@ -61,4 +61,4 @@ export(qmap, qscale, qtranslate, qrotate, qflipY)
 S3method("[<-", "QViz::Layer")
 S3method(dim, QGraphicsView)
 
-export("qrowStretch<-")
+export("qrowStretch<-", "qcolStretch<-")

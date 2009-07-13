@@ -90,12 +90,16 @@ qlimits(points) <- qrect(range(df[,1]), range(df[,2]))
 labels <- qlayer(root, labeler)
 qcacheMode(labels) <- "none"
 qlimits(labels) <- qlimits(points)
-##bounds <- qlayer(boundsPainter)
+##bounds <- qlayer(NULL, boundsPainter)
 ##qaddGraphicsWidget(root, bounds, 1, 1)
-view <- qplotView(scene = scene, opengl = TRUE, rescale = "none")
+
+view <- qplotView(scene = scene, opengl = TRUE)
+
 overlay <- qoverlay(view)
 axesOverlay <- qlayer(overlay, axes)
 print(view)
+
+
 
 ##view2 <- qview(scene = scene)
 ##print(view2)
@@ -122,3 +126,50 @@ print(view)
 ## qtext(painter, "X", 195, -95, "right", "bottom")
 ## qtext(painter, "q", 175, -95, "right", "bottom")
 ## qtext(painter, "Y", -95, 195, "left", "top")
+
+
+library(qtpaint)
+circle <- qpathCircle(0, 0, 5)
+
+n <- 1000
+x <- rnorm(n, 50, 25)
+y <- rnorm(n, 50, 25)
+df <- data.frame(X = x, Y = y)
+
+fill <- col2rgb(rgb(1, seq(0, 1, length=nrow(df)), 0, 0.5), TRUE)
+scatterplot <- function(item, painter, exposed) {
+  qstrokeColor(painter) <- NA
+  qdrawGlyph(painter, circle, df[,1], df[,2], fill = fill)
+}
+xaxisFun <- function(item, painter, exposed) {
+    at <- pretty(exposed[, 1])
+    qdrawText(painter, as.character(at), at, 0.5)
+}
+
+scene <- qgraphicsScene()
+root <- qlayer(scene)
+
+points <- qlayer(NULL, scatterplot)
+qlimits(points) <- qrect(range(df[,1]), range(df[,2]))
+
+xaxis <- qlayer(NULL, xaxisFun)
+qlimits(xaxis) <- qrect(range(df[,1]), c(0, 1))
+
+## either of the following works, but not both
+
+qaddItem(root, points, 0, 0)
+qaddItem(root, xaxis, 1, 0)
+
+view <- qplotView(scene = scene, opengl = FALSE)
+print(view)
+
+qminimumSize(xaxis) <- qsize(1, 20)
+
+qrowStretch(xaxis) <- 0
+
+
+
+
+
+
+

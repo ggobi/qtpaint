@@ -21,6 +21,7 @@ extern "C" {
                          (QViz::PlotView::RescaleMode)asInteger(rescaleMode));
     if (asLogical(ropengl))
       view->setViewport(createGLWidget());
+    view->setFrameStyle(QFrame::NoFrame);
     ans = wrapQWidget(view);
     addQObjectReference(scene, view); // leaky -- view may change scene
     return ans;
