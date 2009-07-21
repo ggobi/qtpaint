@@ -17,15 +17,15 @@ void PaintUtils::drawPolylines(Painter *p, double *x, double *y, QColor *stroke,
   int j = 0, i = 0, k = 0;
   QColor prev_stroke = stroke ? stroke[0] : QColor();
   for (i = 0; i < n; i++) {
-    if (x[i] == NA_REAL || y[i] == NA_REAL) {
-      UPDATE_ATTR(stroke, setStrokeColor);
-      p->drawPolyline(x + j, y + j, i - j);
-      j = i;
-      k++;
-    }
+      if (!R_finite(x[i]) || !R_finite(y[i])) {
+	  UPDATE_ATTR(stroke, setStrokeColor);
+	  p->drawPolyline(x + j, y + j, i - j);
+	  j = i + 1;
+	  k++;
+      }
   }
   if (n && stroke) p->setStrokeColor(stroke[k]);
-  p->drawPolyline(x + j, y + j, i - j);
+  p->drawPolyline(x + j, y + j, n - j);
 }
 
 void PaintUtils::drawPolygons(Painter *p, double *x, double *y, QColor *stroke,
@@ -44,11 +44,11 @@ void PaintUtils::drawPolygons(Painter *p, double *x, double *y, QColor *stroke,
     }
   }
   for (i = 0; i < n; i++) {
-    if (x[i] == NA_REAL || y[i] == NA_REAL) {
+    if (!R_finite(x[i]) || !R_finite(y[i])) {
       UPDATE_ATTR(stroke, setStrokeColor);
       UPDATE_ATTR(fill, setFillColor);
       p->drawPolygon(x + j, y + j, i - j);
-      j = i;
+      j = i + 1;
       k++;
     }
   }

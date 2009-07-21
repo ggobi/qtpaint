@@ -57,7 +57,7 @@ void ScenePainter::drawPolyline(double *x, double *y, int n) {
   QVector<QPointF> points(n);
   QMatrix tform = matrix();
   for (int i = 0; i < n; i++)
-    points[i] = tform.map(QPointF(x[i], y[i]));
+      points[i] = tform.map(QPointF(x[i], y[i]));
   QPainterPath path;
   // NOTE: polygons are not closed by default in paths
   path.addPolygon(QPolygonF(points));
