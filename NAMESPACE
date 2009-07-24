@@ -3,7 +3,8 @@ useDynLib(qtpaint)
 importFrom(qtgui, qshow, qclose, qgraphicsScene, "qmatrix<-", "qmatrix",
            "qgeometry<-", qaddItem, qgeometry, qboundingRect, qitems, qupdate,
            qcacheMode, "qcacheMode<-", qfocus, qfitScene, qminimumSize,
-           "qminimumSize<-")
+           "qminimumSize<-", qtextExtents)
+
 export(qgraphicsScene, qplotView, "qmatrix<-", "qmatrix", "qgeometry<-",
        qgeometry, qaddItem, qboundingRect, qitems, qupdate, qcacheMode,
        "qcacheMode<-", qfocus, qminimumSize, "qminimumSize<-")
@@ -40,6 +41,8 @@ export("qantialias<-",
 
 S3method(qmatrix, Painter)
 S3method("qmatrix<-", Painter)
+
+
 
 S3method(qtextExtents, Painter)
 
