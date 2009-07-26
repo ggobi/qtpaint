@@ -109,6 +109,7 @@ Layer::Layer() : indexScene(new QGraphicsScene()), scenePainter(NULL) {
   // I think this is the right choice (good for panels, strips); actually, we
   // want to be able to disable this too (for axes etc)
 }
+
 Layer::~Layer() {
   delete indexScene;
   if (scenePainter)
