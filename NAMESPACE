@@ -1,15 +1,18 @@
 useDynLib(qtpaint)
 
-importFrom(qtgui, qshow, qclose, qgraphicsScene, "qmatrix<-", "qmatrix",
-           "qgeometry<-", qaddItem, qgeometry, qboundingRect, qitems, qupdate,
-           qcacheMode, "qcacheMode<-", qfocus, qfitScene, qminimumSize,
-           "qminimumSize<-", qtextExtents)
+## importFrom(qtgui, qshow, qclose, qgraphicsScene, "qmatrix<-", "qmatrix",
+##            "qgeometry<-", qaddItem, qgeometry, qboundingRect, qitems, qupdate,
+##            qcacheMode, "qcacheMode<-", qfocus, qfitScene, qminimumSize,
+##            "qminimumSize<-", qtextExtents)
 
 export(qgraphicsScene, qplotView, "qmatrix<-", "qmatrix", "qgeometry<-",
        qgeometry, qaddItem, qboundingRect, qitems, qupdate, qcacheMode,
        "qcacheMode<-", qfocus, qminimumSize, "qminimumSize<-")
 
-importFrom(qtbase, qfont, qrect, qpoint, qsize, qcolor)
+## importFrom(qtbase, qfont, qrect, qpoint, qsize, qcolor)
+
+import(qtbase)
+           
 export(qshow, qclose, qfont, qrect, qpoint, qsize, qcolor)
 
 export("qantialias<-",
