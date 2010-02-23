@@ -1,7 +1,7 @@
 #include "QtBasePainter.hpp"
 #include <QPainter>
 
-using namespace QViz;
+using namespace Qanviz;
 
 void QtBasePainter::setHasStroke(bool enabled) {
   if (enabled == hasStroke())

@@ -1,6 +1,11 @@
 Immediate TODO:
 
-- The identify in the demo seems to be off for points with low Y values.
+- Port to Smoke
+  - Generate bindings using smokegenerator.
+    - One issue is the 'Smoke::classMap' symbol, which must be shared. Have to
+      replace this at run-time, via the R symbol sharing mechanism.
+- Investigate indexing bug that does not handle rectangle query that
+  spans positive and negative values
 - Painter's drawLine and drawPolygon need to be vectorized, by taking
   a sentinel value as a parameter.
 - Each primitive function in Painter should have a vectorized (over
@@ -9,53 +14,10 @@ Immediate TODO:
   default non-vectorized version can just call the vectorized version
   with NULL's.
 - Documentation.
-- Issues with examples: map zoomer weird clipping (worksforme).
-- Support overriding sizeHint() in a Layer. This allows, for example,
-  requesting a minimum height so that text can fit, given a width.
-- Think about Y origin (top or bottom)
 - Prevent calling callbacks while in code browser on Mac and Windows.
   Need to somehow block (queue up) events while in the browser.
-- Fix memory management/ownership. This is mostly fixed now with a
-  reference counting scheme, but it could use some tightening, as
-  references are often held for the lifetime of the referer, even when
-  no longer required. Might need to just allow the R programmer to
-  forcibly delete an object.
 
 Long term thoughts:
-
-- Moving to using QGraphicsView for composing plots, instead of
-  widgets. Why?
-  
-  - QGraphicsWidget is lighter than QWidget and has all necessary features.
-    
-  - While having each glyph as an item is too much overhead,
-    layers would work great as items.
-
-  - Coordinate transformations
-    item -> scene  -> view
-    data -> planar -> screen
-  
-  - Caching: layers can be cached, to avoid redrawing static layers.
-  
-  - Collision detection: quick and easy mapping of user interaction to
-    items, and through use of off-screen scenes, glyphs/primitives.
-
-  - Flexible framework: Users can create their own items for specific
-    interactive graphics tasks (eventually).
-
-  This move requires the following:
-
-  - Layer, a QGraphicsItem subclass that:
-  
-    - Delegates painting to a method that takes a Painter.
-        
-    - Provides for fast element lookup, transparently, through
-      painting to an off-screen QGraphicsScene. This should be done
-      lazily. It may be that in highly dynamic scenes, this yields too
-      much overhead, and so needs to be disabled.
-      
-    - Implements boundingRect(), given the data extents. If margins
-      are desired, they are a property of the scene.
 
 - Interactive graphics pipeline
 

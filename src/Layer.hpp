@@ -2,9 +2,14 @@
 #define LAYER_H
 
 #include <QGraphicsWidget>
-#include "ScenePainter.hpp"
 
-namespace QViz {
+#include "PlotView.hpp"
+
+class Painter;
+class ScenePainter;
+class QGraphicsGridLayout;
+
+namespace Qanviz {
   class Layer : public QGraphicsWidget {
     Q_OBJECT
     
@@ -21,13 +26,13 @@ namespace QViz {
     // transform so that everything ends up in the geometry specified
     // by the layout.
 
-    void updatePlotMatrix();
+    void updatePlotTransform();
     
     QVector<int> itemIndices(QList<QGraphicsItem *> items);
     
     public:
     
-    Layer();
+    Layer(QGraphicsItem *parent);
     virtual ~Layer();
     
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
@@ -37,7 +42,7 @@ namespace QViz {
     void setGeometry(const QRectF &rect) {
       QGraphicsWidget::setGeometry(rect);    
       // update transform to point current limits to new geometry
-      updatePlotMatrix();
+      updatePlotTransform();
     }
 
     QRectF boundingRect() const {
@@ -46,6 +51,8 @@ namespace QViz {
       } else return QGraphicsWidget::boundingRect();
     }
 
+    QTransform deviceTransform(QGraphicsView *view = NULL) const;
+    
     QPainterPath shape() const {
       if (!_limits.isNull()) {
         QPainterPath path;
@@ -54,13 +61,16 @@ namespace QViz {
       } else return QGraphicsWidget::shape();
     }
     
-    
+    QGraphicsGridLayout *gridLayout() const;
+
+    void addLayer(Layer *layer, int row, int col, int rowSpan, int colSpan);
+
     virtual void setLimits(QRectF limits) {
       if (limits != _limits) {
         prepareGeometryChange();
         _limits = limits;
         // update transform to point new limits to current geometry
-        updatePlotMatrix();
+        updatePlotTransform();
       }
     }
     QRectF limits() const {
@@ -76,7 +86,7 @@ namespace QViz {
     
     void ensureIndex();
     void invalidateIndex();
-
+    
     QVector<int> primitives(const QPointF & pos)
     {
       ensureIndex();
@@ -115,6 +125,9 @@ namespace QViz {
       ensureIndex();
       return itemIndices(indexScene->collidingItems(item, mode));
     }
+
+    static QGraphicsView *viewForEvent(QGraphicsSceneEvent *event);
+
   };
 }
 

@@ -1,45 +1,77 @@
 ### some utilities to help make drawing easier
 
+## Need a fast way to map data. Easiest to take QTransform as an R
+## matrix and use vectorized arithmetic.
 qmap <- function(m, x, y) {
+  m <- as.matrix(m)
   cl <- NULL
   if (missing(y)) {
     cl <- class(x) # if only 'x' specified, preserve its class
-    if (!is.matrix(x))
-      x <- matrix(x, ncol = 2, byrow = TRUE)
+    if (NCOL(x) == 1L) {
+      if (is.vector(x))
+        x <- matrix(x, ncol = 2, byrow = TRUE)
+      else x <- as.matrix(x)
+    }
     y <- x[,2]
     x <- x[,1]
   }
   mapped <- cbind(x * m[1,1] + y * m[2,1] + m[3,1],
                   y * m[2,2] + x * m[1,2] + m[3,2])
-  class(mapped) <- cl
+  if (!is.null(cl) && canCoerce(mapped, cl))
+    mapped <- as(mapped, cl)
   mapped
 }
 
-qscale <- function(m = qmatrix(), s = c(x, y), x = 1, y = 1) {
-  s <- rep(s, length = 2)
-  m * matrix(c(rep(s, each = 2), 1, 1), 3, byrow=TRUE)
-}
+## Creates a QTransform that flips the Y axis
 
-qtranslate <- function(m = qmatrix(), t = c(x, y), x = 0, y = 0) {
-  s <- rep(t, length = 2)
-  m + matrix(c(rep(0, 4), colSums(t * m[1:2,])), 3, byrow=TRUE)
+qflipY <- function(ymax, ymin = 0) UseMethod("qflipY")
+qflipY.numeric <- function(ymax, ymin = 0) {
+  if (.validRect(ymax)) {
+    ymin <- ymax[3]
+    ymax <- ymax[4]
+  }
+  Qt$QTransform(1, 0, 0, -1, 0, (ymax + ymin))
 }
-
-qrotate <- function(m = qmatrix(), r = 0) {
-  cs <- c(cos(rotate), sin(rotate))
-  smat <- mat[1:2,]
-  matrix(c(colSums(cs * smat), colSums(c(-cs[2], cs[1]) * smat), mat[3,]),
-         3, byrow=TRUE)
-}
+qflipY.QRect <- qflipY.QRectF <-
+  function(ymax, ymin = 0) qflipY(as.matrix(ymax))
 
 .validRect <- function(r) {
   is.matrix(r) && is.numeric(r) && identical(dim(r), c(2L, 2L))
 }
 
-qflipY <- function(ymax, ymin = 0) {
-  if (.validRect(ymax)) {
-    ymin <- ymax[3]
-    ymax <- ymax[4]
-  }
-  qtranslate(qscale(y = -1), y = -(ymax + ymin))
+## Getting dimensions of rectangles and rectangular objects
+
+dim.QRectF <- function(x) c(x$width(), x$height())
+
+dim.QGraphicsScene <- function(x) dim(x$sceneRect)
+
+dim.QGraphicsItem <- function(x) dim(x$boundingRect)
+
+dim.QGraphicsView <- function(x) dim(x$viewport()$rect)
+
+## The main purpose for this qupdate() is to refresh the item cache
+## But isn't this a bug in Qt?
+## Should make sure this problem still exists in Qt 4.6.
+
+qupdate <- function(x) UseMethod("qupdate")
+
+qupdate.QGraphicsView <- function(x) {
+  qupdate(x$scene())
+  x$viewport()$repaint()
+}
+
+refreshItemCache <- function(item) {
+  mode <- item$cacheMode()
+  item$setCacheMode(Qt$QGraphicsItem$NoCache)
+  item$setCacheMode(mode)
+}
+
+qupdate.QGraphicsScene <- function(x) {
+  lapply(x$items(), refreshItemCache)
+  x$update()
+}
+
+qupdate.QGraphicsItem <- function(x) {
+  refreshItemCache(x)
+  x$update()
 }

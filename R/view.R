@@ -1,13 +1,7 @@
+## convenient R-level constructor, following Layer's precedent
 qplotView <- function(scene, rescale = c("geometry", "transform", "none"),
                       opengl = TRUE)
 {
   rescale <- c(none = 0L, geometry = 1L, transform = 2L)[match.arg(rescale)]
-  .Call("qt_qplotView", scene, rescale, as.logical(opengl),
-        PACKAGE = "qtpaint")
-}
-
-dim.QGraphicsView <- function(x) dim(qboundingRect(x))
-
-`qopengl<-` <- function(x, value) {
-  .Call("qt_qsetOpengl", x, value)
+  Qanviz$PlotView(scene, rescale, opengl)
 }

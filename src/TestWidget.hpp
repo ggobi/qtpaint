@@ -7,7 +7,7 @@
 #include <R.h>
 #include <Rinternals.h>
 
-namespace QViz {
+namespace Qanviz {
   /* Simple widget for testing performance of the drawing layer */
   class TestWidget : public QGLWidget // or QGLWidget
   {

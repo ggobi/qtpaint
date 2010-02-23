@@ -1,20 +1,20 @@
 useDynLib(qtpaint)
 
-## importFrom(qtgui, qshow, qclose, qgraphicsScene, "qmatrix<-", "qmatrix",
-##            "qgeometry<-", qaddItem, qgeometry, qboundingRect, qitems, qupdate,
-##            qcacheMode, "qcacheMode<-", qfocus, qfitScene, qminimumSize,
-##            "qminimumSize<-", qtextExtents)
+## the core Smoke library
+export(Qanviz)
 
-export(qgraphicsScene, qplotView, "qmatrix<-", "qmatrix", "qgeometry<-",
-       qgeometry, qaddItem, qboundingRect, qitems, qupdate, qcacheMode,
-       "qcacheMode<-", qfocus, qminimumSize, "qminimumSize<-")
+## to load our library
+importFrom(qtbase, qlibrary)
 
-## importFrom(qtbase, qfont, qrect, qpoint, qsize, qcolor)
+## the Qt library
+importFrom(qtbase, Qt)
+export(Qt)
 
-import(qtbase)
-           
-export(qshow, qclose, qfont, qrect, qpoint, qsize, qcolor)
+## simple constructors from qtbase
+importFrom(qtbase, qrect, qpoint, qsize, qcolor, qfont, qtransform)
+export(qrect, qpoint, qsize, qcolor, qfont, qtransform)
 
+## the Painter API
 export("qantialias<-",
        qdrawCircle,
        "qdash<-",
@@ -24,13 +24,7 @@ export("qantialias<-",
        "qhasFill<-",
        "qhasStroke<-",
        "qlineWidth<-",
-       "qmatrixEnabled<-",
-       qpath,
-       qpathCircle,
-       qpathPolygon,
-       qpathRect,
-       qpathSegment,
-       qpathText,
+       "qdeviceTransformEnabled<-",
        qdrawPoint,
        qdrawPolygon,
        qdrawLine,
@@ -39,32 +33,16 @@ export("qantialias<-",
        "qstrokeColor<-",
        qdrawText,
        qstrWidth,
-       qdrawImage
+       qdrawImage,
+       qdeviceTransform,
+       "qdeviceTransform<-",
+       qtextExtents
        )
 
-S3method(qmatrix, Painter)
-S3method("qmatrix<-", Painter)
+## some transformation conveniences
+export(qmap, qflipY)
 
-
-
-S3method(qtextExtents, Painter)
-
-export(qoverlay,
-       qlayer,
-       qpaintingView,
-       qlimits,
-       "qlimits<-",
-       qdeviceMatrix,
-       "qbackgroundColor<-",
-       qprimitives,
-       "qopengl<-")
-
-S3method(qboundingRect, QGraphicsView)
-S3method(qaddItem, QViz::Layer)
-
-export(qmap, qscale, qtranslate, qrotate, qflipY)
-
-S3method("[<-", "QViz::Layer")
+## other wrappers
+S3method("[<-", "Qanviz::Layer")
+S3method("[", "Qanviz::Layer")
 S3method(dim, QGraphicsView)
-
-export("qrowStretch<-", "qcolStretch<-")

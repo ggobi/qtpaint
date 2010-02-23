@@ -5,7 +5,7 @@
 #include <QPen>
 #include <QBrush>
 
-namespace QViz {
+namespace Qanviz {
 
   /* For targeting any drawing API that stores state in QPen/QBrush */
   

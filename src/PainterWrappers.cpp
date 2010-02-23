@@ -1,9 +1,10 @@
-#include "Painter.hpp"
-#include "paintUtils.hpp"
-
 #include <qtbase.h>
 
-using namespace QViz;
+#include "Painter.hpp"
+#include "paintUtils.hpp"
+#include "convert.hpp"
+
+using namespace Qanviz;
 
 #define OPTIONAL(x, cast) x == R_NilValue ? NULL : cast(x)
 #define COLOR(x) OPTIONAL(x, asQColors)
@@ -28,23 +29,51 @@ using namespace QViz;
 
 extern "C" {
 
+  /* We do not use Smoke for these bindings, since performance is so
+     important. We could work-around issues like the double array (use
+     QList<float>), and the Smoke method call overhead probably does
+     not matter. But there are issues:
+
+     - We special-case QColor conversion, so that we do not need to
+       create a QList<QColor> in R. We could special-case this
+       conversion in qtbase, but that would be ugly. Idea: introduce
+       special class for this, with special converter.
+
+     - Special-casing of the font metrics and text extents. Would need
+       special classes/conversions for this, as well.
+
+     - We currently do a lot of vectorization in these wrappers. This
+       really should be pushed down to Painter, for consistency with
+       drawGlyphs, but it would take some work.
+
+     - The R wrappers put a more R-like interface on things. Would
+       that have to stay? Would Painter need an adaptor?
+     
+     The question is whether the above work outweighs the benefits,
+     which are much fewer than with e.g. Layer, as Painter is just a
+     QObject. The main gain would be the deletion of these manual
+     bindings, which are already well tested, but incomplete.
+
+     Conclusion: let's hold off for now.
+  */
+  
 #define PAINTER_P() Painter *p = unwrapPointer(rp, Painter)
 
   // retrieve transformation (when pixels matter)
-  SEXP qt_qmatrix_Painter(SEXP rp, SEXP rinverted) {
+  SEXP qt_qtransform_Painter(SEXP rp) {
     PAINTER_P();
-    return asRMatrix(p->matrix(), asLogical(rinverted));
+    return wrapSmokeCopy(p->transform(), QTransform);
   }
 
-  SEXP qt_qsetMatrix_Painter(SEXP rp, SEXP rmatrix) {
+  SEXP qt_qsetTransform_Painter(SEXP rp, SEXP rtform) {
     PAINTER_P();
-    p->setMatrix(asQMatrix(rmatrix));
+    p->setTransform(*unwrapSmoke(rtform, QTransform));
     return rp;
   }
 
-  SEXP qt_qsetMatrixEnabled_Painter(SEXP rp, SEXP renabled) {
+  SEXP qt_qsetTransformEnabled_Painter(SEXP rp, SEXP renabled) {
     PAINTER_P();
-    p->setMatrixEnabled(asLogical(renabled));
+    p->setTransformEnabled(asLogical(renabled));
     return rp;
   }
   
@@ -73,11 +102,10 @@ extern "C" {
   }
 
   // font
-  SEXP qt_qsetFont_Painter(SEXP rp, SEXP family, SEXP ps, SEXP weight, SEXP italic)
+  SEXP qt_qsetFont_Painter(SEXP rp, SEXP rfont)
   {
     PAINTER_P();
-    p->setFont(QFont(sexp2qstring(family), asInteger(ps), asInteger(weight),
-                     asLogical(italic)));
+    p->setFont(*unwrapSmoke(rfont, QFont));
     return rp;
   }
   SEXP qt_qfontMetrics_Painter(SEXP rp) {
@@ -153,7 +181,7 @@ extern "C" {
   // NOTE: if drawing many shapes of same size, use drawGlyphs
   // NOTE: this follows the top left, width, height convention
   SEXP qt_qdrawRectangles_Painter(SEXP rp, SEXP rx, SEXP ry, SEXP rw, SEXP rh,
-                              SEXP rstroke, SEXP rfill)
+                                  SEXP rstroke, SEXP rfill)
   {
     PAINTER_P();
     QColor *stroke = COLOR(rstroke);
@@ -196,7 +224,7 @@ extern "C" {
     return rp;
   }
   SEXP qt_qdrawCircle_Painter(SEXP rp, SEXP rx, SEXP ry, SEXP rr,
-                          SEXP rstroke, SEXP rfill)
+                              SEXP rstroke, SEXP rfill)
   {
     PAINTER_P();
     int i, n = length(rx);
@@ -238,7 +266,7 @@ extern "C" {
   
   // draw text
   SEXP qt_qdrawText_Painter(SEXP rp, SEXP rstrs, SEXP rx, SEXP ry, SEXP rflags,
-                        SEXP rrot)
+                            SEXP rrot)
   {
     PAINTER_P();
     p->drawText(asStringArray(rstrs), REAL(rx), REAL(ry), length(rx),
@@ -248,82 +276,20 @@ extern "C" {
 
   // drawing glyphs (same path, many places)
   SEXP qt_qdrawGlyphs_Painter(SEXP rp, SEXP rpath, SEXP rx, SEXP ry, SEXP rsize,
-                          SEXP rstroke, SEXP rfill)
+                              SEXP rstroke, SEXP rfill)
   {
     PAINTER_P();
-    p->drawGlyphs(*unwrapPointer(rpath, QPainterPath), REAL(rx), REAL(ry),
+    p->drawGlyphs(*unwrapSmoke(rpath, QPainterPath), REAL(rx), REAL(ry),
                   OPTIONAL(rsize, REAL), COLOR(rstroke), COLOR(rfill),
                   length(rx));
     return rp;
   }
-  
-  // This should go away, after we have ways to construct QImage
-  SEXP qt_qdrawImageRaw_Painter(SEXP rp, SEXP rcol, SEXP rwidth, SEXP rheight,
-                            SEXP rx, SEXP ry)
+
+  SEXP qt_qdrawImage_Painter(SEXP rp, SEXP rimage, SEXP rx, SEXP ry)
   {
     PAINTER_P();
-    QImage image(RAW(rcol), asInteger(rwidth), asInteger(rheight),
-                 QImage::Format_ARGB32);
-    p->drawGlyphs(image, REAL(rx), REAL(ry), length(rx));
+    p->drawGlyphs(*unwrapSmoke(rimage, QImage), REAL(rx), REAL(ry),
+                  length(rx));
     return rp;
   }
-
-#define QPAINTERPATH_P() QPainterPath *p = unwrapPointer(rp, QPainterPath)
-
-  void finalizePainterPath(SEXP rpath) {
-    QPainterPath *path = unwrapPointer(rpath, QPainterPath);
-    R_ClearExternalPtr(rpath);
-    delete path;
-  }
-  
-  SEXP qt_qpath(void) {
-    QList<QString> classes;
-    classes.append("QPainterPath");
-    QPainterPath *path = new QPainterPath();
-    return wrapPointer(path, classes, finalizePainterPath);
-  }
-
-  SEXP qt_qaddCircle_QPainterPath(SEXP rp, SEXP rx, SEXP ry, SEXP rr) {
-    QPAINTERPATH_P();
-    p->addEllipse(QPointF(asReal(rx), asReal(ry)), asReal(rr), asReal(rr));
-    return rp;
-  }
-
-  SEXP qt_qaddRect_QPainterPath(SEXP rp, SEXP rx, SEXP ry, SEXP dx, SEXP dy) {
-    QPAINTERPATH_P();
-    p->addRect(asReal(rx), asReal(ry), asReal(dx), asReal(dy));
-    return rp;
-  }
-
-  SEXP qt_qaddPolygon_QPainterPath(SEXP rp, SEXP rx, SEXP ry) {
-    QPAINTERPATH_P();
-    QPolygonF polygon;
-    double *x = REAL(rx);
-    double *y = REAL(ry);
-    for (int i = 0; i < length(rx); i++)
-      polygon << QPointF(x[i], y[i]);
-    p->addPolygon(polygon);
-    return rp;
-  }
-
-  SEXP qt_qaddText_QPainterPath(SEXP rp, SEXP rtext, SEXP rx, SEXP ry,
-                                SEXP rfamily, SEXP rps, SEXP rweight,
-                                SEXP ritalic)
-  {
-    QPAINTERPATH_P();
-    QFont font(sexp2qstring(rfamily), asInteger(rps), asInteger(rweight),
-               asLogical(ritalic));
-    p->addText(asReal(rx), asReal(ry), font, sexp2qstring(rtext));
-    return rp;
-  }
-
-  SEXP qt_qaddLine_QPainterPath(SEXP rp, SEXP rx0, SEXP ry0, SEXP rx1,
-                                SEXP ry1)
-  {
-    QPAINTERPATH_P();
-    p->moveTo(asReal(rx0), asReal(ry0));
-    p->lineTo(asReal(rx1), asReal(ry1));
-    return rp;
-  }
-
 }

@@ -3,7 +3,7 @@
 
 #include "Painter.hpp"
 
-namespace QViz {
+namespace Qanviz {
   namespace PaintUtils {
     void drawPolylines(Painter *p, double *x, double *y, QColor *stroke, int n);
     void drawPolygons(Painter *p, double *x, double *y, QColor *stroke,

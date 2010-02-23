@@ -23,17 +23,20 @@ QT += opengl
 HEADERS += Painter.hpp QtPainter.hpp OpenGLPainter.hpp paintUtils.hpp
 HEADERS += ScenePainter.hpp QtBasePainter.hpp TestWidget.hpp
 HEADERS += Layer.hpp PlotView.hpp RLayer.hpp
+HEADERS += convert.hpp
 
 SOURCES += init.cpp
 SOURCES += QtPainter.cpp OpenGLPainter.cpp ScenePainter.cpp QtBasePainter.cpp
-SOURCES += Layer.cpp RLayer.cpp PlotView.cpp paintUtils.cpp 
-SOURCES += ViewWrappers.cpp LayerWrappers.cpp SceneWrappers.cpp
-SOURCES += PainterWrappers.cpp
+SOURCES += Layer.cpp RLayer.cpp PlotView.cpp paintUtils.cpp scene.cpp
+SOURCES += convert.cpp PainterWrappers.cpp
 SOURCES += TestWidget.cpp
 SOURCES += imports.cpp
+SOURCES += smokedata.cpp x_1.cpp
 
 INCLUDEPATH += ${R_INCLUDE_DIR}
 INCLUDEPATH += ${CLINK_CPPFLAGS/-I/}
+INCLUDEPATH += ${QTBASE_DIR}/kdebindings/smoke
+INCLUDEPATH += ../inst/kdebindings/smoke ../inst/kdebindings/smoke/qanviz
 CFLAGS += -g
 ## LIBS += -L${R_HOME/lib}
 

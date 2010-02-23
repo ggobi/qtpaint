@@ -35,7 +35,7 @@
    to be drawn with a cosmetic pen, for line brushing.
 */
 
-using namespace QViz;
+using namespace Qanviz;
 
 // mechanism for mapping from item back to graphical primitive
 // -1 indicates not found
@@ -55,7 +55,7 @@ int ScenePainter::itemIndex(QGraphicsItem *item) {
 // draw lines
 void ScenePainter::drawPolyline(double *x, double *y, int n) {
   QVector<QPointF> points(n);
-  QMatrix tform = matrix();
+  QTransform tform = transform();
   for (int i = 0; i < n; i++)
       points[i] = tform.map(QPointF(x[i], y[i]));
   QPainterPath path;
@@ -66,7 +66,7 @@ void ScenePainter::drawPolyline(double *x, double *y, int n) {
 void ScenePainter::drawSegments(double *x0, double *y0, double *x1, double *y1,
                                 int n)
 {
-  QMatrix tform = matrix();
+  QTransform tform = transform();
   QPen pen = this->pen();
   for (int i = 0; i < n; i++) {
     QLineF line = QLineF(x0[i], y0[i], x1[i], y1[i]);
@@ -78,7 +78,7 @@ void ScenePainter::drawSegments(double *x0, double *y0, double *x1, double *y1,
 
 // draw points (pixels)
 void ScenePainter::drawPoints(double *x, double *y, int n) {
-  QMatrix tform = matrix();
+  QTransform tform = transform();
   QPen pen = this->pen();
   // seems that 0-size items are ignored, so we use min size
   float minFloat = std::numeric_limits<float>::min();
@@ -96,7 +96,7 @@ void ScenePainter::drawPoints(double *x, double *y, int n) {
 void ScenePainter::drawRectangles(double *x, double *y, double *w, double *h,
                                   int n)
 {
-  QMatrix tform = matrix();
+  QTransform tform = transform();
   QPen pen = this->pen();
   for (int i = 0; i < n; i++) {
     QPointF point = QPointF(x[i], y[i]);
@@ -110,12 +110,12 @@ void ScenePainter::drawCircle(double x, double y, int r) {
   QRectF rect = QRectF(-r, -r, 2*r, 2*r);
   QGraphicsItem *item = STORE_INDEX(_scene->addEllipse(rect, pen(), brush()));
   item->setFlag(QGraphicsItem::ItemIgnoresTransformations);
-  item->setPos(matrix().map(QPointF(x, y)));
+  item->setPos(transform().map(QPointF(x, y)));
 }
 
 void ScenePainter::drawPolygon(double *x, double *y, int n) {
   QVector<QPointF> points(n);
-  QMatrix tform = matrix();
+  QTransform tform = transform();
   for (int i = 0; i < n; i++)
     points[i] = tform.map(QPointF(x[i], y[i]));
   STORE_INDEX(_scene->addPolygon(QPolygonF(points), pen(), brush()));
@@ -137,7 +137,7 @@ void ScenePainter::drawText(const char * const *strs, double *x, double *y,
     return;
   }
   // FIXME: alignment is ignored -- translate to HTML?
-  QMatrix tform = matrix();
+  QTransform tform = transform();
   for (int i = 0; i < n; i++) {
     QString qstr = QString::fromLocal8Bit(strs[i]);
     QGraphicsItem *item = STORE_INDEX(_scene->addText(qstr, _scene->font()));
@@ -165,7 +165,7 @@ void ScenePainter::drawImage(const QImage &image, double x, double y,
   } else subImage = image;
   QPixmap pixmap = QPixmap::fromImage(subImage);
   QGraphicsItem *item = STORE_INDEX(_scene->addPixmap(pixmap));
-  item->setPos(matrix().map(QPointF(x, y)));
+  item->setPos(transform().map(QPointF(x, y)));
   item->setFlag(QGraphicsItem::ItemIgnoresTransformations);
 }
 
@@ -176,7 +176,7 @@ void ScenePainter::drawGlyphs(const QPainterPath &path, double *x, double *y,
   if (indexMode()) {
     drawPoints(x, y, n);
   } else if (!rasterize()) { 
-    QMatrix tform = matrix();
+    QTransform tform = transform();
     double curSize = glyphSize();
     for (int i = 0; i < n; i++) {
       if (stroke) setStrokeColor(stroke[i]);

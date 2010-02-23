@@ -9,5 +9,5 @@
 
 .onLoad <- function(libname, pkgname) 
 {
-    library.dynam("qtpaint", pkgname, libname )
+  qlibrary(Qanviz)
 }

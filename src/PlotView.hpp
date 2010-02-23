@@ -10,7 +10,7 @@
    - automatic rescaling
    - 'overlay' as a scene drawn in viewport coordinates in the foreground.
 */
-namespace QViz {
+namespace Qanviz {
 
   class PlotView;
 
@@ -37,6 +37,8 @@ namespace QViz {
 
   public:
 
+    static PlotView *paintingView(QGraphicsScene *scene);
+    
     enum RescaleMode {
       None,
       WidgetGeometry, /* activates layout, single view only */
@@ -44,13 +46,7 @@ namespace QViz {
     };
     
     PlotView(QGraphicsScene *scene, QWidget *parent = 0,
-             RescaleMode rescaleMode = WidgetGeometry)
-      : QGraphicsView(scene, parent), _overlay(new OverlayScene(this))
-    {
-      setRescaleMode(rescaleMode);
-      connect(_overlay, SIGNAL(changed(QList<QRectF>)), this,
-              SLOT(update()));
-    }
+             RescaleMode rescaleMode = WidgetGeometry, bool opengl = true);
 
     //virtual ~PlotView();
     
@@ -78,6 +74,7 @@ namespace QViz {
       return _isPainting;
     }
 
+    void setOpenGL(bool opengl);
     
   protected:
 

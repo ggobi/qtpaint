@@ -1,7 +1,7 @@
 #include "QtPainter.hpp"
 #include <QVarLengthArray>
 
-using namespace QViz;
+using namespace Qanviz;
 
 // font
 void QtPainter::setFont(QFont font) {
@@ -25,7 +25,7 @@ void QtPainter::drawPolyline(double *x, double *y, int n) {
   }
   QPointF *points = (QPointF *)p.data();
   if (!simplePen()) {
-    QMatrix tform = matrix();   
+    QTransform tform = transform();   
     for (int i = 0; i < n; i++)
       points[i] = tform.map(points[i]);
   }
@@ -50,7 +50,7 @@ void QtPainter::drawSegments(double *x0, double *y0, double *x1, double *y1,
   }
   QLineF *lines = (QLineF *)l.data();
   if (!simplePen()) {
-    QMatrix tform = matrix();
+    QTransform tform = transform();
     for (int i = 0; i < n; i++)
       lines[i] = tform.map(lines[i]);
   }
@@ -95,7 +95,7 @@ void QtPainter::drawRectangles(double *x, double *y, double *w, double *h,
   }
   QRectF *rects = (QRectF *)r.data();
   if (!simplePen()) {
-    QMatrix tform = matrix();
+    QTransform tform = transform();
     for (int i = 0; i < n; i++)
       rects[i] = tform.mapRect(rects[i]);
   }
@@ -105,7 +105,7 @@ void QtPainter::drawRectangles(double *x, double *y, double *w, double *h,
 
 // if drawing many circles of same size, use drawGlyphs
 void QtPainter::drawCircle(double x, double y, int r) {
-  QMatrix tform = matrix();
+  QTransform tform = transform();
   painter->setWorldMatrixEnabled(false);
   QPointF center = tform.map(QPointF(x, y));
   painter->drawEllipse(center, r, r);
@@ -119,7 +119,7 @@ void QtPainter::drawPolygon(double *x, double *y, int n) {
   }
   QPointF *points = (QPointF *)p.data();
   if (!simplePen()) {
-    QMatrix tform = matrix();
+    QTransform tform = transform();
     for (int i = 0; i < n; i++)
       points[i] = tform.map(points[i]);
   }
@@ -130,7 +130,7 @@ void QtPainter::drawPolygon(double *x, double *y, int n) {
 void QtPainter::drawText(const char * const *strs, double *x, double *y,
                          int n, Qt::Alignment flags, double rot)
 {
-  QMatrix tform = matrix();
+  QTransform tform = transform();
   for (int i = 0; i < n; i++) {
     QString qstr;
     QRectF brect;
@@ -147,7 +147,7 @@ void QtPainter::drawText(const char * const *strs, double *x, double *y,
     painter->drawText(rect, flags, qstr);
     //painter->drawText(QPointF(0, 0), qstr); // at baseline
   }
-  setMatrix(tform);
+  setTransform(tform);
 }
 
 // image
@@ -155,7 +155,7 @@ void QtPainter::drawImage(const QImage &image, double x, double y,
                           int sx, int sy, int sw, int sh)
 {
   // assume the image is in device space
-  QMatrix tform = matrix();
+  QTransform tform = transform();
   painter->setWorldMatrixEnabled(false);
   painter->drawImage(tform.map(QPointF(x, y)), image, QRectF(sx, sy, sw, sh));
 }
@@ -172,7 +172,7 @@ void QtPainter::drawSomeGlyphs(const QImage &image, double *x, double *y, int n)
 {
   QPainter bufferPainter(glyphBuffer);
   QRectF source(0, 0, image.width(), image.height());
-  QMatrix tform = matrix();
+  QTransform tform = transform();
   bufferPainter.translate(-image.width() / 2, -image.height() / 2);
   for (int k = 0; k < n; k++) {
     bufferPainter.drawImage(tform.map(QPointF(x[k], y[k])), image, source);

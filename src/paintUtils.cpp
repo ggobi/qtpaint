@@ -1,7 +1,7 @@
 #include "paintUtils.hpp"
 #include <R_ext/Arith.h>
 
-using namespace QViz;
+using namespace Qanviz;
 
 /* these two functions break primitives on NA */
 

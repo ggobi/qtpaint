@@ -9,18 +9,18 @@
 
 #include <math.h> // for fabs()
 
-namespace QViz {
+namespace Qanviz {
   class Painter {
 
   private:
-    QMatrix savedMatrix;
-    bool _matrixEnabled;
+    QTransform savedTransform;
+    bool _transformEnabled;
     bool _rasterize;
     double _glyphSize;
     
   public:
 
-    Painter() : _matrixEnabled(true), _rasterize(true), _glyphSize(1.0) { }
+    Painter() : _transformEnabled(true), _rasterize(true), _glyphSize(1.0) { }
 
     virtual ~Painter() { }
     
@@ -28,37 +28,37 @@ namespace QViz {
     virtual QRectF deviceRect() const = 0;
 
     void setLimits(QRectF limits, bool combined = false) {
-      QMatrix tform;
+      QTransform tform;
       QRectF device = deviceRect();
       tform.scale(device.width() / limits.width(),
                   -device.height() / limits.height());
       tform.translate(-limits.left(), -limits.bottom());
-      setMatrix(tform, combined);
+      setTransform(tform, combined);
     }
-    virtual void setMatrix(const QMatrix& matrix, bool combined = false) {
+    virtual void setTransform(const QTransform& tform, bool combined = false) {
       Q_UNUSED(combined);
       // just checks for rotated matrices, which are unsupported
       // (they cannot map text extents to user space, and besides,
       // there are currently no use cases for rotation).
-      if (QTransform(matrix).isRotating()) {
-        qWarning("Painter::setMatrix: rotating matrices not supported");
+      if (tform.isRotating()) {
+        qWarning("Painter::setTransform: rotating matrices not supported");
       }
     }
-    virtual const QMatrix& matrix() const = 0;
+    virtual const QTransform& transform() const = 0;
 
-    void setMatrixEnabled(bool enabled = true) {
-      if (enabled == _matrixEnabled)
+    void setTransformEnabled(bool enabled = true) {
+      if (enabled == _transformEnabled)
         return;
-      _matrixEnabled = enabled;
+      _transformEnabled = enabled;
       if (enabled)
-        setMatrix(savedMatrix);
+        setTransform(savedTransform);
       else {
-        QMatrix ident;
-        savedMatrix = matrix();
-        setMatrix(ident);
+        QTransform ident;
+        savedTransform = transform();
+        setTransform(ident);
       }
     }
-    bool matrixEnabled() { return _matrixEnabled; }
+    bool transformEnabled() { return _transformEnabled; }
     
     // stroke/fill
     virtual bool hasStroke() const = 0;
@@ -112,7 +112,6 @@ namespace QViz {
     }
     
     // draw lines
-    // FIXME: need a utility that draws multiple polylines, split by NA
     virtual void drawPolyline(double *x, double *y, int n) = 0;
     virtual void drawSegments(double *x0, double *y0, double *x1, double *y1,
                               int n) = 0;
@@ -141,11 +140,11 @@ namespace QViz {
                           int n, Qt::Alignment flags, double rot) = 0;
     
     // overall font metrics
-    // FIXME: is there any way to reverse scale when matrix is
+    // FIXME: is there any way to reverse scale when tform is
     // rotated? (any way to unrotate a matrix?)
     void fontMetrics(float *ascent, float *descent) {
       QFontMetrics metrics = QFontMetrics(font());
-      float yscale = fabs(matrix().m22());
+      float yscale = fabs(transform().m22());
       *ascent = metrics.ascent() / yscale;
       *descent = metrics.descent() / yscale;
     }
@@ -155,8 +154,8 @@ namespace QViz {
     {
       QVector<QRectF> rects(n);
       QFontMetrics metrics = QFontMetrics(font());
-      QMatrix rtform;
-      rtform.scale(fabs(1 / matrix().m11()), fabs(1 / matrix().m22()));
+      QTransform rtform;
+      rtform.scale(fabs(1 / transform().m11()), fabs(1 / transform().m22()));
       for (int i = 0; i < n; i++) {
         QString qstr = QString::fromLocal8Bit(strs[i]);
         if (qstr.count(QChar::LineSeparator))

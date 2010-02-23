@@ -1,20 +1,21 @@
-## R wrappers around the QViz::Painter API
+## R wrappers around the Qanviz::Painter API
 ## These are the lowest level wrappers
 
-## TODO: maybe move to a model where 'p' is obtained from a hidden
-## variable in the parent (callback) frame.
-
-
-qmatrix.Painter <- function(x, inverted = FALSE) 
-  .Call("qt_qmatrix_Painter", x, as.logical(inverted))
-
-`qmatrix<-.Painter` <- function(x, value) {
-  .Call("qt_qsetMatrix_Painter", x, value, PACKAGE = "qtpaint")
+## should be called 'qtransform', but qtbase already uses that for a
+## convenience constructor (would rather not make it generic)
+qdeviceTransform <- function(x) {
+  stopifnot(inherits(x, "Painter"))
+  .Call("qt_qtransform_Painter", x)
+}
+`qdeviceTransform<-` <- function(x, value) {
+  stopifnot(inherits(x, "Painter"))
+  stopifnot(inherits(value, "QTransform"))
+  .Call("qt_qsetTransform_Painter", x, value, PACKAGE = "qtpaint")
 }
 
-`qmatrixEnabled<-` <- function(p, value) {
+`qdeviceTransformEnabled<-` <- function(p, value) {
   stopifnot(inherits(p, "Painter"))
-  invisible(.Call("qt_qsetMatrixEnabled_Painter", p, as.logical(value)))
+  invisible(.Call("qt_qsetTransformEnabled_Painter", p, as.logical(value)))
 }
 
 `qhasStroke<-` <- function(p, value) {
@@ -44,6 +45,8 @@ qmatrix.Painter <- function(x, inverted = FALSE)
 .normArgColor <- function(color, len) {
   if (is.null(color))
     return(NULL)
+  if (inherits(color, "QColor"))
+    color <- as.matrix(color) # simplifies C code
   if (!is.matrix(color) || !is.integer(color) || nrow(color) != 4)
     color <- col2rgb(color, TRUE)
   if (!missing(len)) # might drop to vector here, much faster, C code is OK
@@ -63,13 +66,12 @@ qmatrix.Painter <- function(x, inverted = FALSE)
   invisible(.Call("qt_qsetFillColor_Painter", x, color))
 }
 
-## 'font' as returned by 'qfont'
+## 'value' is a QFont
 `qfont<-` <- function(x, value)
 {
   stopifnot(inherits(x, "Painter"))
-  invisible(.Call("qt_qsetFont_Painter", x, as.character(value$family),
-                  as.integer(value$pointsize), as.integer(value$weight),
-                  as.logical(value$italic)))
+  stopifnot(inherits(value, "QFont"))
+  invisible(.Call("qt_qsetFont_Painter", x, value))
 }
 
 `qlineWidth<-` <- function(x, value) {
@@ -220,47 +222,6 @@ qdrawText <- function(p, text, x, y, halign = c("center", "left", "right"),
   drawText(text)
 }
 
-## qtext <- function(p, text, x, y, halign = c("center", "left", "right"),
-##                    valign = c("center", "basecenter", "baseline", "bottom",
-##                      "top"),
-##                    rot = 0)
-## {
-##   stopifnot(inherits(p, "Painter"))
-##   halign <- match.arg(halign)
-##   valign <- match.arg(valign)
-##   extents <- NULL
-
-##   ## align vertically
-##   if (valign != "baseline") {
-##     if (valign == "center") {
-##       extents <- qtextExtents(p, text, TRUE)
-##       print(extents)
-##       offset <- (extents[,"y1"] - extents[,"y0"]) / 2 - extents[,"y1"]
-##     } else {
-##       metrics <- qfontMetrics(p)
-##       offset <- if (valign == "bottom")
-##         -metrics["descent"]
-##       else metrics["ascent"]
-##       if (valign == "basecenter")
-##         offset <- offset / 2
-##     }
-##     print(offset)
-##     y <- y - offset
-##   }
-  
-##   ## align horizontally
-##   if (halign != "left") {
-##     if (is.null(extents))
-##       extents <- qtextExtents(p, text, valign == "center")
-##     hadj <- if (halign == "center") 0.5 else 1
-##     x <- x - hadj*(extents[,"x1"] - extents[,"x0"]) - extents[,"x0"]
-##   }
-  
-##   print(c(x,y))
-##   invisible(.Call("qt_qdrawText_Painter", p, as.character(text), as.numeric(x),
-##                   as.numeric(y), as.numeric(rot)))
-## }
-
 qfontMetrics <- function(p) {
   stopifnot(inherits(p, "Painter"))
   ans <- .Call("qt_qfontMetrics_Painter", p)
@@ -268,7 +229,7 @@ qfontMetrics <- function(p) {
   ans
 }
 
-qtextExtents.Painter <- function(x, text) {
+qtextExtents <- function(x, text) {
   ans <- .Call("qt_qtextExtents_Painter", x, as.character(text))
   colnames(ans) <- c("x0", "y0", "x1", "y1")
   ans
@@ -280,16 +241,14 @@ qstrWidth <- function(p, text) {
   extents[,3] - extents[,1]
 }
 
-qdrawImage <- function(p, col, width, height, x = 0, y = height-1) {
+qdrawImage <- function(p, image, x, y) {
   stopifnot(inherits(p, "Painter"))
-  stopifnot(length(col) == width*height)
+  stopifnot(inherits(image, "QImage"))
   m <- max(length(x), length(y))
   x <- recycleVector(x, m)
   y <- recycleVector(y, m)
-### FIXME: could also accept a matrix, like that returned here
-  rgb <- as.raw(.normArgColor(col))
-  invisible(.Call("qt_qdrawImage_Painter", p, rgb, as.integer(width),
-                  as.integer(height)), as.numeric(x), as.numeric(y))
+  invisible(.Call("qt_qdrawImage_Painter", p, image, as.numeric(x),
+                  as.numeric(y)))
 }
 
 qdrawGlyph <- function(p, path, x, y, cex = NULL, stroke = NULL, fill = NULL) {
@@ -303,42 +262,4 @@ qdrawGlyph <- function(p, path, x, y, cex = NULL, stroke = NULL, fill = NULL) {
   invisible(.Call("qt_qdrawGlyphs_Painter", p, path, as.numeric(x),
                   as.numeric(y), cex, .normArgStroke(p, stroke, m),
                   .normArgFill(p, fill, m)))
-}
-
-qpath <- function() {
-  invisible(.Call("qt_qpath"))
-}
-
-
-### NOTE: these are not vectorized, as it is probably not necessary
-
-### IDEA: add grid graphical primitives with '+' function
-
-qpathCircle <- function(x, y, r, path = qpath()) {
-  stopifnot(inherits(path, "QPainterPath"))
-  invisible(.Call("qt_qaddCircle_QPainterPath", path, as.numeric(x),
-                  as.numeric(y), as.numeric(r)))
-}
-qpathRect <- function(xleft, ybottom, xright, ytop, path = qpath()) {
-  stopifnot(inherits(path, "QPainterPath"))
-  invisible(.Call("qt_qaddRect_QPainterPath", path, as.numeric(xleft),
-                  as.numeric(ytop), as.numeric(xright - xleft),
-                  as.numeric(ytop - ybottom)))
-}
-qpathPolygon <- function(x, y, path = qpath()) {
-  stopifnot(inherits(path, "QPainterPath"))
-  invisible(.Call("qt_qaddPolygon_QPainterPath", path, as.numeric(x),
-                  as.numeric(y)))
-}
-qpathText <- function(text, x, y, font, path = qpath()) {
-  stopifnot(inherits(path, "QPainterPath"))
-  invisible(.Call("qt_qaddText_QPainterPath", path, as.character(text),
-                  as.numeric(x), as.numeric(y), as.character(font$family),
-                  as.integer(font$pointsize), as.integer(font$weight),
-                  as.logical(font$italic)))
-}
-qpathSegment <- function(x0, y0, x1, y1, path = qpath()) {
-  stopifnot(inherits(path, "QPainterPath"))
-  invisible(.Call("qt_qaddSegment_QPainterPath", path, as.numeric(x0),
-                  as.numeric(y0), as.numeric(x1), as.numeric(y1)))
 }

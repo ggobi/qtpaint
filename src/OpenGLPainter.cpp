@@ -2,7 +2,7 @@
 #include "OpenGLPainter.hpp"
 #include <QVarLengthArray>
 
-using namespace QViz;
+using namespace Qanviz;
 
 /* Case for just using QPainter for most of this:
    1) Line dashing: setDashes would be limited due to glLineStipple(). Yes,
@@ -87,7 +87,7 @@ void OpenGLPainter::drawCircle(double x, double y, int r) {
     glDisable(GL_POINT_SMOOTH);
   } else if (has_pen || has_fill) { // does not antialias!
     enableTransform(false);
-    QPointF p = matrix().map(QPointF(x, y));
+    QPointF p = transform().map(QPointF(x, y));
     if (has_pen)
       setColor(pen.color());
     else setColor(brush.color());

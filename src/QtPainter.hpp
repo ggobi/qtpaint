@@ -4,7 +4,7 @@
 #include <QPainter>
 #include "QtBasePainter.hpp"
 
-namespace QViz {
+namespace Qanviz {
   class QtPainter : public QtBasePainter {
     
   private:
@@ -46,16 +46,16 @@ namespace QViz {
     }
     
     // scaling
-    void setMatrix(const QMatrix& matrix, bool combined = false) {
-      Painter::setMatrix(matrix, combined);
-      painter->setWorldMatrix(matrix, combined);
+    void setTransform(const QTransform& tform, bool combined = false) {
+      Painter::setTransform(tform, combined);
+      painter->setWorldTransform(tform, combined);
       // force update
       painter->save();
       painter->restore();
     }
 
-    const QMatrix& matrix() const {
-      return painter->worldMatrix();
+    const QTransform& transform() const {
+      return painter->worldTransform();
     }
     
     // font

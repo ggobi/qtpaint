@@ -2,7 +2,7 @@
 #include <QHash>
 #include <QGraphicsScene>
 
-namespace QViz {
+namespace Qanviz {
   class ScenePainter : public QtBasePainter {
 
   private:
@@ -16,7 +16,7 @@ namespace QViz {
 
     QPen _pen;
     QBrush _brush;
-    QMatrix _matrix;
+    QTransform _tform;
     
   public:
     
@@ -39,14 +39,14 @@ namespace QViz {
       return _scene->sceneRect();
     }
 
-    // matrix
-    void setMatrix(const QMatrix& matrix, bool combined = false) {
+    // tform
+    void setTransform(const QTransform& tform, bool combined = false) {
       if (combined)
-        _matrix = matrix * _matrix;
-      else _matrix = matrix;
+        _tform = tform * _tform;
+      else _tform = tform;
     }
-    const QMatrix& matrix() const {
-      return _matrix;
+    const QTransform& transform() const {
+      return _tform;
     }
       
     // font

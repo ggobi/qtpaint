@@ -1,11 +1,12 @@
-#include "PlotView.hpp"
-
 #include <QResizeEvent>
 #include <QStyleOptionGraphicsItem>
 #include <QScrollBar>
+#include <QGLWidget>
 #include <QtCore/qmath.h>
 
-using namespace QViz;
+#include "PlotView.hpp"
+
+using namespace Qanviz;
 
 /* In the QGraphicsView framework, the each layer/geom of a plot is an
    item, and the overall plot, possibly including multiple facets, is
@@ -59,6 +60,17 @@ using namespace QViz;
    playing it to a transformed QPainter. Like how Graham showed in
    Bremen.
 */
+
+PlotView::PlotView(QGraphicsScene *scene, QWidget *parent,
+                   RescaleMode rescaleMode, bool opengl)
+  : QGraphicsView(scene, parent), _overlay(new OverlayScene(this))
+{
+  setOpenGL(opengl);
+  setRescaleMode(rescaleMode);
+  setFrameStyle(QFrame::NoFrame);
+  connect(_overlay, SIGNAL(changed(QList<QRectF>)), this,
+          SLOT(update()));
+}
 
 void PlotView::resizeEvent (QResizeEvent * event)
 {
@@ -176,13 +188,33 @@ void OverlayScene::drawOverlay(QPainter *painter, QRectF exposed) {
     if (items[i]->flags() & QGraphicsItem::ItemIgnoresTransformations)
       tform = items[i]->deviceTransform(tform);
     else tform = items[i]->sceneTransform() * tform;
-    options[i].rect = items[i]->boundingRect().toRect();
     options[i].exposedRect = tform.inverted().mapRect(exposed);
+#if QT_VERSION < 0x40600
+    options[i].rect = items[i]->boundingRect().toRect();
     options[i].matrix = tform.toAffine();
     options[i].levelOfDetail = qSqrt(tform.map(v1).length() *
                                      tform.map(v2).length());
+#endif
     overlayItems[i] = items[i];
   }
   drawItems(painter, items.size(), overlayItems.data(), options.data(),
             _view->viewport());
+}
+
+// NOTE: only makes sense in single-threaded apps (like R)
+PlotView *PlotView::paintingView(QGraphicsScene *scene) {
+  QList<QGraphicsView *> views = scene->views();
+  PlotView *paintingView = NULL;
+  for (int i = 0; i < views.size() && !paintingView; i++) {
+    PlotView *view = qobject_cast<PlotView *>(views[i]);
+    if (view && view->isPainting())
+      paintingView = view;
+  }
+  return paintingView;
+}
+
+void PlotView::setOpenGL(bool opengl) {
+  if (opengl)
+    setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
+  else setViewport(new QWidget);
 }

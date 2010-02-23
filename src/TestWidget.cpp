@@ -2,7 +2,7 @@
 #include "OpenGLPainter.hpp"
 #include <sys/time.h>
 
-using namespace QViz;
+using namespace Qanviz;
 
 #define BEGIN_TIMING gettimeofday(&before, NULL);
 #define END_TIMING   gettimeofday(&after, NULL); \

@@ -1,0 +1,24 @@
+
+Version 0.6.0 (2/23/10): changes to align qtpaint with qtbase
+
+qaddItem -> layer$addLayer
+qboundingRect -> view$viewport()$rect
+qdeviceMatrix -> item$deviceTransform(view) (but no more inverting!)
+q(row,col)Stretch[<-] -> now take layer$layout() as argument
+q(h,v)Spacing<- -> layer$layout()$setHorizontal(Vertical)Spacing()
+qpaintingView -> QtPaint$PlotView$paintingView()
+qbackgroundColor<- -> scene$backgroundBrush <- Qt$QBrush(Qt$Red)
+qmatrix[Enabled][<-] -> qdeviceTransform[Enabled][<-]
+qpath* -> interact explicitly with QPainterPath
+
+The following functions should be replaced with equivalent qtbase syntax:
+
+qgraphicsScene, qaddItem, qsceneRect, qsceneRect, qboundingRect,
+qclear, clearSelection, qitems, qgeometry, qminimumSize,
+qsetItemIndexMethod, qsetParentItem, qpos, qsetZValue, qsetTooltip,
+qgraphicsView, qfitScene, qsetTransform, qsetDragMode,
+qsetAntialias, qcacheMode, qclip, qfocus, qlimits, qoverlay,
+qprimitives, probably others
+
+
+

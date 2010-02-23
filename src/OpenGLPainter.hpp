@@ -5,7 +5,7 @@
 #include <QGLWidget>
 #include <QGLFramebufferObject>
 
-namespace QViz {
+namespace Qanviz {
   class OpenGLPainter : public QtPainter {
     
   private:
