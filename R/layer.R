@@ -13,7 +13,7 @@ qlayer <- function(parent = NULL, paintFun = NULL, keyPressFun = NULL,
                    dragMoveEvent = NULL, dropEvent = NULL,
                    focusInEvent = NULL, focusOutEvent = NULL,
                    sizeHintFun = NULL,
-                   geometry = qrect(0, 0, 600, 400), clip = TRUE)
+                   geometry = qrect(0, 0, 600, 400), clip = TRUE, cache = TRUE)
 {
   p <- NULL
   if (inherits(parent, "QGraphicsItem"))
@@ -45,6 +45,8 @@ qlayer <- function(parent = NULL, paintFun = NULL, keyPressFun = NULL,
   else if (!is.null(parent)) stop("Unsupported parent type")
   layer$geometry <- qrect(geometry)
   layer$setFlag(Qt$QGraphicsItem$ItemClipsToShape, clip)
+  if (!cache)
+    layer$setCacheMode(Qt$QGraphicsItem$NoCache)
   layer
 }
 
