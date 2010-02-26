@@ -1,5 +1,38 @@
 ### some utilities to help make drawing easier
 
+## Some simple glyph generators
+
+qglyphCircle <- function(r = 5) {
+  glyph <- Qt$QPainterPath()
+  glyph$addEllipse(0, 0, r, r)
+  glyph
+}
+
+qglyphSquare <- function(x = 5) {
+  glyph <- Qt$QPainterPath()
+  glyph$addRect(-x, -x, 2*x, 2*x)
+  glyph  
+}
+
+qglyphTriangle <- function(x = 5, direction = c("up", "down")) {
+  direction <- match.arg(direction)
+  if (direction == "down")
+    x <- -x
+  glyph <- Qt$QPainterPath()
+  glyph$moveTo(-x, x)
+  glyph$lineTo(x, x)
+  glyph$lineTo(0, -x)
+  glyph$closeSubpath()
+  glyph
+}
+
+## not quite sure about this
+qglyphText <- function(text = "X", size = 12) {
+  glyph <- Qt$QPainterPath()
+  glyph$addText(-size / 2, size / 2, qfont(pointsize = size), text)
+  glyph
+}
+
 ## Need a fast way to map data. Easiest to take QTransform as an R
 ## matrix and use vectorized arithmetic.
 qmap <- function(m, x, y) {
@@ -24,6 +57,10 @@ qmap <- function(m, x, y) {
 
 ## Creates a QTransform that flips the Y axis
 
+.validRect <- function(r) {
+  is.matrix(r) && is.numeric(r) && identical(dim(r), c(2L, 2L))
+}
+
 qflipY <- function(ymax, ymin = 0) UseMethod("qflipY")
 qflipY.numeric <- function(ymax, ymin = 0) {
   if (.validRect(ymax)) {
@@ -34,10 +71,6 @@ qflipY.numeric <- function(ymax, ymin = 0) {
 }
 qflipY.QRect <- qflipY.QRectF <-
   function(ymax, ymin = 0) qflipY(as.matrix(ymax))
-
-.validRect <- function(r) {
-  is.matrix(r) && is.numeric(r) && identical(dim(r), c(2L, 2L))
-}
 
 ## Getting dimensions of rectangles and rectangular objects
 

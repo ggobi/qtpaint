@@ -39,6 +39,12 @@ export("qantialias<-",
        qtextExtents
        )
 
+## convenience constructors
+export(qlayer, qplotView)
+
+## glyph generators
+export(qglyphCircle, qglyphSquare, qglyphTriangle, qglyphText)
+
 ## some transformation conveniences
 export(qmap, qflipY)
 
