@@ -54,6 +54,8 @@ RLayer::RLayer(QGraphicsItem *parent,
 #if QT_VERSION >= 0x40600
   if (paintEvent == R_NilValue)
     setFlag(QGraphicsItem::ItemHasNoContents);
+  if (length(FORMALS(paintEvent)) > 2) // user requests exposed rect
+    setFlag(QGraphicsItem::ItemUsesExtendedStyleOption);
 #endif
   /* preserve every callback */
   PRESERVE_CALLBACK(paintEvent);
@@ -103,22 +105,24 @@ RLayer::~RLayer() {
 void RLayer::paintPlot(Painter *painter, QRectF exposed)
 {
   SEXP e, etmp, rpainter;
+  bool wantsExposed = length(FORMALS(paintEvent_R)) > 2;
   QList<QString> painterClasses;
   painterClasses.append("Painter");
   
   if (paintEvent_R == R_NilValue)
     return; // not painting (just for layout)
 
-  PROTECT(e = allocVector(LANGSXP, 4));
+  PROTECT(e = allocVector(LANGSXP, 3 + wantsExposed));
   SETCAR(e, paintEvent_R);
   etmp = CDR(e);
   SETCAR(etmp, wrapSmoke(this, Layer, false));
   etmp = CDR(etmp);
   rpainter = wrapPointer(painter, painterClasses, NULL);
   SETCAR(etmp, rpainter);
-  etmp = CDR(etmp);
-  SETCAR(etmp, wrapSmokeCopy(exposed, QRectF));
-  
+  if (wantsExposed) {
+    etmp = CDR(etmp);
+    SETCAR(etmp, wrapSmokeCopy(exposed, QRectF));
+  }
   R_tryEval(e, R_GlobalEnv, NULL);
 
   /* We cannot guarantee that these pointers will be valid */
