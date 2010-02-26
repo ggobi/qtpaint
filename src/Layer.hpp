@@ -51,7 +51,8 @@ namespace Qanviz {
       } else return QGraphicsWidget::boundingRect();
     }
 
-    QTransform deviceTransform(QGraphicsView *view = NULL) const;
+    QTransform deviceTransform(QGraphicsView *view) const;
+    QTransform deviceTransform(QGraphicsSceneEvent *event) const;
     
     QPainterPath shape() const {
       if (!_limits.isNull()) {

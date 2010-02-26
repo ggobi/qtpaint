@@ -149,11 +149,14 @@ void Layer::addLayer(Layer *layer, int row = 0, int col = 0,
 // This method in QGraphicsItem is buggy (assumes 'self' ignores transforms)
 QTransform Layer::deviceTransform(QGraphicsView *view) const
 {
-  if (!view) {
-    view = PlotView::paintingView(scene());
-    if (!view)
-      return sceneTransform();
-  }
+  return sceneTransform() * view->viewportTransform();
+}
+
+QTransform Layer::deviceTransform(QGraphicsSceneEvent *event) const
+{
+  QGraphicsView *view = viewForEvent(event);
+  if (!view)
+    return sceneTransform();
   return sceneTransform() * view->viewportTransform();
 }
 
