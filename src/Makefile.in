@@ -15,6 +15,6 @@ all:
 	cp Makefile.in Makefile
 
 clean:
-	make -f Makefile.clean clean
+	if test -e Makefile.clean; then make -f Makefile.clean clean; fi
 	make -C ../inst/kdebindings clean
 	rm -rf ../local
