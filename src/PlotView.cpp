@@ -4,7 +4,7 @@
 #include <QGLWidget>
 #include <QtCore/qmath.h>
 
-#include "PlotView.hpp"
+#include "PlotView.moc"
 
 using namespace Qanviz;
 

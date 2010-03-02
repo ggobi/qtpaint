@@ -1,5 +1,5 @@
-#include <Rinternals.h>
 #include <QColor>
+#include <Rinternals.h>
 
 /* colors */
 QColor asQColor(SEXP c);

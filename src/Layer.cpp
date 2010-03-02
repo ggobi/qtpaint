@@ -4,7 +4,7 @@
 
 #include "OpenGLPainter.hpp"
 #include "ScenePainter.hpp"
-#include "Layer.hpp"
+#include "Layer.moc"
 #include "PlotView.hpp"
 
 using namespace Qanviz;

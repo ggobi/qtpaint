@@ -6,16 +6,15 @@ all:
 	      -DR_INCLUDE_DIR=$(R_INCLUDE_DIR)
 	LD_LIBRARY_PATH=${QTBASE_DIR}/kdebindings/generator/bin \
 		make -C ../inst/kdebindings install
-	QTBASE_DIR=${QTBASE_DIR} bash createProject.sh
-	make -f Makefile.qtpaint
-	if test -e libqtpaint.so; then cp libqtpaint.so qtpaint.so; fi
-## for macx:
-	if test -e libqtpaint.dylib; then cp libqtpaint.dylib qtpaint.so; fi
-
+	cmake CMakeLists.txt \
+	      -DR_LIBRARIES="${LIBR}" \
+	      -DR_INCLUDES=${R_INCLUDE_DIR} \
+	      -DQTBASE_DIR=${QTBASE_DIR}
+	make
+	cp Makefile Makefile.clean
+	cp Makefile.in Makefile
 
 clean:
-	rm -f *.so *.o *.a libqt* qtpaint.pro Makefile.qtpaint moc*.cpp
+	make -f Makefile.clean clean
 	make -C ../inst/kdebindings clean
-	rm -f smokedata.cpp x_1.cpp
-
-
+	rm -rf ../local
