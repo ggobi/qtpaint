@@ -1,3 +1,5 @@
+#ifdef QT_OPENGL_LIB
+
 #define GL_GLEXT_PROTOTYPES 1
 #include "OpenGLPainter.hpp"
 #include <QVarLengthArray>
@@ -318,3 +320,5 @@ void OpenGLPainter::drawVertices(GLenum mode, double *x, double *y, int n) {
   glDrawArrays(mode, 0, n);
   glDisableClientState(GL_VERTEX_ARRAY);
 }
+
+#endif

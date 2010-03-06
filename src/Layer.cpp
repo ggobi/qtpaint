@@ -4,7 +4,7 @@
 
 #include "OpenGLPainter.hpp"
 #include "ScenePainter.hpp"
-#include "Layer.moc"
+#include "Layer.hpp"
 #include "PlotView.hpp"
 
 using namespace Qanviz;
@@ -12,8 +12,9 @@ using namespace Qanviz;
 void Layer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                   QWidget *widget)
 {
-  QPainter *fboPainter;
   QtPainter *qvpainter = NULL;
+#ifdef QT_OPENGL_LIB
+  QPainter *fboPainter;
   QGLFramebufferObject *fbo = NULL;
   QGLWidget *qglWidget = qobject_cast<QGLWidget *>(widget);
   if (qglWidget) { // on-screen OpenGL
@@ -63,6 +64,7 @@ void Layer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
       qvpainter->setTransform(painter->worldTransform());
     }
   }
+#endif
   
   if (!qvpainter) // fallback to Qt renderer
     qvpainter = new QtPainter(painter);
@@ -71,6 +73,7 @@ void Layer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
   paintPlot(qvpainter, option->exposedRect);
 
   delete qvpainter;
+#ifdef QT_OPENGL_LIB
   if (fbo) { // silliness: download to image, only to upload to texture
     painter->setWorldMatrixEnabled(false);
     // Not sure why this can't be (0, 0)...
@@ -78,6 +81,7 @@ void Layer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     delete fboPainter;
     delete fbo;
   }
+#endif
 }
 
 // QGraphicsWidget assumes a (0, 0, width, height) bounding

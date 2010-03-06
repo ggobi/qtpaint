@@ -1,6 +1,8 @@
 #ifndef OPENGLPAINTER_H
 #define OPENGLPAINTER_H
 
+#ifdef QT_OPENGL_LIB
+
 #include "QtPainter.hpp"
 #include <QGLWidget>
 #include <QGLFramebufferObject>
@@ -68,5 +70,7 @@ namespace Qanviz {
     void drawSomeGlyphs(const QImage &image, double *x, double *y, int n);
   };
 }
+
+#endif
 
 #endif

@@ -1,6 +1,6 @@
 #include <QGraphicsSceneMouseEvent>
 
-#include "RLayer.moc"
+#include "RLayer.hpp"
 #include <qtbase.h>
 
 /* This class allows the R user to implement a custom Layer without a

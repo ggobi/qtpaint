@@ -1,10 +1,13 @@
 #include <QResizeEvent>
 #include <QStyleOptionGraphicsItem>
 #include <QScrollBar>
-#include <QGLWidget>
 #include <QtCore/qmath.h>
 
-#include "PlotView.moc"
+#ifdef QT_OPENGL_LIB
+#include <QGLWidget>
+#endif
+
+#include "PlotView.hpp"
 
 using namespace Qanviz;
 
@@ -215,6 +218,10 @@ PlotView *PlotView::paintingView(QGraphicsScene *scene) {
 
 void PlotView::setOpenGL(bool opengl) {
   if (opengl)
+#ifdef QT_OPENGL_LIB
     setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
+#else
+    qWarning("OpenGL not supported by this build of Qt and/or qtpaint");
+#endif
   else setViewport(new QWidget);
 }
