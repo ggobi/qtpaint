@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 2.8)
 
 find_package(Qt4 4.4.0 COMPONENTS QtCore QtGui QtOpenGL REQUIRED )
 
-include_directories( ../inst/kdebindings/smoke ../inst/kdebindings/smoke/qanviz
-                     ${R_INCLUDES} ${QTBASE_DIR}/kdebindings/smoke
+include_directories( ../inst/local/include/smoke
+                     ${R_INCLUDES} ${QTBASE_DIR}/local/include
                      ${QTBASE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}
                    )
 
