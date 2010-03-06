@@ -164,6 +164,7 @@ QTransform Layer::deviceTransform(QGraphicsSceneEvent *event) const
   return sceneTransform() * view->viewportTransform();
 }
 
+
 QGraphicsView *Layer::viewForEvent(QGraphicsSceneEvent *event) {
   return qobject_cast<QGraphicsView*>(event->widget()->parent());
 }
