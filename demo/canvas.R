@@ -1,4 +1,10 @@
 ## tests/demonstrations for the interactive canvas
+
+## issues:
+## - Everything is pinkish, not red -- compositing issue?
+## - Nothing is displayed when caching is enabled
+## - Glyphs are always squares (i.e. GL_POINTS)
+
 library(qtpaint)
 
 options(warn=2)
@@ -22,13 +28,14 @@ scatterplot <- function(item, painter) {
   qstrokeColor(painter) <- NA
   qfillColor(painter) <- fill
   ##qantialias(painter) <- FALSE
+  ##qdrawText(painter, "x", df[,1], df[,2])
   ##qdrawPoint(painter, df[,1], df[,2], stroke = fill)
   qdrawGlyph(painter, circle, df[,1], df[,2], fill = fill)
 }
 
 labeled <- rep(FALSE, nrow(df))
 labeler <- function(item, painter) {
-  mat <- painter$deviceTransform()
+  mat <- qdeviceTransform(painter)
   off <- qmap(mat, c(5, 5)) - qmap(mat, c(0, 0))
   df <- df[labeled,]
   qdrawText(painter, rownames(df), df[,1]+off[1], df[,2]+off[2], "left",
@@ -55,7 +62,7 @@ pointAdder <- function(item, event) {
 pointIdentifier <- function(item, event) {
   off <- 20
   rect <- qrect(0, 0, off*2, off*2)
-  mat <- item$deviceTransform(event)$invert()
+  mat <- item$deviceTransform(event)$inverted()
   rect <- mat$mapRect(rect)
   pos <- event$pos()
   rect$moveCenter(pos)
@@ -79,7 +86,7 @@ root <- qlayer(scene)
 points <- qlayer(root, scatterplot, hoverMove = pointIdentifier)
 points$setLimits(qrect(range(df[,1]), range(df[,2])))
 labels <- qlayer(root, labeler, cache = FALSE)
-labels$setLimits(qlimits(points))
+labels$setLimits(points$limits())
 ##bounds <- qlayer(NULL, boundsPainter)
 ##qaddGraphicsWidget(root, bounds, 1, 1)
 view <- qplotView(scene = scene, opengl = TRUE)
