@@ -52,3 +52,8 @@ export(qmap, qflipY)
 S3method("[<-", "Qanviz::Layer")
 S3method("[", "Qanviz::Layer")
 S3method(dim, QGraphicsView)
+
+export(qupdate)
+S3method(qupdate, QGraphicsView)
+S3method(qupdate, QGraphicsScene)
+S3method(qupdate, QGraphicsItem)
