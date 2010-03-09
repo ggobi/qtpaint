@@ -106,7 +106,7 @@ void RLayer::paintPlot(Painter *painter, QRectF exposed)
 {
   SEXP e, etmp, rpainter;
   bool wantsExposed = length(FORMALS(paintEvent_R)) > 2;
-  QList<QString> painterClasses;
+  QList<QByteArray> painterClasses;
   painterClasses.append("Painter");
   
   if (paintEvent_R == R_NilValue)
@@ -115,7 +115,7 @@ void RLayer::paintPlot(Painter *painter, QRectF exposed)
   PROTECT(e = allocVector(LANGSXP, 3 + wantsExposed));
   SETCAR(e, paintEvent_R);
   etmp = CDR(e);
-  SETCAR(etmp, wrapSmoke(this, Layer, false));
+  SETCAR(etmp, wrapSmoke(this, Qanviz::RLayer, false));
   etmp = CDR(etmp);
   rpainter = wrapPointer(painter, painterClasses, NULL);
   SETCAR(etmp, rpainter);
@@ -131,41 +131,41 @@ void RLayer::paintPlot(Painter *painter, QRectF exposed)
   UNPROTECT(1);
 }
 
-template<typename T> void dispatchEvent(SEXP closure, T event) {
+template<typename T> void dispatchEvent(RLayer *layer, SEXP closure, T event,
+                                        const char *eventClass)
+{
   SEXP e;
 
   if (closure == R_NilValue) {
     return;
   }
-  
-  PROTECT(e = allocVector(LANGSXP, 2));
-  SETCAR(e, closure);
-  SETCADR(e, wrapSmoke(event, T, false));
+
+  e = lang3(closure, wrapSmoke(layer, Qanviz::RLayer, false),
+            _wrapSmoke(event, eventClass, false));
   
   R_tryEval(e, R_GlobalEnv, NULL);
-  
-  UNPROTECT(1);
 }
 
 void RLayer::keyPressEvent ( QKeyEvent * event ) {
-  dispatchEvent(keyPressEvent_R, event);
+  dispatchEvent(this, keyPressEvent_R, event, "QKeyEvent");
 }
 
 void RLayer::keyReleaseEvent ( QKeyEvent * event ) {
-  dispatchEvent(keyReleaseEvent_R, event);
+  dispatchEvent(this, keyReleaseEvent_R, event, "QKeyEvent");
 }
 
 void RLayer::mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event ) {
   if (mouseDoubleClickEvent_R == R_NilValue)
     QGraphicsItem::mouseDoubleClickEvent(event);
-  else dispatchEvent(mouseDoubleClickEvent_R, event);
+  else dispatchEvent(this, mouseDoubleClickEvent_R, event,
+                     "QGraphicsSceneMouseEvent");
 }
 
 /* NOTE: this is really more like a 'dragging' event */
 void RLayer::mouseMoveEvent ( QGraphicsSceneMouseEvent * event ) {
   if (mouseMoveEvent_R == R_NilValue)  
     QGraphicsItem::mouseMoveEvent(event);
-  else dispatchEvent(mouseMoveEvent_R, event);
+  else dispatchEvent(this, mouseMoveEvent_R, event, "QGraphicsSceneMouseEvent");
 }
 
 void RLayer::mousePressEvent ( QGraphicsSceneMouseEvent * event ) {
@@ -176,77 +176,85 @@ void RLayer::mousePressEvent ( QGraphicsSceneMouseEvent * event ) {
       event->accept(); // accept this if we want other mouse events
     }    
   }
-  else dispatchEvent(mousePressEvent_R, event);
+  else dispatchEvent(this, mousePressEvent_R, event,
+                     "QGraphicsSceneMouseEvent");
 }
 
 void RLayer::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event ) {
   if (mouseReleaseEvent_R == R_NilValue)
     QGraphicsItem::mouseReleaseEvent(event);
-  else dispatchEvent(mouseReleaseEvent_R, event);
+  else dispatchEvent(this, mouseReleaseEvent_R, event,
+                     "QGraphicsSceneMouseEvent");
 }
 
 void RLayer::wheelEvent ( QGraphicsSceneWheelEvent * event ) {
-  dispatchEvent(wheelEvent_R, event);
+  dispatchEvent(this, wheelEvent_R, event, "QGraphicsSceneWheelEvent");
 }
 
 void RLayer::hoverEnterEvent ( QGraphicsSceneHoverEvent * event ) {
   if (hoverEnterEvent_R == R_NilValue)  
     QGraphicsItem::hoverEnterEvent(event);
-  else dispatchEvent(hoverEnterEvent_R, event);
+  else dispatchEvent(this, hoverEnterEvent_R, event,
+                     "QGraphicsSceneHoverEvent");
 }
 
 void RLayer::hoverLeaveEvent ( QGraphicsSceneHoverEvent * event ) {
   if (hoverLeaveEvent_R == R_NilValue)  
     QGraphicsItem::hoverLeaveEvent(event);
-  else dispatchEvent(hoverLeaveEvent_R, event);
+  else dispatchEvent(this, hoverLeaveEvent_R, event,
+                     "QGraphicsSceneHoverEvent");
 }
 
 void RLayer::hoverMoveEvent ( QGraphicsSceneHoverEvent * event ) {
   if (hoverMoveEvent_R == R_NilValue)  
     QGraphicsItem::hoverMoveEvent(event);
-  else dispatchEvent(hoverMoveEvent_R, event);
+  else dispatchEvent(this, hoverMoveEvent_R, event, "QGraphicsSceneHoverEvent");
 }
 
 void RLayer::contextMenuEvent ( QGraphicsSceneContextMenuEvent * event ) {
   if (contextMenuEvent_R == R_NilValue)  
     QGraphicsItem::contextMenuEvent(event);
-  else dispatchEvent(contextMenuEvent_R, event);
+  else dispatchEvent(this, contextMenuEvent_R, event,
+                     "QGraphicsSceneContextMenuEvent");
 }
 
 void RLayer::dragEnterEvent ( QGraphicsSceneDragDropEvent * event ) {
   if (dragEnterEvent_R == R_NilValue)  
     QGraphicsItem::dragEnterEvent(event);
-  else dispatchEvent(dragEnterEvent_R, event);
+  else dispatchEvent(this, dragEnterEvent_R, event,
+                     "QGraphicsSceneDragDropEvent");
 }  
 
 void RLayer::dragLeaveEvent ( QGraphicsSceneDragDropEvent * event ) {
   if (dragLeaveEvent_R == R_NilValue)  
     QGraphicsItem::dragLeaveEvent(event);
-  else dispatchEvent(dragLeaveEvent_R, event);
+  else dispatchEvent(this, dragLeaveEvent_R, event,
+                     "QGraphicsSceneDragDropEvent");
 }
 
 void RLayer::dragMoveEvent ( QGraphicsSceneDragDropEvent * event ) {
   if (dragMoveEvent_R == R_NilValue)  
     QGraphicsItem::dragMoveEvent(event);
-  else dispatchEvent(dragMoveEvent_R, event);
+  else dispatchEvent(this, dragMoveEvent_R, event,
+                     "QGraphicsSceneDragDropEvent");
 }
 
 void RLayer::dropEvent ( QGraphicsSceneDragDropEvent * event ) {
   if (dropEvent_R == R_NilValue)  
     QGraphicsItem::dropEvent(event);
-  else dispatchEvent(dropEvent_R, event);
+  else dispatchEvent(this, dropEvent_R, event, "QGraphicsSceneDragDropEvent");
 }
 
 void RLayer::focusInEvent ( QFocusEvent * event ) {
   if (focusInEvent_R == R_NilValue)  
     QGraphicsItem::focusInEvent(event);
-  else dispatchEvent(focusInEvent_R, event);
+  else dispatchEvent(this, focusInEvent_R, event, "QFocusEvent");
 }
 
 void RLayer::focusOutEvent ( QFocusEvent * event ) {
   if (focusOutEvent_R == R_NilValue)  
     QGraphicsItem::focusOutEvent(event);
-  else dispatchEvent(focusOutEvent_R, event);
+  else dispatchEvent(this, focusOutEvent_R, event, "QFocusEvent");
 }
 
 QSizeF RLayer::sizeHint ( Qt::SizeHint hint, QSizeF &constraint ) {
@@ -267,4 +275,28 @@ QSizeF RLayer::sizeHint ( Qt::SizeHint hint, QSizeF &constraint ) {
   UNPROTECT(1);
 
   return(*unwrapSmoke(ans, QSizeF));
+}
+
+SEXP qanviz_RLayer(SEXP parent, SEXP paintEvent, SEXP keyPressEvent,
+                   SEXP keyReleaseEvent, SEXP mouseDoubleClickEvent,
+                   SEXP mouseMoveEvent, SEXP mousePressEvent,
+                   SEXP mouseReleaseEvent, SEXP wheelEvent,
+                   SEXP hoverMoveEvent, SEXP hoverEnterEvent,
+                   SEXP hoverLeaveEvent, SEXP contextMenuEvent,
+                   SEXP dragEnterEvent, SEXP dragLeaveEvent,
+                   SEXP dragMoveEvent, SEXP dropEvent,
+                   SEXP focusInEvent, SEXP focusOutEvent, SEXP sizeHint)
+{
+  Qanviz::RLayer *layer =
+    new Qanviz::RLayer(unwrapSmoke(parent, QGraphicsItem),
+                       paintEvent, keyPressEvent,
+                       keyReleaseEvent, mouseDoubleClickEvent,
+                       mouseMoveEvent, mousePressEvent,
+                       mouseReleaseEvent, wheelEvent,
+                       hoverMoveEvent, hoverEnterEvent,
+                       hoverLeaveEvent, contextMenuEvent,
+                       dragEnterEvent, dragLeaveEvent,
+                       dragMoveEvent, dropEvent,
+                       focusInEvent, focusOutEvent, sizeHint);
+  return wrapSmoke(layer, Qanviz::RLayer, true);
 }

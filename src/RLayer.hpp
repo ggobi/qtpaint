@@ -62,4 +62,15 @@ namespace Qanviz {
   };
 }
 
+extern "C" SEXP
+qanviz_RLayer(SEXP parent, SEXP paintEvent, SEXP keyPressEvent,
+              SEXP keyReleaseEvent, SEXP mouseDoubleClickEvent,
+              SEXP mouseMoveEvent, SEXP mousePressEvent,
+              SEXP mouseReleaseEvent, SEXP wheelEvent,
+              SEXP hoverMoveEvent, SEXP hoverEnterEvent,
+              SEXP hoverLeaveEvent, SEXP contextMenuEvent,
+              SEXP dragEnterEvent, SEXP dragLeaveEvent,
+              SEXP dragMoveEvent, SEXP dropEvent,
+              SEXP focusInEvent, SEXP focusOutEvent, SEXP sizeHint);
+
 #endif
