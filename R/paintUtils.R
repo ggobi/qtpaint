@@ -41,9 +41,14 @@ qmap <- function(m, x, y) {
   if (missing(y)) {
     cl <- class(x) # if only 'x' specified, preserve its class
     if (NCOL(x) == 1L) {
-      if (is.vector(x))
-        x <- matrix(x, ncol = 2, byrow = TRUE)
-      else x <- as.matrix(x)
+      tmpX <- try(as.numeric(x), silent=TRUE)
+      if (!is(tmpX, "try-error"))
+        x <- matrix(tmpX, ncol = 2, byrow = TRUE)
+      else {
+        x <- try(as.matrix(x), silent=TRUE)
+        if (is(x, "try-error"))
+          stop("if 'y' is missing, 'x' must be coercible to vector or matrix")
+      }
     }
     y <- x[,2]
     x <- x[,1]
