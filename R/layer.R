@@ -18,32 +18,32 @@ qlayer <- function(parent = NULL, paintFun = NULL, keyPressFun = NULL,
   p <- NULL
   if (inherits(parent, "QGraphicsItem"))
     p <- parent
-  layer <- Qanviz$RLayer(p,
-                         .normArgCallback(paintFun),
-                         .normArgCallback(keyPressFun),
-                         .normArgCallback(keyReleaseFun),
-                         .normArgCallback(mouseDoubleClickFun),
-                         .normArgCallback(mouseMoveFun),
-                         .normArgCallback(mousePressFun),
-                         .normArgCallback(mouseReleaseFun),
-                         .normArgCallback(wheelFun),
-                         .normArgCallback(hoverMoveEvent),
-                         .normArgCallback(hoverEnterEvent),
-                         .normArgCallback(hoverLeaveEvent),
-                         .normArgCallback(contextMenuEvent),
-                         .normArgCallback(dragEnterEvent),
-                         .normArgCallback(dragLeaveEvent),
-                         .normArgCallback(dragMoveEvent),
-                         .normArgCallback(dropEvent),
-                         .normArgCallback(focusInEvent),
-                         .normArgCallback(focusOutEvent),               
-                         .normArgCallback(sizeHintFun))
+  layer <- .Call("qanviz_RLayer", p,
+                 .normArgCallback(paintFun),
+                 .normArgCallback(keyPressFun),
+                 .normArgCallback(keyReleaseFun),
+                 .normArgCallback(mouseDoubleClickFun),
+                 .normArgCallback(mouseMoveFun),
+                 .normArgCallback(mousePressFun),
+                 .normArgCallback(mouseReleaseFun),
+                 .normArgCallback(wheelFun),
+                 .normArgCallback(hoverMoveEvent),
+                 .normArgCallback(hoverEnterEvent),
+                 .normArgCallback(hoverLeaveEvent),
+                 .normArgCallback(contextMenuEvent),
+                 .normArgCallback(dragEnterEvent),
+                 .normArgCallback(dragLeaveEvent),
+                 .normArgCallback(dragMoveEvent),
+                 .normArgCallback(dropEvent),
+                 .normArgCallback(focusInEvent),
+                 .normArgCallback(focusOutEvent),               
+                 .normArgCallback(sizeHintFun), PACKAGE="qtpaint")
   if (inherits(parent, "Qanviz::Layer")) {
     parent$addLayer(layer, 0, 0, 1, 1)
   } else if (inherits(parent, "QGraphicsScene"))
     parent$addItem(layer)
   else if (!is.null(parent)) stop("Unsupported parent type")
-  layer$geometry <- qrect(geometry)
+  layer$geometry <- geometry
   layer$setFlag(Qt$QGraphicsItem$ItemClipsToShape, clip)
   if (!cache)
     layer$setCacheMode(Qt$QGraphicsItem$NoCache)
