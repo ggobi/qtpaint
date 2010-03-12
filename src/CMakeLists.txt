@@ -12,7 +12,7 @@ include(${QT_USE_FILE})
 set(qtpaint_LIB_SRCS Layer.cpp QtPainter.cpp imports.cpp
     OpenGLPainter.cpp RLayer.cpp init.cpp PainterWrappers.cpp
     ScenePainter.cpp paintUtils.cpp PlotView.cpp
-    scene.cpp QtBasePainter.cpp convert.cpp
+    scene.cpp QtBasePainter.cpp convert.cpp TestWidget.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/smokedata.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/x_1.cpp)
   

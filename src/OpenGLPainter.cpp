@@ -32,6 +32,22 @@ using namespace Qanviz;
    circles.
  */
 
+/* Notes about OpenGL2 engine in Qt 4.6:
+
+   Qt 4.6 adds the OpenGL2 engine, which is designed for OpenGL ES
+   2.0. This means there is a heavy reliance on shaders (for embedded
+   devices computation is much faster on the GPU). Unfortunately, for
+   the types of drawing we do, i.e. lots of points and lines, the
+   original paint engine is much faster, as most everything happens
+   directly in the hardware. There are some cases (dashed lines,
+   concave polygons, text) where we would not expect much difference.
+
+   The obvious downside is that it is unclear whether the OpenGL 1.x
+   engine will continue to be maintained and included within Qt.
+
+   Should run performance tests.
+ */
+
 void OpenGLPainter::drawPoints(double *x, double *y, int n) {
   glPushAttrib(GL_ENABLE_BIT | GL_POINT_BIT);
   if (antialias())
