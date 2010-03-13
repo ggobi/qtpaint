@@ -4,7 +4,7 @@
 
 qglyphCircle <- function(r = 5) {
   glyph <- Qt$QPainterPath()
-  glyph$addEllipse(0, 0, r, r)
+  glyph$addEllipse(qpoint(0, 0), r, r)
   glyph
 }
 

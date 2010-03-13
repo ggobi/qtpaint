@@ -1,4 +1,4 @@
-N = 300000, aliased/multisampled/hq-antialiased, time in seconds
+N = 300000, aliased/multisampled/[hq-]antialiased, time in seconds
 Qt := QtPainter, software (X11)
 QGL := QtPainter, OpenGL
 QGL2 := QtPainter, OpenGL2

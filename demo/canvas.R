@@ -1,10 +1,5 @@
 ## tests/demonstrations for the interactive canvas
 
-## issues:
-## - Everything is pinkish, not red -- compositing issue?
-## - Nothing is displayed when caching is enabled
-## - Glyphs are always squares (i.e. GL_POINTS)
-
 library(qtpaint)
 
 options(warn=2)
@@ -85,7 +80,7 @@ scene <- Qt$QGraphicsScene()
 root <- qlayer(scene)
 points <- qlayer(root, scatterplot, hoverMove = pointIdentifier)
 points$setLimits(qrect(range(df[,1]), range(df[,2])))
-labels <- qlayer(root, labeler, cache = FALSE)
+labels <- qlayer(root, labeler, cache = TRUE)
 labels$setLimits(points$limits())
 ##bounds <- qlayer(NULL, boundsPainter)
 ##qaddGraphicsWidget(root, bounds, 1, 1)

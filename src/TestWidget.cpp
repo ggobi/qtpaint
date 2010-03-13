@@ -1,23 +1,43 @@
+#include <sys/time.h>
+
+#include <QFile>
+#include <QTextStream>
+#include <QCoreApplication>
+
 #include "TestWidget.hpp"
 #include "QtPainter.hpp"
 #include "OpenGLPainter.hpp"
-#include <sys/time.h>
+
+#include <qtbase.h>
 
 using namespace Qanviz;
 
+static const char * opNames[] =
+  { "Glyph", "Polygon", "Rectangle", "Point", "Line", "Segment", "Circle" };
+
+#define OUTFILE "painter.csv"
+
 #define BEGIN_TIMING gettimeofday(&before, NULL)
 #define END_TIMING   gettimeofday(&after, NULL);                        \
-  Rprintf("op: %d ogl: %d aa: %d time: %f\n", op, opengl,               \
-          painter->antialias(),                                         \
-          after.tv_sec + (float)after.tv_usec/1000000 -                 \
-          (before.tv_sec + (float)before.tv_usec/1000000))
+  stream << opNames[op] << "," << (opengl ? "opengl" : "software") << ","; \
+  stream << (painter->antialias() ? "antialiased" : "aliased") << ",";  \
+  stream << (filled ? "filled" : "open") << ",";                        \
+  stream << after.tv_sec + (float)after.tv_usec/1000000 -               \
+  (before.tv_sec + (float)before.tv_usec/1000000) << "\n"
 
-static void draw(Painter *painter, Operation op, bool opengl) {
-  int N = 300000;
+static void draw(Painter *painter, Operation op, bool opengl, bool antialias,
+                 bool filled)
+{
+  int N = 30000;
   struct timeval before, after;
   painter->setLimits(QRectF(0, 0, 100, 100));
-  painter->setHasFill(false);
+  painter->setAntialias(antialias);
+  painter->setHasFill(filled);
 
+  QFile file(OUTFILE);
+  file.open(QIODevice::Append);
+  QTextStream stream(&file);
+  
   switch(op) {
   case Glyph: {
     QPainterPath path;
@@ -117,7 +137,15 @@ static void draw(Painter *painter, Operation op, bool opengl) {
     BEGIN_TIMING;
     for (int i = 0; i < N; i++)
       painter->drawCircle(50, 50, 5);
-    END_TIMING;
+    stream << "R5"; END_TIMING;
+    BEGIN_TIMING;
+    for (int i = 0; i < N; i++)
+      painter->drawCircle(50, 50, 30);
+    stream << "R30"; END_TIMING;
+    BEGIN_TIMING;
+    for (int i = 0; i < N; i++)
+      painter->drawCircle(50, 50, 35);
+    stream << "R35"; END_TIMING;
     break;
   default:
     error("Unknown drawing operation");
@@ -126,34 +154,41 @@ static void draw(Painter *painter, Operation op, bool opengl) {
 
 void TestWidget::paintEvent(QPaintEvent *event) {
   // put test code here
-  QtPainter painter(this); // or OpenGLPainter
-  painter.setAntialias(antialias);
-  draw(&painter, operation, false);
+  QtPainter painter(this);
+  draw(&painter, operation, false, antialias, filled);
 }
 
 #ifdef QT_OPENGL_LIB
 void TestGLWidget::paintEvent(QPaintEvent *event) {
   // put test code here
   OpenGLPainter painter(this);
-  draw(&painter, operation, true);
+  draw(&painter, operation, true, antialias, filled);
 }
 #endif
 
 extern "C" {
-  SEXP qanviz_painter_test(SEXP r_op, SEXP r_opengl, SEXP r_antialias) {
+  SEXP qanviz_painter_test(SEXP r_op, SEXP r_opengl, SEXP r_antialias,
+                           SEXP r_filled)
+  {
     QWidget *test = NULL;
     bool antialias = asLogical(r_antialias);
     Operation op = (Operation)asInteger(r_op);
+    bool filled = asLogical(r_filled);
     if (asLogical(r_opengl)) {
 #ifdef QT_OPENGL_LIB
-      test = new TestGLWidget(op, antialias);
+      test = new TestGLWidget(op, antialias, filled);
 #else
       warning("No OpenGL support, skipping OpenGL benchmarks");
       return R_NilValue;
 #endif
     }
-    else test = new TestWidget(op, antialias);
+    else test = new TestWidget(op, antialias, filled);
     test->show();
+    QCoreApplication *app = QCoreApplication::instance();
+    app->processEvents();
+    test->repaint();
+    test->repaint();
+    delete test;
     return R_NilValue;
   }
 }

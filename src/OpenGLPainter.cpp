@@ -6,30 +6,24 @@
 
 using namespace Qanviz;
 
-/* Case for just using QPainter for most of this:
-   1) Line dashing: setDashes would be limited due to glLineStipple(). Yes,
-   QPainter would tesselate, but how often does one use weird lines??
-   2) Line drawing: drawing polyines and segments will not be much
-   faster here. OpenGL draws lines in a weird way, and QtPainter
-   corrects for that.
-   3) Points: probably no difference (but in Qt 4.5, there is)
-   4) Rectangles: QtPainter is a bit faster
-   5) Circles: the midpoint algorithm is a hack, but the anti-aliased
+/* Implementation of operations, here vs. QPainter:
+   
+   1) Line dashing [qpainter]: setDashes would be limited due to
+   glLineStipple(). Yes, QPainter would tesselate, but how often does
+   one use weird lines??
+   2) Line drawing [qpainter]: drawing polyines and segments will not
+   be much faster here. OpenGL draws lines in a weird way, and
+   QPainter corrects for that.
+   3) Points [here]: Qt >=4.5 is slow, use GL_POINTS fast path
+   4) Rectangles [both]: GL_QUADS optimization possible in certain cases
+   5) Circles [both]: the midpoint algorithm is a hack, but the anti-aliased
    point is a nice trick -- but most of the time we use drawGlyphs. It
-   seems QtPainter tesselates here, so we should try to optimize.
-   6) Polygons: probably same speed, except QtPainter handles concave
+   seems QPainter tesselates here, so we should try to optimize.
+   6) Polygons [qpainter]: probably same speed, except QPainter handles concave
    polygons, while we are limited to convex cases.
-   7) Text: We are already using a painter for this
-   8) Images: Probably about the same
-   9) Plot glyphs: This is our key optimization. Just override this.
-
-   It seems we could move to QtPainter, without much loss in speed,
-   except in cases like: line width > 1 and dashes, where we would be
-   faster, but uglier. Users should probably use simple lines for
-   exploratory, interactive graphics, then tweak the aesthetics for
-   presentation. QPainter would certainly help with concave polygons and
-   text. Just need to add glyph blitting as a fast path, and optimize
-   circles.
+   7) Text [qpainter]: We are already using a painter for this
+   8) Images [qpainter]: Probably about the same
+   9) Plot glyphs [here]: This is our key optimization.
  */
 
 /* Notes about OpenGL2 engine in Qt 4.6:
