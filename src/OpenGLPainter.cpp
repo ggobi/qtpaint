@@ -39,7 +39,9 @@ using namespace Qanviz;
    The obvious downside is that it is unclear whether the OpenGL 1.x
    engine will continue to be maintained and included within Qt.
 
-   Should run performance tests.
+   Should run performance tests to make sure that OpenGL2 is slower
+   when drawing lines and polygons, the cases where we count on Qt
+   being fast. Indeed, this is the case, by 20-30X.
  */
 
 void OpenGLPainter::drawPoints(double *x, double *y, int n) {
