@@ -45,6 +45,7 @@ using namespace Qanviz;
  */
 
 void OpenGLPainter::drawPoints(double *x, double *y, int n) {
+  beginCustom();
   glPushAttrib(GL_ENABLE_BIT | GL_POINT_BIT);
   if (antialias())
     glEnable(GL_POINT_SMOOTH);
@@ -52,6 +53,7 @@ void OpenGLPainter::drawPoints(double *x, double *y, int n) {
   setColor(strokeColor());  
   drawVertices(GL_POINTS, x, y, n);
   glPopAttrib();
+  endCustom();
 }
 
 // if drawing many circles of same size, use drawGlyphs
@@ -92,6 +94,7 @@ void OpenGLPainter::drawCircle(double x, double y, int r) {
     QtPainter::drawCircle(x, y, r);
   else if (has_fill && mps >= d) {
     enableTransform();
+    beginCustom();
     glEnable(GL_POINT_SMOOTH);
     setColor(brush.color());
     glPointSize(d);
@@ -99,15 +102,17 @@ void OpenGLPainter::drawCircle(double x, double y, int r) {
     glVertex2f(x, y);
     glEnd();
     glDisable(GL_POINT_SMOOTH);
-  } else if (has_pen || has_fill) { // does not antialias!
+    endCustom();
+  } else if (has_pen || has_fill) {
     enableTransform(false);
+    beginCustom();
     QPointF p = transform().map(QPointF(x, y));
     if (has_pen)
       setColor(pen.color());
     else setColor(brush.color());
     drawMidpointCircle(p.x(), p.y(), d/2, has_fill);
+    endCustom();
   }
-
 }
 
 void OpenGLPainter::drawMidpointCircle(int cx, int cy, uint r, bool fill) {
@@ -221,11 +226,13 @@ void OpenGLPainter::drawRectangles(double *x, double *y, double *w, double *h,
         v[6] = x[i]; v[7] = y[i] + h[i];
         v += 8;
       }
+      beginCustom();
       setColor(fillColor());
       glEnableClientState(GL_VERTEX_ARRAY);
       glVertexPointer(2, GL_DOUBLE, 0, vertices.data());
       glDrawArrays(GL_QUADS, 0, 4*n);
       glDisableClientState(GL_VERTEX_ARRAY);
+      endCustom();
     } else QtPainter::drawRectangles(x, y, w, h, n);
 }
 
@@ -262,7 +269,7 @@ void OpenGLPainter::drawGlyphs(const QPainterPath &path, double *x, double *y,
       if (do_stroke) setStrokeColor(Qt::white);
       if (do_fill) setFillColor(Qt::white);
       QImage glyph = rasterizeGlyph(path);
-      /*
+      /*      
       for (int i = 0; i < glyph.height(); i++)
         for (int j = 0; j < glyph.bytesPerLine()/4; j++)
           printf("%x,", glyph.pixel(j, i));
@@ -272,10 +279,6 @@ void OpenGLPainter::drawGlyphs(const QPainterPath &path, double *x, double *y,
       prepareDrawGlyphs();
       // override the env mode for modulation
       glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-      /*
-      glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
-                          GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-      */
       QVector<float> colors(n*4);
       float *tmp = colors.data();
       if (!stroke)
@@ -300,6 +303,7 @@ void OpenGLPainter::drawGlyphs(const QPainterPath &path, double *x, double *y,
 }
 
 void OpenGLPainter::prepareDrawGlyphs(void) {
+  beginCustom();
   glPushAttrib(GL_TEXTURE_BIT | GL_ENABLE_BIT | GL_POINT_BIT);
   glEnable(GL_TEXTURE_2D);
   glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
@@ -310,12 +314,14 @@ void OpenGLPainter::prepareDrawGlyphs(void) {
 }
 void OpenGLPainter::finishDrawGlyphs(void) {
   glPopAttrib();
+  endCustom();
 }
 
 void OpenGLPainter::drawSomeGlyphs(const QImage &image, double *x, double *y,
                                    int n)
 {
-  GLuint tex = context->bindTexture(image);
+  GLuint tex = context->bindTexture(image, GL_TEXTURE_2D, GL_RGBA,
+                                    QGLContext::PremultipliedAlphaBindOption);
   glPointSize(image.width());
   drawVertices(GL_POINTS, x, y, n);
   context->deleteTexture(tex);
@@ -331,6 +337,22 @@ void OpenGLPainter::drawVertices(GLenum mode, double *x, double *y, int n) {
   glEnableClientState(GL_VERTEX_ARRAY);
   glDrawArrays(mode, 0, n);
   glDisableClientState(GL_VERTEX_ARRAY);
+}
+
+void OpenGLPainter::beginCustom() {
+#if QT_VERSION >= 0x40600
+  painter->beginNativePainting();
+#endif
+  glPushAttrib(GL_ENABLE_BIT | GL_COLOR_BUFFER_BIT);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+}
+
+void OpenGLPainter::endCustom() {
+  glPopAttrib();
+#if QT_VERSION >= 0x40600
+  painter->endNativePainting();
+#endif
 }
 
 #endif

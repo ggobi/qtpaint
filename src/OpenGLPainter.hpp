@@ -15,7 +15,8 @@ namespace Qanviz {
     QGLContext *context;
     
     void setColor(QColor c) {
-      glColor4ub(c.red(), c.green(), c.blue(), c.alpha());
+      float alpha = c.alphaF();
+      glColor4f(c.redF() * alpha, c.greenF() * alpha, c.blueF() * alpha, alpha);
     }
     GLfloat maxPointSize() {
       GLfloat p[2];
@@ -33,6 +34,9 @@ namespace Qanviz {
         painter->restore();
       }
     }
+
+    void beginCustom();
+    void endCustom();
     
   public:
 
