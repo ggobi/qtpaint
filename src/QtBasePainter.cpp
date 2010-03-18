@@ -97,11 +97,14 @@ void QtBasePainter::setMiterLimit(double limit) {
 QImage QtBasePainter::rasterizeGlyph(const QPainterPath &path) {
   QRectF bounds = path.boundingRect();
   double size = glyphSize();
-  QImage image(bounds.width()*size+2, bounds.height()*size+2,
+  int lw = lineWidth() - 1;
+  if (lw < 0) lw = 0;
+  QImage image(bounds.width()*size + 2 + lw, bounds.height()*size + 2 + lw,
                QImage::Format_ARGB32_Premultiplied);
   image.fill(0);
   QPainter imagePainter(&image);
-  imagePainter.translate(-bounds.x() + 1, -bounds.y() + 1);  
+  int boundsAdj = lw / 2.0 + 1.5;
+  imagePainter.translate(-bounds.x() + boundsAdj, -bounds.y() + boundsAdj);  
   imagePainter.scale(size, size);
   // all glyphs are antialiased
   imagePainter.setRenderHint(QPainter::Antialiasing);
