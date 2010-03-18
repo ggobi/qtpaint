@@ -25,9 +25,13 @@ void Layer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     // caching, try FBO
     // if we have direct rendering and FBO support, make use of
     // FBO, but this could still just be in software
-    // FIXME: perhaps have a method for setting a hint?
+
+    // NOTE: In Qt 4.6, 'painter' would already target an FBO, if we
+    // were using the 'OpenGL2' paint engine. We have decided to stick
+    // with the original engine for now, as the OpenGL2 engine relies
+    // heavily on shaders, which is slow for our use case.
     
-    // FIXME: apparently, we must use the QGLContext associated with
+    // Apparently, we must use the QGLContext associated with
     // the view being painted. Thus, PlotView tracks whether it is
     // inside a paintEvent, so we can get the current QGLWidget.
     OverlayScene *overlayScene = qobject_cast<OverlayScene *>(scene());
@@ -54,11 +58,10 @@ void Layer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 #else
       fbo = new QGLFramebufferObject(size);
 #endif
-      // clear the FBO, necessary on at least some Macs
+      // clear the FBO
       fboPainter = new QPainter(fbo);
       fboPainter->setCompositionMode(QPainter::CompositionMode_Source);
-      fboPainter->fillRect(0, 0, size.width(), size.height(),
-                           QColor(0, 0, 0, 0));
+      fboPainter->fillRect(0, 0, size.width(), size.height(), Qt::transparent);
       fboPainter->setCompositionMode(QPainter::CompositionMode_SourceOver);
       qvpainter = new OpenGLPainter(fboPainter, context);
       qvpainter->setTransform(painter->worldTransform());
@@ -76,8 +79,15 @@ void Layer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 #ifdef QT_OPENGL_LIB
   if (fbo) { // silliness: download to image, only to upload to texture
     painter->setWorldMatrixEnabled(false);
+    // need to tell Qt that 'fboImage' is actually premultiplied
+    QImage fboImage = fbo->toImage();
+    const uchar *data = fboImage.bits(); // no deep copy
+    QImage premultImage = QImage(data,
+                                 fboImage.width(),
+                                 fboImage.height(),
+                                 QImage::Format_ARGB32_Premultiplied);
     // Not sure why this can't be (0, 0)...
-    painter->drawImage(QPointF(1, -1), fbo->toImage());
+    painter->drawImage(QPointF(1, -1), premultImage);
     delete fboPainter;
     delete fbo;
   }
