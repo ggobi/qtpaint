@@ -320,8 +320,12 @@ void OpenGLPainter::finishDrawGlyphs(void) {
 void OpenGLPainter::drawSomeGlyphs(const QImage &image, double *x, double *y,
                                    int n)
 {
-  GLuint tex = context->bindTexture(image, GL_TEXTURE_2D, GL_RGBA,
-                                    QGLContext::PremultipliedAlphaBindOption);
+  GLuint tex = context->bindTexture(image
+#if QT_VERSION >= 0x40600
+                                    , GL_TEXTURE_2D, GL_RGBA,
+                                    QGLContext::PremultipliedAlphaBindOption
+#endif
+                                    );
   glPointSize(image.width());
   drawVertices(GL_POINTS, x, y, n);
   context->deleteTexture(tex);
