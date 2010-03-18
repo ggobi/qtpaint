@@ -11,8 +11,9 @@ importFrom(qtbase, Qt)
 export(Qt)
 
 ## simple constructors from qtbase
-importFrom(qtbase, qrect, qpoint, qsize, qcolor, qfont, qtransform)
-export(qrect, qpoint, qsize, qcolor, qfont, qtransform)
+importFrom(qtbase, qrect, qpoint, qsize, qcolor, qfont, qtransform, qbrush,
+           qpen)
+export(qrect, qpoint, qsize, qcolor, qfont, qtransform, qbrush, qpen)
 
 ## the Painter API
 export("qantialias<-",
