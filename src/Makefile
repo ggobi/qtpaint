@@ -7,6 +7,7 @@ all:
 	cmake ../kdebindings \
 	      -DCMAKE_INSTALL_PREFIX=../inst/local -DQTBASE_DIR=$(QTBASE_DIR) \
 	      -DR_INCLUDE_DIR=$(R_INCLUDE_DIR); \
+	DYLD_LIBRARY_PATH=${QTBASE_DIR}/local/lib \
 	LD_LIBRARY_PATH=${QTBASE_DIR}/local/lib make install
 	cd ../src-build; \
 	cmake ../src \
