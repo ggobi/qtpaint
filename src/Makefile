@@ -15,7 +15,7 @@ all:
 	      -DR_LIBRARIES="${LIBR}" \
 	      -DR_INCLUDES=${R_INCLUDE_DIR} \
 	      -DQTBASE_DIR=${QTBASE_DIR}; \
-	make install
+	make install VERBOSE=1
 
 clean:
 	rm -rf ../kdebindings-build
