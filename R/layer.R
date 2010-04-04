@@ -12,7 +12,7 @@ qlayer <- function(parent = NULL, paintFun = NULL, keyPressFun = NULL,
                    dragEnterEvent = NULL, dragLeaveEvent = NULL,
                    dragMoveEvent = NULL, dropEvent = NULL,
                    focusInEvent = NULL, focusOutEvent = NULL,
-                   sizeHintFun = NULL,
+                   sizeHintFun = NULL, limits = qrect(),
                    geometry = qrect(0, 0, 600, 400), clip = TRUE, cache = TRUE)
 {
   p <- NULL
@@ -44,6 +44,7 @@ qlayer <- function(parent = NULL, paintFun = NULL, keyPressFun = NULL,
     parent$addItem(layer)
   else if (!is.null(parent)) stop("Unsupported parent type")
   layer$geometry <- geometry
+  layer$setLimits(limits)
   layer$setFlag(Qt$QGraphicsItem$ItemClipsToShape, clip)
   if (!cache)
     layer$setCacheMode(Qt$QGraphicsItem$NoCache)
@@ -68,3 +69,21 @@ qlayer <- function(parent = NULL, paintFun = NULL, keyPressFun = NULL,
 {
   x$layout()$itemAt(i, j)
 }
+
+## wrappers that could be added by anyone interested in maintaining them:
+
+## qlimits <- function(x) x$limits()
+## "qlimits<-" <- function(x, limits) x$setLimits(limits)
+## qaddLayer <- function(x, child) x$addLayer(child)
+## qdeviceTransform: layer$deviceTransform(event)
+## q(row,col)Stretch[<-]: layer$layout()$(row,col)[Set]Stretch()
+## q(h,v)Spacing[<-]: layer$layout()$setHorizontal(Vertical)Spacing()
+## qbackgroundBrush[<-]: scene$backgroundBrush <- brush
+## qclearSelection: layer$clearSelection()
+## qzValue[<-]: layer$setZValue()
+## qprimitives: layer$primitives()
+## qminimumSize[<-]: layer$setMinimumSize()
+## qcacheMode[<-]: layer$setCacheMode()
+## qclip[<-]: layer$setClip()
+## qfocus[<-]: layer$setFocus()
+## qoverlayScene: layer$overlayScene()

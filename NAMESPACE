@@ -41,7 +41,7 @@ export("qantialias<-",
        )
 
 ## convenience constructors
-export(qlayer, qplotView)
+export(qlayer, qplotView, qscene)
 
 ## glyph generators
 export(qglyphCircle, qglyphSquare, qglyphTriangle, qglyphText)
@@ -49,9 +49,11 @@ export(qglyphCircle, qglyphSquare, qglyphTriangle, qglyphText)
 ## some transformation conveniences
 export(qmap, qflipY)
 
-## other wrappers
+## layer wrappers
 S3method("[<-", "Qanviz::Layer")
 S3method("[", "Qanviz::Layer")
+
+## other wrappers
 S3method(dim, QGraphicsView)
 
 export(qupdate)

@@ -1,3 +1,7 @@
+## convenience wrapper for constructor
+
+qscene <- function(parent = NULL) Qt$QGraphicsScene(parent)
+
 ## vectorized scene manipulation functions from qtgui
 
 qscene.points <- function(s, x, y, radius = 1)
