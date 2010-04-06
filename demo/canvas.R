@@ -19,6 +19,8 @@ df <- data.frame(X = x, Y = y)
 ##df <- iris
 
 fill <- col2rgb(rgb(1, seq(0, 1, length=nrow(df)), 0, 0.5), TRUE)
+##fill <- col2rgb(rgb(1, 0, 0, 0.5), TRUE)
+##fill <- rep("red", nrow(df))
 scatterplot <- function(item, painter) {
   qstrokeColor(painter) <- NA
   qfillColor(painter) <- fill
@@ -75,13 +77,13 @@ boundsPainter <- function(item, painter) {
   qdrawRect(painter, lims[1,1], lims[1,2], lims[2,1], lims[2,2])
 }
 
-scene <- Qt$QGraphicsScene()
+scene <- qscene()
 ##qbackground(scene) <- "black"
 root <- qlayer(scene)
-points <- qlayer(root, scatterplot, hoverMove = pointIdentifier)
-points$setLimits(qrect(range(df[,1]), range(df[,2])))
-labels <- qlayer(root, labeler, cache = TRUE)
-labels$setLimits(points$limits())
+lims <- qrect(range(df[,1]), range(df[,2]))
+points <- qlayer(root, scatterplot, hoverMove = pointIdentifier, cache = TRUE,
+                 limits = lims)
+labels <- qlayer(root, labeler, cache = FALSE, limits = lims)
 ##bounds <- qlayer(NULL, boundsPainter)
 ##qaddGraphicsWidget(root, bounds, 1, 1)
 view <- qplotView(scene = scene, opengl = TRUE)
