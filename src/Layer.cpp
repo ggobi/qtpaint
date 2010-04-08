@@ -50,15 +50,11 @@ void Layer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
       QGLContext *context = const_cast<QGLContext *>(qglWidget->context());
       qglWidget->makeCurrent();
       // NOTE: need Qt 4.6 for antialiasing to work with FBOs
-#if QT_VERSION >= 0x40600
+#if false
       QGLFramebufferObjectFormat fboFormat;
       fboFormat.setAttachment(QGLFramebufferObject::CombinedDepthStencil);
       fboFormat.setSamples(4); // 4X antialiasing should be enough?
       fbo = new QGLFramebufferObject(size, fboFormat);
-      if (fbo->format().attachment() == QGLFramebufferObject::Depth) {
-        delete fbo; // if we only get a depth attachment, drop it
-        fbo = new QGLFramebufferObject(size);
-      }
 #else
       fbo = new QGLFramebufferObject(size);
 #endif
