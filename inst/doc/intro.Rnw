@@ -1,0 +1,47 @@
+% \VignetteIndexEntry{Introduction to qtpaint}
+% \VignetteDepends{qtbase}
+% \VignetteKeywords{graphics}
+% \VignettePackage{qtpaint}
+\documentclass[10pt]{article}
+
+\usepackage{times}
+\usepackage{hyperref}
+
+\textwidth=6.5in
+\textheight=8.5in
+% \parskip=.3cm
+\oddsidemargin=-.1in
+\evensidemargin=-.1in
+\headheight=-.3in
+
+\newcommand{\Rfunction}[1]{{\texttt{#1}}}
+\newcommand{\Robject}[1]{{\texttt{#1}}}
+\newcommand{\Rpackage}[1]{{\textbf{#1}}}
+\newcommand{\Rmethod}[1]{{\texttt{#1}}}
+\newcommand{\Rfunarg}[1]{{\texttt{#1}}}
+\newcommand{\Rclass}[1]{{\textit{#1}}}
+\newcommand{\Rcode}[1]{{\texttt{#1}}}
+
+\newcommand{\software}[1]{\textsf{#1}}
+\newcommand{\R}{\software{R}}
+\newcommand{\qtpaint}{\Rpackage{qtpaint}}
+
+\title{An Introduction to \qtpaint{}}
+\author{Michael Lawrence}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+<<options,echo=FALSE>>=
+options(width=72)
+@
+
+\section{Overview}
+
+\section{Drawing}
+
+\section{Event Handling}
+
+\end{document}
