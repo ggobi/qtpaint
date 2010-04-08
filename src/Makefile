@@ -12,10 +12,10 @@ all:
 	cd ../src-build; \
 	cmake ../src \
 	      -DCMAKE_INSTALL_PREFIX=../src \
-	      -DR_LIBRARIES="${LIBR}" \
+	      -DR_LIBRARIES="${SHLIB_CXXLDFLAGS} ${LIBR}" \
 	      -DR_INCLUDES=${R_INCLUDE_DIR} \
 	      -DQTBASE_DIR=${QTBASE_DIR}; \
-	make install VERBOSE=1
+	make install
 
 clean:
 	rm -rf ../kdebindings-build
