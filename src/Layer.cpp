@@ -2,12 +2,15 @@
 #include <QGraphicsGridLayout>
 #include <QGraphicsSceneEvent>
 
+#define GL_GLEXT_PROTOTYPES 1
 #include "OpenGLPainter.hpp"
 #include "ScenePainter.hpp"
 #include "Layer.hpp"
 #include "PlotView.hpp"
 
 using namespace Qanviz;
+
+static bool fboDepthStencilFailed = false;
 
 void Layer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                   QWidget *widget)
@@ -50,14 +53,23 @@ void Layer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
       QGLContext *context = const_cast<QGLContext *>(qglWidget->context());
       qglWidget->makeCurrent();
       // NOTE: need Qt 4.6 for antialiasing to work with FBOs
-#if false
-      QGLFramebufferObjectFormat fboFormat;
-      fboFormat.setAttachment(QGLFramebufferObject::CombinedDepthStencil);
-      fboFormat.setSamples(4); // 4X antialiasing should be enough?
-      fbo = new QGLFramebufferObject(size, fboFormat);
-#else
-      fbo = new QGLFramebufferObject(size);
+#if QT_VERSION >= 0x40600
+      if (!fboDepthStencilFailed) { // only fail once
+        QGLFramebufferObjectFormat fboFormat;
+        fboFormat.setAttachment(QGLFramebufferObject::CombinedDepthStencil);
+        fboFormat.setSamples(4); // 4X antialiasing should be enough?
+        fbo = new QGLFramebufferObject(size, fboFormat);
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        {
+          qDebug("FBO incomplete, antialiased drawing to cache disabled");
+          fboDepthStencilFailed = true;
+          delete fbo;
+          fbo = NULL;
+        }
+      }
 #endif
+      if (!fbo)
+        fbo = new QGLFramebufferObject(size);
       // clear the FBO
       fboPainter = new QPainter(fbo);
       fboPainter->setCompositionMode(QPainter::CompositionMode_Source);
