@@ -59,7 +59,8 @@ void Layer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
         fboFormat.setAttachment(QGLFramebufferObject::CombinedDepthStencil);
         fboFormat.setSamples(4); // 4X antialiasing should be enough?
         fbo = new QGLFramebufferObject(size, fboFormat);
-        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        if (glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT) !=
+            GL_FRAMEBUFFER_COMPLETE_EXT)
         {
           qDebug("FBO incomplete, antialiased drawing to cache disabled");
           fboDepthStencilFailed = true;
