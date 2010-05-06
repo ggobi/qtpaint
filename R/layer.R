@@ -13,6 +13,7 @@ qlayer <- function(parent = NULL, paintFun = NULL, keyPressFun = NULL,
                    dragMoveEvent = NULL, dropEvent = NULL,
                    focusInEvent = NULL, focusOutEvent = NULL,
                    sizeHintFun = NULL, limits = qrect(),
+                   row = 0L, col = 0L, rowSpan = 1L, colSpan = 1L,
                    geometry = qrect(0, 0, 600, 400), clip = TRUE, cache = TRUE)
 {
   p <- NULL
@@ -39,7 +40,7 @@ qlayer <- function(parent = NULL, paintFun = NULL, keyPressFun = NULL,
                  .normArgCallback(focusOutEvent),               
                  .normArgCallback(sizeHintFun), PACKAGE="qtpaint")
   if (inherits(parent, "Qanviz::Layer")) {
-    parent$addLayer(layer, 0, 0, 1, 1)
+    parent$addLayer(layer, row, col, rowSpan, colSpan)
   } else if (inherits(parent, "QGraphicsScene"))
     parent$addItem(layer)
   else if (!is.null(parent)) stop("Unsupported parent type")
