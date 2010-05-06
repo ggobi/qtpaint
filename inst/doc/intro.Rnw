@@ -59,8 +59,8 @@ interface to the \Qt{} library.
 An interactive graphic is defined by two types of logic: drawing and
 handling user input. The latter is handled reasonably well by \R{}
 graphics devices, though this is more true of some than
-others. Another caveat is that handling user events is difficult for
-graphics drawn through the \Rpackage{grid} package, upon which
+others. Despite this, handling user events is difficult for graphics
+drawn through the \Rpackage{grid} package, upon which
 \Rpackage{ggplot2} and \Rpackage{lattice} are
 based. \Rpackage{qtpaint} responds to a comprehensive set of input
 events, from low-level mouse movement to high-level drag and drop
@@ -70,13 +70,15 @@ mapping event coordinates back to graphical primitives and the data.
 However, the key contribution of \qtpaint{} is drawing. The base \R{}
 graphics system is inflexible and suffers from poor performance. While
 more flexible drawing is possible with \Rpackage{grid}, it is even
-slower. The \qtpaint{} strategy for fast graphics may be explained
-through a physical analogy. If a person wishes to move from point A to
-point B, the time to reach point B depends on the speed of the person
-along the route and on the length of the route. Increasing the speed
-of the person or decreasing the length of the route will result in a
-shorter time. For drawing, this translates to moving pixels to the
-screen faster and decreasing the number of pixels that must be drawn.
+slower. \qtpaint{} preserves the flexible grid-based layout mechanism
+of \Rpackage{grid}, while maximizing performance. The \qtpaint{}
+strategy for fast graphics may be explained through a physical
+analogy. If a person wishes to move from point A to point B, the time
+to reach point B depends on the speed of the person along the route
+and on the length of the route. Increasing the speed of the person or
+decreasing the length of the route will result in a shorter time. For
+drawing, this translates to moving pixels to the screen faster and
+decreasing the number of pixels that must be drawn.
 
 This draw-less-faster approach is achieved by the following techniques:
 \begin{itemize}
@@ -111,15 +113,16 @@ flexible as in \R.
 
 In \qtpaint, layers draw everything and handle all input events. A
 layer is represented by an instance of the C++ \Rclass{Qanviz::Layer}
-class, which descends from the \Qt \Rclass{QGraphicsItem} class. It is
-possible to draw directly to the scene, but, by default, \qtpaint{}
-asks \Qt{} to cache the drawing at the pixel level. The default cache
-mode is at the device, so that if the device dimensions change, the
-layer must be redrawn. An alternative mode will scale the cached image
-to fit the device, but this is not generally recommended as it results
-in poor quality. One possible use-case would be to smoothly animate
-transitions through rasterized scaling, leaving the redraw until after
-the transition is finished (like Google Maps).
+class, which descends from the \Qt \Rclass{QGraphicsItem} class. 
+
+It is possible to draw directly to the scene, but, by default,
+\qtpaint{} asks \Qt{} to cache the drawing at the pixel level. The
+default cache mode is at the device, so that if the device dimensions
+change, the layer must be redrawn. An alternative mode will scale the
+cached image to fit the device, but this is not generally recommended
+as it results in poor quality. One possible use-case would be to
+smoothly animate transitions through rasterized scaling, leaving the
+redraw until after the transition is finished (like Google Maps).
 
 The rationale behind caching pixels, rather than a logical
 representation, such as a vector path or display list, as in \R, is
@@ -344,6 +347,44 @@ coordinates. Vectorized mapping of data points through the
 \Rclass{QTransform} can be queried, modified, inverted, etc, using the
 \Rpackage{qtbase} package; see the \Qt{} documentation for more
 details.
+
+\subsection{Layout}
+\label{sec:layout}
+
+In the previous section, we demonstrated a simple scatterplot, without
+axes or other plot decorations. Such simplicity often works well for
+exploring data through interactive graphics. However, for
+presentation, decorations and guides become a necessity. Such complex
+plots consist of multiple components, almost always laid out on a
+grid, as supported by the \Rpackage{grid} package. The layout strategy
+in \qtpaint{} is also grid-based, leveraging the
+\Rclass{QGraphicsGridLayout} class. 
+
+The simplest way to construct a layout is to create a root layer for
+the entire figure, and then add child layers with the
+\Rfunction{qlayer} function, which takes the zero-based row and column grid
+coordinates as arguments. We create a plot with a title, $X$ axis, $Y$
+axis and plotting area:
+<<complex-plot,eval=FALSE>>=
+scene <- qgraphicsScene()
+figLayer <- qlayer(scene)
+titleLayer <- qlayer(figLayer, titlePainter, rowSpan = 2)
+yaxis <- qlayer(figLayer, yAxisPainter, row = 1)
+plotLayer <- qlayer(figLayer, plotPainter, row = 1, col = 1)
+xaxis <- qlayer(figLayer, xAxisPainter, row = 2, col = 1)
+@ 
+We skip implementation of the paint callback functions above, as we
+are only illustrating the configuration of the layout. The
+\Rfunarg{row} and \Rfunarg{col} arguments specify the zero-based row
+and column coordinates, respectively, with the origin at the top-left
+of the parent. They default to zero. The \Rfunarg{rowSpan} and
+\Rfunarg{colSpan} arguments default to one and indicate how many rows
+or columns are spanned by the layer, where \Rfunarg{row} and
+\Rfunarg{col} represent the top-left coordinate of the rectangle.
+
+To change the layout dynamically, one should manipulate the layout
+object directly. The \Rfunarg{layout} method on \Rclass{Layer} returns
+the layout instance. See the \Qt{} documentation for more details.
 
 \subsection{Performance Tips}
 
