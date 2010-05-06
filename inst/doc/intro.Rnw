@@ -365,7 +365,7 @@ the entire figure, and then add child layers with the
 \Rfunction{qlayer} function, which takes the zero-based row and column grid
 coordinates as arguments. We create a plot with a title, $X$ axis, $Y$
 axis and plotting area:
-<<complex-plot,eval=FALSE>>=
+<<layout-layers,eval=FALSE>>=
 scene <- qgraphicsScene()
 figLayer <- qlayer(scene)
 titleLayer <- qlayer(figLayer, titlePainter, rowSpan = 2)
@@ -382,9 +382,33 @@ of the parent. They default to zero. The \Rfunarg{rowSpan} and
 or columns are spanned by the layer, where \Rfunarg{row} and
 \Rfunarg{col} represent the top-left coordinate of the rectangle.
 
-To change the layout dynamically, one should manipulate the layout
-object directly. The \Rfunarg{layout} method on \Rclass{Layer} returns
-the layout instance. See the \Qt{} documentation for more details.
+We are now half-way to having a reasonable layout for our figure. The
+second step is to configure the sizing of each row and column in the
+grid. Quite often, we want most components to remain the same size,
+even if the size of the view increases. Only the plot area should
+scale with the view. To achieve this, we need to set the row and
+column stretch parameters on the layout object:
+<<layout-stretch-factor>>=
+layout <- figLayer$layout()
+layout$setRowStretchFactor(0, 0)
+layout$setRowStretchFactor(2, 0)
+layout$setColumnStretchFactor(0, 0)
+@ 
+The stretch factor indicates the proportion of the newly available
+space that should be allocated to the row or column relative to the
+others. For example, if a column has a stretch factor of two, then it
+will receive twice as much of the available space compared to a column
+with a factor of one. As one might expect, a stretch factor of zero
+prevents the layout from expanding the row or column when more space
+becomes available. The default stretch factor is one.
+
+There is an important caveat when overlaying/stacking layers (a useful
+technique for efficient dynamic graphics). Stacking requires multiple
+layers to coexist with the same grid cell of the layout. This only
+works for layers with a single cell, and even then \Qt{} will emit an
+annoying error message (but everything still works, apparently). Thus,
+stacking layers in a multi-cell layout will require some creative
+nesting of layers. 
 
 \subsection{Performance Tips}
 
