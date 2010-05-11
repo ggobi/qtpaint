@@ -70,15 +70,17 @@ mapping event coordinates back to graphical primitives and the data.
 However, the key contribution of \qtpaint{} is drawing. The base \R{}
 graphics system is inflexible and suffers from poor performance. While
 more flexible drawing is possible with \Rpackage{grid}, it is even
-slower. \qtpaint{} preserves the flexible grid-based layout mechanism
-of \Rpackage{grid}, while maximizing performance. The \qtpaint{}
-strategy for fast graphics may be explained through a physical
-analogy. If a person wishes to move from point A to point B, the time
-to reach point B depends on the speed of the person along the route
-and on the length of the route. Increasing the speed of the person or
-decreasing the length of the route will result in a shorter time. For
-drawing, this translates to moving pixels to the screen faster and
-decreasing the number of pixels that must be drawn.
+slower, as it is bound to the same underlying graphics
+engine. \qtpaint{} preserves the flexible grid-based layout mechanism
+of \Rpackage{grid}, while delegating to a highly optimized
+graphics engine. The \qtpaint{} strategy for fast graphics may be
+explained through a physical analogy. If a person wishes to move from
+point A to point B, the time to reach point B depends on the speed of
+the person along the route and on the length of the route. Increasing
+the speed of the person or decreasing the length of the route will
+result in a shorter time. For drawing, this translates to moving
+pixels to the screen faster and decreasing the number of pixels that
+must be drawn.
 
 This draw-less-faster approach is achieved by the following techniques:
 \begin{itemize}
@@ -356,15 +358,24 @@ axes or other plot decorations. Such simplicity often works well for
 exploring data through interactive graphics. However, for
 presentation, decorations and guides become a necessity. Such complex
 plots consist of multiple components, almost always laid out on a
-grid, as supported by the \Rpackage{grid} package. The layout strategy
-in \qtpaint{} is also grid-based, leveraging the
-\Rclass{QGraphicsGridLayout} class. 
+grid, as supported by the \Rpackage{grid} package. 
 
-The simplest way to construct a layout is to create a root layer for
-the entire figure, and then add child layers with the
-\Rfunction{qlayer} function, which takes the zero-based row and column grid
-coordinates as arguments. We create a plot with a title, $X$ axis, $Y$
-axis and plotting area:
+The layout strategy in \qtpaint{} is also grid-based, and is managed
+by an instance of the \Rclass{QGraphicsGridLayout} class, not the
+\Rclass{Layer} itself. The layout object defines the bounds of each
+layer in scene (or ``figure'') coordinates. These bounds are called
+the \textit{geometry} of the layer. Since the layout controls the
+geometry of its child layers, it really only makes sense for the user
+to set the geometry of the root layer. Normally, the root layer
+geometry defines the extents of the scene, which, by default, matches
+the extents, in pixels, of the view widget.
+
+Specifying a layout requires three steps. The first is to add each
+component layer to a grid cell of the root layer, which contains the
+entire figure. We add child layers to the root layer upon their
+construction.  The \Rfunction{qlayer} constructor takes the zero-based
+row and column grid coordinates as arguments. We create a plot with a
+title, $X$ axis, $Y$ axis and plotting area:
 <<layout-layers,eval=FALSE>>=
 scene <- qgraphicsScene()
 figLayer <- qlayer(scene)
@@ -382,14 +393,43 @@ of the parent. They default to zero. The \Rfunarg{rowSpan} and
 or columns are spanned by the layer, where \Rfunarg{row} and
 \Rfunarg{col} represent the top-left coordinate of the rectangle.
 
-We are now half-way to having a reasonable layout for our figure. The
-second step is to configure the sizing of each row and column in the
-grid. Quite often, we want most components to remain the same size,
-even if the size of the view increases. Only the plot area should
-scale with the view. To achieve this, we need to set the row and
-column stretch parameters on the layout object:
-<<layout-stretch-factor>>=
+The second step of layout specification is telling the layout object
+our preferred (default) height and width (in scene units) for
+each row and column, respectively:
+<<layout-preferred-dims>>=
 layout <- figLayer$layout()
+layout$setRowPreferredHeight(0, 75)
+layout$setRowPreferredHeight(1, 400)
+layout$setRowPreferredHeight(2, 75)
+layout$setColumnPreferredWidth(0, 75)
+layout$setColumnPreferredWidth(1, 600)
+@ 
+It is also possible to set the maximum and mininum heights and widths
+by simply replacing \texttt{Preferred} with \texttt{Maximum} or
+\texttt{Minimum} in the calls above.
+
+An alternative to the above is to allow the layout object to derive
+the row heights and column widths automatically from the size requests
+of the layers. The layout will attempt to satisfy the preferred width
+and height of every layer (set with the
+\Rfunction{setPreferredWidth/Height/Size} methods). However, such
+requests may not be fulfilled, as the layout is given a finite amount
+of space to distribute to the layers. This is a problem, for example,
+if a layer is displaying text. The size of the text (calculated using
+\Rfunction{qtextExtents}) depends on the font parameters and thus is
+not controlled by the layout.  The solution is to set a minimum size
+on the layer (with the \Rfunction{setMinimumWidth/Height/Size}
+methods). To satisfy the minimum size of every layer, the layout will
+request the necessary space from its parent. This request will be
+satisfied unless a maximum size constraint is violated.
+
+We are now two thirds of the way to having a reasonable layout for our
+figure. The final step is to configure the resizing behavior of each
+row and column in the grid. Quite often, we want most components to
+remain the same size, even if the size of the view increases. Only the
+plot area should scale with the view. To achieve this, we need to set
+the row and column stretch parameters on the layout object:
+<<layout-stretch-factor>>=
 layout$setRowStretchFactor(0, 0)
 layout$setRowStretchFactor(2, 0)
 layout$setColumnStretchFactor(0, 0)
