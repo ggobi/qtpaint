@@ -82,7 +82,7 @@ qlayer <- function(parent = NULL, paintFun = NULL, keyPressFun = NULL,
 ## qbackgroundBrush[<-]: scene$backgroundBrush <- brush
 ## qclearSelection: layer$clearSelection()
 ## qzValue[<-]: layer$setZValue()
-## qprimitives: layer$primitives()
+## qlocate: layer$locate()
 ## qminimumSize[<-]: layer$setMinimumSize()
 ## qcacheMode[<-]: layer$setCacheMode()
 ## qclip[<-]: layer$setClip()

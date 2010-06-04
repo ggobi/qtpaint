@@ -560,11 +560,24 @@ pointBrusher <- function(layer, event) {
   rect <- mat$mapRect(rect) # 20x20 square now in data space
   pos <- event$pos()
   rect$moveCenter(pos) # centered on the pointer data pos
-  hits <- layer$primitives(rect) # get indices in rectangle
+  hits <- layer$locate(rect) # get indices in rectangle
   df$color[hits] <- "blue" # color points blue
   qupdate(scene)
 }
-@ 
+@
+
+The \Rfunction{locate} method returns the position in the drawing
+order for each graphical primitive located within the given region. In
+Oour case, we simply draw points in the same order as the data, so it
+is easy to index into our dataset. Behind the scenes, an efficient
+spatial data structure is constructed the first time
+\Rfunction{locate} is called. This structure is cached so that it need
+not be rebuilt for each invocation of \Rfunction{locate}. If the any
+of the graphical primitives change their position in layer
+coordinates, the cache will need to be invalidated, so that a new
+spatial index is created. This is the purpose of the
+\Rfunction{invalidateIndex} method.
+
 The next step would be to pass the callback as the
 \Rfunarg{hoverMoveEvent} argument to the \Rfunction{qlayer}
 constructor. We are thus well on our way towards implementing highly

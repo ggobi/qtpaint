@@ -8,8 +8,8 @@ options(error=recover)
 circle <- qglyphCircle()
 
 n <- 1000
-x <- rnorm(n, 50, 25)
-y <- rnorm(n, 50, 25)
+x <- rnorm(n) #, 50, 25)
+y <- rnorm(n) #, 50, 25)
 df <- data.frame(X = x, Y = y)
 
 ##data(mtcars)
@@ -63,7 +63,7 @@ pointIdentifier <- function(item, event) {
   rect <- mat$mapRect(rect)
   pos <- event$pos()
   rect$moveCenter(pos)
-  hits <- item$primitives(rect)
+  hits <- item$locate(rect)
   hitmat <- as.matrix(df[hits,])
   posmat <- matrix(pos, ncol=2)
   labeled <<- rep(FALSE, nrow(df))

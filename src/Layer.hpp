@@ -88,13 +88,13 @@ namespace Qanviz {
     void ensureIndex();
     void invalidateIndex();
     
-    QVector<int> primitives(const QPointF & pos)
+    QVector<int> locate(const QPointF & pos)
     {
       ensureIndex();
       return itemIndices(indexScene->items(pos));
     }
     
-    QVector<int> primitives(const QRectF & rectangle,
+    QVector<int> locate(const QRectF & rectangle,
                             Qt::ItemSelectionMode mode =
                             Qt::IntersectsItemShape)
     {
@@ -103,7 +103,7 @@ namespace Qanviz {
     }
 
     
-    QVector<int> primitives(const QPolygonF & polygon,
+    QVector<int> locate(const QPolygonF & polygon,
                             Qt::ItemSelectionMode mode =
                             Qt::IntersectsItemShape)
     {
@@ -111,7 +111,7 @@ namespace Qanviz {
       return itemIndices(indexScene->items(polygon, mode));
     }
     
-    QVector<int> primitives(const QPainterPath & path,
+    QVector<int> locate(const QPainterPath & path,
                             Qt::ItemSelectionMode mode =
                             Qt::IntersectsItemShape)
     {
