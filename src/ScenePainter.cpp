@@ -106,8 +106,11 @@ void ScenePainter::drawRectangles(double *x, double *y, double *w, double *h,
 }
 
 void ScenePainter::drawCircle(double x, double y, int r) {
-  if (indexMode()) r = 0;
-  QRectF rect = QRectF(-r, -r, 2*r, 2*r);
+  QRectF rect;
+  if (indexMode()) {
+    float minFloat = std::numeric_limits<float>::min();
+    rect = QRectF(0, 0, minFloat, minFloat);
+  } else rect = QRectF(-r, -r, 2*r, 2*r);
   QGraphicsItem *item = STORE_INDEX(_scene->addEllipse(rect, pen(), brush()));
   item->setFlag(QGraphicsItem::ItemIgnoresTransformations);
   item->setPos(transform().map(QPointF(x, y)));

@@ -141,17 +141,17 @@ void QtBasePainter::drawGlyphs(const QPainterPath &path, double *x, double *y,
       bool changed = false;
       if (stroke && stroke[i] != prevStroke) {
         setStrokeColor(stroke[i-1]);                              
-        prevStroke = stroke[i-1];
+        prevStroke = stroke[i];
         changed = true;
       }
       if (fill && fill[i] != prevFill) {
         setFillColor(fill[i-1]);
-        prevFill = fill[i-1];
+        prevFill = fill[i];
         changed = true;
       }
       if (size && size[i] != prevSize) {
         setGlyphSize(size[i-1]);
-        prevSize = size[i-1];
+        prevSize = size[i];
         changed = true;
       }
       if (changed) {
