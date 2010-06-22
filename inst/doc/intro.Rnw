@@ -396,7 +396,7 @@ or columns are spanned by the layer, where \Rfunarg{row} and
 The second step of layout specification is telling the layout object
 our preferred (default) height and width (in scene units) for
 each row and column, respectively:
-<<layout-preferred-dims>>=
+<<layout-preferred-dims,eval=FALSE>>=
 layout <- figLayer$layout()
 layout$setRowPreferredHeight(0, 75)
 layout$setRowPreferredHeight(1, 400)
@@ -429,7 +429,7 @@ row and column in the grid. Quite often, we want most components to
 remain the same size, even if the size of the view increases. Only the
 plot area should scale with the view. To achieve this, we need to set
 the row and column stretch parameters on the layout object:
-<<layout-stretch-factor>>=
+<<layout-stretch-factor,eval=FALSE>>=
 layout$setRowStretchFactor(0, 0)
 layout$setRowStretchFactor(2, 0)
 layout$setColumnStretchFactor(0, 0)
