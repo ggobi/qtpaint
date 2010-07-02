@@ -57,6 +57,9 @@ RLayer::RLayer(QGraphicsItem *parent,
   if (length(FORMALS(paintEvent)) > 2) // user requests exposed rect
     setFlag(QGraphicsItem::ItemUsesExtendedStyleOption);
 #endif
+  if (mousePressEvent == R_NilValue && mouseMoveEvent == R_NilValue &&
+      mouseReleaseEvent == R_NilValue && mouseDoubleClickEvent == R_NilValue)
+    setAcceptedMouseButtons(0);
   /* preserve every callback */
   PRESERVE_CALLBACK(paintEvent);
   PRESERVE_CALLBACK(keyPressEvent);
@@ -147,11 +150,15 @@ template<typename T> void dispatchEvent(RLayer *layer, SEXP closure, T event,
 }
 
 void RLayer::keyPressEvent ( QKeyEvent * event ) {
-  dispatchEvent(this, keyPressEvent_R, event, "QKeyEvent");
+  if (keyPressEvent_R == R_NilValue)
+    QGraphicsItem::keyPressEvent(event);
+  else dispatchEvent(this, keyPressEvent_R, event, "QKeyEvent");
 }
 
 void RLayer::keyReleaseEvent ( QKeyEvent * event ) {
-  dispatchEvent(this, keyReleaseEvent_R, event, "QKeyEvent");
+  if (keyReleaseEvent_R == R_NilValue)
+    QGraphicsItem::keyReleaseEvent(event);
+  else dispatchEvent(this, keyReleaseEvent_R, event, "QKeyEvent");
 }
 
 void RLayer::mouseDoubleClickEvent ( QGraphicsSceneMouseEvent * event ) {
@@ -188,7 +195,9 @@ void RLayer::mouseReleaseEvent ( QGraphicsSceneMouseEvent * event ) {
 }
 
 void RLayer::wheelEvent ( QGraphicsSceneWheelEvent * event ) {
-  dispatchEvent(this, wheelEvent_R, event, "QGraphicsSceneWheelEvent");
+  if (wheelEvent_R == R_NilValue)
+    QGraphicsItem::wheelEvent(event);
+  else dispatchEvent(this, wheelEvent_R, event, "QGraphicsSceneWheelEvent");
 }
 
 void RLayer::hoverEnterEvent ( QGraphicsSceneHoverEvent * event ) {
