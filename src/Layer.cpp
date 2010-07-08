@@ -49,7 +49,9 @@ void Layer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
     if (qglWidget) {
       QSize size(painter->device()->width(), painter->device()->height());
       QGLContext *context = const_cast<QGLContext *>(qglWidget->context());
-      qglWidget->makeCurrent();
+      // GC during paint callback may have reset this
+      if (qglWidget->context() != QGLContext::currentContext())
+        qglWidget->makeCurrent();
       // NOTE: need Qt 4.6 for antialiasing to work with FBOs
 #if QT_VERSION >= 0x40600
       QGLFramebufferObjectFormat fboFormat;
@@ -80,6 +82,7 @@ void Layer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 #ifdef QT_OPENGL_LIB
   if (fbo) { // silliness: download to image, only to upload to texture
     painter->setWorldMatrixEnabled(false);
+    qglWidget->makeCurrent(); // gc during callback may have cleared this
     // need to tell Qt that 'fboImage' is actually premultiplied
     QImage fboImage = fbo->toImage();
     const uchar *data = fboImage.bits(); // no deep copy
