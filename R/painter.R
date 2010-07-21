@@ -154,6 +154,16 @@ qdrawPolygon <- function(p, x, y, stroke = NULL, fill = NULL) {
                   .normArgStroke(p, stroke, m), .normArgFill(p, fill, m)))
 }
 
+qdrawPath <- function(p, path, stroke = NULL, fill = NULL) {
+  stopifnot(inherits(p, "Painter"))
+  if (inherits(path, "QPainterPath"))
+    path <- list(path)
+  else path <- as.list(path)
+  m <- length(path)
+  invisible(.Call("qt_qdrawPath_Painter", p, path,
+                  .normArgStroke(p, stroke, m), .normArgFill(p, fill, m)))
+}
+
 ## Text drawing: a mess
 
 ## It seems that (at least in base R graphics) there are three

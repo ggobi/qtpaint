@@ -74,6 +74,11 @@ void ScenePainter::drawSegments(double *x0, double *y0, double *x1, double *y1,
   }
 }
 
+// draw path
+void ScenePainter::drawPath(QPainterPath path) {
+  STORE_INDEX(_scene->addPath(transform().map(path), pen(), brush()));
+}
+
 #include <limits>
 
 // draw points (pixels)

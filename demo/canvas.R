@@ -7,7 +7,10 @@ options(error=recover)
 
 circle <- qglyphCircle()
 
-n <- 1000
+circle <- qglyphCircle(r = 0.04)
+paths <- lapply(seq(0, by=0.1, length=10), circle$translated, 0)
+
+n <- 10
 x <- rnorm(n) #, 50, 25)
 y <- rnorm(n) #, 50, 25)
 df <- data.frame(X = x, Y = y)
@@ -18,16 +21,19 @@ df <- data.frame(X = x, Y = y)
 ##data(iris)
 ##df <- iris
 
-fill <- col2rgb(rgb(1, seq(0, 1, length=nrow(df)), 0, 0.5), TRUE)
+##fill <- col2rgb(rgb(1, seq(0, 1, length=nrow(df)), 0, 0.5), TRUE)
 ##fill <- col2rgb(rgb(1, 0, 0, 0.5), TRUE)
-##fill <- rep("red", nrow(df))
+fill <- rep("red", nrow(df))
+fill[5] <- "blue"
 scatterplot <- function(item, painter) {
   qstrokeColor(painter) <- NA
-  qfillColor(painter) <- fill
+  ##qfillColor(painter) <- fill
   ##qantialias(painter) <- FALSE
   ##qdrawText(painter, "x", df[,1], df[,2])
   ##qdrawPoint(painter, df[,1], df[,2], stroke = fill)
-  qdrawGlyph(painter, circle, df[,1], df[,2], fill = fill)
+  ##qdrawCircle(painter, df[,1], df[,2], 5, fill = fill)
+  qdrawPath(painter, paths, fill = fill)
+  ##qdrawGlyph(painter, circle, df[,1], df[,2], fill = fill)
 }
 
 labeled <- rep(FALSE, nrow(df))

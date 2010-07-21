@@ -1,9 +1,5 @@
 Immediate TODO:
 
-- Port to Smoke
-  - Generate bindings using smokegenerator.
-    - One issue is the 'Smoke::classMap' symbol, which must be shared. Have to
-      replace this at run-time, via the R symbol sharing mechanism.
 - Investigate indexing bug that does not handle rectangle query that
   spans positive and negative values
 - Painter's drawLine and drawPolygon need to be vectorized, by taking

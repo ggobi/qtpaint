@@ -58,6 +58,14 @@ void QtPainter::drawSegments(double *x0, double *y0, double *x1, double *y1,
   painter->drawLines(lines, n);
 }
 
+// draw path
+void QtPainter::drawPath(QPainterPath path) {
+  if (!simplePen())
+    path = transform().map(path);
+  painter->setWorldMatrixEnabled(simplePen());
+  painter->drawPath(path);  
+}
+
 // draw points (pixels)
 void QtPainter::drawPoints(double *x, double *y, int n) {
   Q_ASSERT(sizeof(PointF) == sizeof(QPointF));

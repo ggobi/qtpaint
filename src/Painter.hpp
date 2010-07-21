@@ -91,7 +91,7 @@ namespace Qanviz {
     // antialiasing option
     virtual void setAntialias(bool antialias) = 0;
     virtual bool antialias() const = 0;
-
+    
     // should rasterizing optimizations be employed?
     // good for screen, perhaps undersirable off-screen
     bool rasterize() const {
@@ -115,6 +115,9 @@ namespace Qanviz {
     virtual void drawPolyline(double *x, double *y, int n) = 0;
     virtual void drawSegments(double *x0, double *y0, double *x1, double *y1,
                               int n) = 0;
+
+    // draw path
+    virtual void drawPath(QPainterPath path) = 0;
     
     // draw points (pixels)
     virtual void drawPoints(double *x, double *y, int n) = 0;

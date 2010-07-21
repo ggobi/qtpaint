@@ -80,7 +80,10 @@ namespace Qanviz {
     void drawPolyline(double *x, double *y, int n);
     void drawSegments(double *x0, double *y0, double *x1, double *y1,
                       int n);
-    
+
+    // draw path
+    void drawPath(QPainterPath path);
+
     // draw points (pixels)
     void drawPoints(double *x, double *y, int n);
     

@@ -169,7 +169,37 @@ extern "C" {
                                  REAL(ry1) + j, i - j), length(rx0));
     return rp;
   }
-   
+
+  // draw paths
+  SEXP qt_qdrawPath_Painter(SEXP rp, SEXP rpath, SEXP rstroke, SEXP rfill)
+  {
+    PAINTER_P();
+    int i, n = length(rpath);
+    QColor *stroke = COLOR(rstroke);
+    QColor *fill = COLOR(rfill);
+    QColor prevStroke, prevFill;
+    if (stroke && n) {
+      p->setStrokeColor(stroke[0]);
+      prevStroke = stroke[0];
+    }
+    if (fill && n) {
+      p->setFillColor(fill[0]);
+      prevFill = fill[0];
+    }
+    for (i = 0; i < n; i++) {
+      if (stroke && stroke[i] != prevStroke) {
+        p->setStrokeColor(stroke[i]);
+        prevStroke = stroke[i];
+      }
+      if (fill && fill[i] != prevFill) {
+        p->setFillColor(fill[i]);
+        prevFill = fill[i];
+      }
+      p->drawPath(*unwrapSmoke(VECTOR_ELT(rpath, i), QPainterPath));
+    }
+    return rp;
+  }
+
   // draw points (pixels)
   SEXP qt_qdrawPoints_Painter(SEXP rp, SEXP rx, SEXP ry, SEXP rstroke) {
     PAINTER_P();
