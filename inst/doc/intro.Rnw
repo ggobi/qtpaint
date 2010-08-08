@@ -377,7 +377,7 @@ construction.  The \Rfunction{qlayer} constructor takes the zero-based
 row and column grid coordinates as arguments. We create a plot with a
 title, $X$ axis, $Y$ axis and plotting area:
 <<layout-layers,eval=FALSE>>=
-scene <- qgraphicsScene()
+scene <- qscene()
 figLayer <- qlayer(scene)
 titleLayer <- qlayer(figLayer, titlePainter, rowSpan = 2)
 yaxis <- qlayer(figLayer, yAxisPainter, row = 1)
@@ -397,7 +397,7 @@ The second step of layout specification is telling the layout object
 our preferred (default) height and width (in scene units) for
 each row and column, respectively:
 <<layout-preferred-dims,eval=FALSE>>=
-layout <- figLayer$layout()
+layout <- figLayer$gridLayout()
 layout$setRowPreferredHeight(0, 75)
 layout$setRowPreferredHeight(1, 400)
 layout$setRowPreferredHeight(2, 75)
