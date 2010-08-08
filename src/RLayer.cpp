@@ -286,26 +286,13 @@ QSizeF RLayer::sizeHint ( Qt::SizeHint hint, QSizeF &constraint ) {
   return(*unwrapSmoke(ans, QSizeF));
 }
 
-SEXP qanviz_RLayer(SEXP parent, SEXP paintEvent, SEXP keyPressEvent,
-                   SEXP keyReleaseEvent, SEXP mouseDoubleClickEvent,
-                   SEXP mouseMoveEvent, SEXP mousePressEvent,
-                   SEXP mouseReleaseEvent, SEXP wheelEvent,
-                   SEXP hoverMoveEvent, SEXP hoverEnterEvent,
-                   SEXP hoverLeaveEvent, SEXP contextMenuEvent,
-                   SEXP dragEnterEvent, SEXP dragLeaveEvent,
-                   SEXP dragMoveEvent, SEXP dropEvent,
-                   SEXP focusInEvent, SEXP focusOutEvent, SEXP sizeHint)
-{
-  Qanviz::RLayer *layer =
-    new Qanviz::RLayer(unwrapSmoke(parent, QGraphicsItem),
-                       paintEvent, keyPressEvent,
-                       keyReleaseEvent, mouseDoubleClickEvent,
-                       mouseMoveEvent, mousePressEvent,
-                       mouseReleaseEvent, wheelEvent,
-                       hoverMoveEvent, hoverEnterEvent,
-                       hoverLeaveEvent, contextMenuEvent,
-                       dragEnterEvent, dragLeaveEvent,
-                       dragMoveEvent, dropEvent,
-                       focusInEvent, focusOutEvent, sizeHint);
-  return wrapSmoke(layer, Qanviz::RLayer, true);
+#include <qanviz_smoke.h>
+
+/* This is a hack that lets us pass SEXP's directly to RLayer() */
+SEXP qanviz_RLayer(SEXP args)
+{ 
+  Smoke::ModuleIndex meth =
+    qanviz_Smoke->findMethod("Qanviz::RLayer", "RLayer#???????????????????");
+  meth.index = meth.smoke->methodMaps[meth.index].method;
+  return invokeSmokeMethod(meth, NULL, args);
 }

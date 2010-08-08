@@ -23,7 +23,8 @@ namespace Qanviz {
     void dispatchHoverEvent(SEXP closure, QGraphicsSceneHoverEvent *event);
     
   public:
-
+    // FIXME: callbacks should probably be accessed via
+    // setters/getters, and the constructor simplified to 'parent'
     RLayer(QGraphicsItem *parent,
            SEXP paintEvent, SEXP keyPressEvent, SEXP keyReleaseEvent,
            SEXP mouseDoubleClickEvent, SEXP mouseMoveEvent,
@@ -62,15 +63,6 @@ namespace Qanviz {
   };
 }
 
-extern "C" SEXP
-qanviz_RLayer(SEXP parent, SEXP paintEvent, SEXP keyPressEvent,
-              SEXP keyReleaseEvent, SEXP mouseDoubleClickEvent,
-              SEXP mouseMoveEvent, SEXP mousePressEvent,
-              SEXP mouseReleaseEvent, SEXP wheelEvent,
-              SEXP hoverMoveEvent, SEXP hoverEnterEvent,
-              SEXP hoverLeaveEvent, SEXP contextMenuEvent,
-              SEXP dragEnterEvent, SEXP dragLeaveEvent,
-              SEXP dragMoveEvent, SEXP dropEvent,
-              SEXP focusInEvent, SEXP focusOutEvent, SEXP sizeHint);
+extern "C" SEXP qanviz_RLayer(SEXP args);
 
 #endif

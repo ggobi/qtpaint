@@ -19,26 +19,27 @@ qlayer <- function(parent = NULL, paintFun = NULL, keyPressFun = NULL,
   p <- NULL
   if (inherits(parent, "QGraphicsItem"))
     p <- parent
-  layer <- .Call("qanviz_RLayer", p,
-                 .normArgCallback(paintFun),
-                 .normArgCallback(keyPressFun),
-                 .normArgCallback(keyReleaseFun),
-                 .normArgCallback(mouseDoubleClickFun),
-                 .normArgCallback(mouseMoveFun),
-                 .normArgCallback(mousePressFun),
-                 .normArgCallback(mouseReleaseFun),
-                 .normArgCallback(wheelFun),
-                 .normArgCallback(hoverMoveFun),
-                 .normArgCallback(hoverEnterFun),
-                 .normArgCallback(hoverLeaveFun),
-                 .normArgCallback(contextMenuFun),
-                 .normArgCallback(dragEnterFun),
-                 .normArgCallback(dragLeaveFun),
-                 .normArgCallback(dragMoveFun),
-                 .normArgCallback(dropFun),
-                 .normArgCallback(focusInFun),
-                 .normArgCallback(focusOutFun),               
-                 .normArgCallback(sizeHintFun), PACKAGE="qtpaint")
+  args <- list(p,
+               .normArgCallback(paintFun),
+               .normArgCallback(keyPressFun),
+               .normArgCallback(keyReleaseFun),
+               .normArgCallback(mouseDoubleClickFun),
+               .normArgCallback(mouseMoveFun),
+               .normArgCallback(mousePressFun),
+               .normArgCallback(mouseReleaseFun),
+               .normArgCallback(wheelFun),
+               .normArgCallback(hoverMoveFun),
+               .normArgCallback(hoverEnterFun),
+               .normArgCallback(hoverLeaveFun),
+               .normArgCallback(contextMenuFun),
+               .normArgCallback(dragEnterFun),
+               .normArgCallback(dragLeaveFun),
+               .normArgCallback(dragMoveFun),
+               .normArgCallback(dropFun),
+               .normArgCallback(focusInFun),
+               .normArgCallback(focusOutFun),               
+               .normArgCallback(sizeHintFun))
+  layer <- .Call("qanviz_RLayer", args, PACKAGE="qtpaint")
   if (inherits(parent, "Qanviz::Layer")) {
     parent$addLayer(layer, row, col, rowSpan, colSpan)
   } else if (inherits(parent, "QGraphicsScene"))

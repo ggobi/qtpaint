@@ -22,8 +22,6 @@
         <typeName>Qanviz::Painter</typeName>
     </voidpTypes>
     <exclude>
-      <!-- we will wrap this manually, takes SEXP closures -->
-      <signature>.*Qanviz::RLayer::RLayer.*</signature>
     </exclude>
     <classList> 
       <class>Qanviz::Layer</class>
