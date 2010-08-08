@@ -10,6 +10,19 @@
 
 using namespace Qanviz;
 
+static bool fboMultisamplingFailed = false;
+
+void fboDebugMsgCatcher(QtMsgType type, const char *msg)
+{
+  switch (type) {
+  case QtDebugMsg:
+    fboMultisamplingFailed = true;
+    break;
+  default:
+    fprintf(stderr, "%s\n", msg);
+  }
+}
+
 void Layer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                   QWidget *widget)
 {
@@ -54,10 +67,18 @@ void Layer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
         qglWidget->makeCurrent();
       // NOTE: need Qt 4.6 for antialiasing to work with FBOs
 #if QT_VERSION >= 0x40600
-      QGLFramebufferObjectFormat fboFormat;
-      fboFormat.setAttachment(QGLFramebufferObject::CombinedDepthStencil);
-      fboFormat.setSamples(4); // 4X antialiasing should be enough?
-      fbo = new QGLFramebufferObject(size, fboFormat);
+      if (!fboMultisamplingFailed) {
+        QGLFramebufferObjectFormat fboFormat;
+        fboFormat.setAttachment(QGLFramebufferObject::CombinedDepthStencil);
+        fboFormat.setSamples(4); // 4X antialiasing should be enough?
+        qInstallMsgHandler(fboDebugMsgCatcher);
+        fbo = new QGLFramebufferObject(size, fboFormat);
+        qInstallMsgHandler(0);
+        if (fboMultisamplingFailed) {
+          delete fbo;
+          fbo = NULL;
+        }
+      }
 #endif
       if (!fbo)
         fbo = new QGLFramebufferObject(size);
