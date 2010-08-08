@@ -4,5 +4,8 @@ qplotView <- function(scene, parent = NULL,
                       opengl = TRUE)
 {
   rescale <- c(none = 0L, geometry = 1L, transform = 2L)[match.arg(rescale)]
-  Qanviz$PlotView(scene, parent, rescale, opengl)
+  view <- Qanviz$PlotView(scene, parent, rescale, opengl)
+  if (is.null(scene$parent())) # view becomes default parent of scene
+    scene$setParent(view)
+  view
 }
