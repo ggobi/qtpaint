@@ -11,7 +11,7 @@ static R_CallMethodDef CallEntries[] = {
 
 void init_smoke(void) {
   init_qanviz_Smoke();
-  qanviz_Smoke = registerRQtModule(qanviz_Smoke);
+  qanviz_Smoke = registerSmokeModule(qanviz_Smoke);
 }
 
 extern "C" {
