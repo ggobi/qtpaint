@@ -2,6 +2,8 @@
 #include <QGraphicsGridLayout>
 #include <QGraphicsSceneEvent>
 
+#include <stdio.h>
+
 #define GL_GLEXT_PROTOTYPES 1
 #include "OpenGLPainter.hpp"
 #include "ScenePainter.hpp"
