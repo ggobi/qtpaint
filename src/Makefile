@@ -1,4 +1,4 @@
-QTBASE_DIR := $(shell $(R_HOME)/bin/Rscript -e 'cat(system.file(package="qtbase"))')
+QTBASE_DIR := $(shell $(R_HOME)/bin/Rscript --vanilla -e 'cat(system.file(package="qtbase"))')
 
 all:
 	mkdir -p ../kdebindings-build;
