@@ -296,11 +296,40 @@ extern "C" {
   
   // draw text
   SEXP qt_qdrawText_Painter(SEXP rp, SEXP rstrs, SEXP rx, SEXP ry, SEXP rflags,
-                            SEXP rrot)
+                            SEXP rrot, SEXP rcolor)
   {
     PAINTER_P();
-    p->drawText(asStringArray(rstrs), REAL(rx), REAL(ry), length(rx),
-                (Qt::Alignment)asInteger(rflags), asReal(rrot));
+    int i, n = length(rx), j = 0;
+    QColor *color = COLOR(rcolor);
+    QColor prevColor;
+    double *rot = REAL(rrot), prevRot;
+    double *x = REAL(rx);
+    double *y = REAL(ry);
+    const char * const *strs = asStringArray(rstrs);
+    Qt::Alignment flags = (Qt::Alignment)asInteger(rflags);
+    if (color && n) {
+      p->setStrokeColor(color[0]);
+      prevColor = color[0];
+    }
+    prevRot = rot[0];
+    for (i = 0; i < n; i++) {
+      bool changed = false;
+      if (color && color[i] != prevColor) {
+        p->setStrokeColor(color[i]);
+        prevColor = color[i];
+        changed = true;
+      }
+      if (rot[i] != prevRot) {
+        prevRot = rot[i];
+        changed = true;
+      }
+      if (changed) {
+        p->drawText(strs + j, x + j, y + j, i - j, flags, rot[j]);
+        j = i;
+      }
+    }
+    if (color) p->setStrokeColor(color[i-1]);
+    p->drawText(strs + j, x + j, y + j, i - j, flags, rot[j]);
     return rp;
   }
 

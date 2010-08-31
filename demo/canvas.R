@@ -29,7 +29,7 @@ scatterplot <- function(item, painter) {
   qstrokeColor(painter) <- NA
   ##qfillColor(painter) <- fill
   ##qantialias(painter) <- FALSE
-  ##qdrawText(painter, "x", df[,1], df[,2])
+  ##qdrawText(painter, "x", df[,1], df[,2], color = fill)
   ##qdrawPoint(painter, df[,1], df[,2], stroke = fill)
   ##qdrawCircle(painter, df[,1], df[,2], 5, fill = fill)
   qdrawPath(painter, paths, fill = fill)

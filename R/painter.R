@@ -190,16 +190,17 @@ qdrawPath <- function(p, path, stroke = NULL, fill = NULL) {
 qdrawText <- function(p, text, x, y, halign = c("center", "left", "right"),
                       valign = c("center", "basecenter", "baseline", "bottom",
                         "top"),
-                      rot = 0)
+                      rot = rep.int(0, length(text)), color = NULL)
 {
   m <- max(length(text), length(x), length(y))
   text <- recycleVector(text, m)
   x <- recycleVector(x, m)
   y <- recycleVector(y, m)
+  rot <- recycleVector(rot, m)
   drawText <- function(text)
     invisible(.Call("qt_qdrawText_Painter", p, as.character(text),
                     as.numeric(x), as.numeric(y), as.integer(hflag + vflag),
-                    as.numeric(rot)))
+                    as.numeric(rot), .normArgStroke(p, color, m)))
   stopifnot(inherits(p, "Painter"))
   hflags <- c(left = 0x1, right = 0x2, center = 0x4)
   halign <- match.arg(halign)
