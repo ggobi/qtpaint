@@ -222,13 +222,24 @@ qdrawText <- function(p, text, x, y, halign = c("center", "left", "right"),
   if (is.na(vflag)) {
     vflag <- vflags["top"]
     ascent <- qfontMetrics(p)["ascent"]
+    adj <- 0
     if (valign == "basecenter")
       ascent <- ascent / 2
     else if (valign == "center") {
       extents <- qtextExtents(p, text)
-      y <- y - (extents[,"y1"] - extents[,"y0"]) / 2 + extents[,"y1"]
+      adj <- -(extents[,"y1"] - extents[,"y0"]) / 2 + extents[,"y1"]
     }
-    y <- y + ascent
+    adj <- adj + ascent
+    ## fix adjustment for rotation
+    rads <- rot/360*2*pi
+    tf <- qdeviceTransform(p)
+    ## we perform an "inverse" rotation in Y, map Y to pixels, then back to X
+    ## 'adj' is a magnitude, so we have to subtract the origin (0)
+    ## this works around the flipped Y axis
+    mapToX <- function(y)
+      qmap(tf$inverted(), qmap(tf, 0, sin(rads) * y)[,2], 0)[,1]
+    x <- x + mapToX(adj) - mapToX(0)
+    y <- y + cos(rads)*adj
   }
   drawText(text)
 }

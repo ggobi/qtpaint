@@ -9,7 +9,7 @@ q(h,v)Spacing<- -> layer$layout()$setHorizontal(Vertical)Spacing()
 qpaintingView -> QtPaint$PlotView$paintingView()
 qbackgroundColor<- -> scene$backgroundBrush <- Qt$QBrush(Qt$Red)
 qmatrix[Enabled][<-] -> qdeviceTransform[Enabled][<-]
-qpath* -> interact explicitly with QPainterPath
+qpath* -> interact explicitly with QPainterPath, or use qglyph*
 
 The following functions should be replaced with equivalent qtbase syntax:
 
