@@ -294,5 +294,5 @@ SEXP qanviz_RLayer(SEXP args)
   Smoke::ModuleIndex meth =
     qanviz_Smoke->findMethod("Qanviz::RLayer", "RLayer#???????????????????");
   meth.index = meth.smoke->methodMaps[meth.index].method;
-  return invokeSmokeMethod(meth, NULL, args);
+  return invokeSmokeMethod(meth.smoke, meth.index, NULL, args);
 }
