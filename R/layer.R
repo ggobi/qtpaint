@@ -14,8 +14,11 @@ qlayer <- function(parent = NULL, paintFun = NULL, keyPressFun = NULL,
                    focusInFun = NULL, focusOutFun = NULL,
                    sizeHintFun = NULL, limits = qrect(),
                    row = 0L, col = 0L, rowSpan = 1L, colSpan = 1L,
-                   geometry = qrect(0, 0, 600, 400), clip = TRUE, cache = TRUE)
+                   geometry = qrect(0, 0, 600, 400), clip = cache,
+                   cache = FALSE)
 {
+  if (cache && !clip)
+    warning("Enabling caching implicitly enables clipping")
   p <- NULL
   if (inherits(parent, "QGraphicsItem"))
     p <- parent
