@@ -64,13 +64,14 @@ qlayer <- function(parent = NULL, paintFun = NULL, keyPressFun = NULL,
 
 ## matrix-style syntax for accessing child layers
 ## the [,] operator does not exist in C++
-"[<-.Qanviz::Layer" <-
-  function (x, i, j, ..., value)
+"[<-.Qanviz::Layer" <- function (x, i = 0, j = 0, rowSpan = 1, colSpan = 1,
+                                 value)
 {
-  x$addLayer(value, i, j, ...)
+  x$addLayer(value, i, j, rowSpan, colSpan)
+  x
 }
 "[.Qanviz::Layer" <-
-  function (x, i, j, ...)
+  function (x, i = 0, j = 0)
 {
   x$layout()$itemAt(i, j)
 }
