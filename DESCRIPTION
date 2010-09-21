@@ -1,5 +1,5 @@
 Package: qtpaint
-Version: 0.7.10
+Version: 0.7.11
 Title: Qt-based painting infrastructure
 Author: Michael Lawrence, Deepayan Sarkar
 Depends: R (>= 2.6.0), utils
