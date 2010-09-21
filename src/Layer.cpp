@@ -180,8 +180,8 @@ void Layer::invalidateIndex() {
   scenePainter = NULL;
 }
 
-void Layer::addLayer(Layer *layer, int row = 0, int col = 0,
-                     int rowSpan = 1, int colSpan = 1)
+void Layer::addLayer(Layer *layer, int row, int col,
+                     int rowSpan, int colSpan)
 {
   gridLayout()->addItem(layer, row, col, rowSpan, colSpan);
   layer->setZValue(childItems().size());

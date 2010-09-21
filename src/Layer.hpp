@@ -64,7 +64,8 @@ namespace Qanviz {
     
     QGraphicsGridLayout *gridLayout() const;
 
-    void addLayer(Layer *layer, int row, int col, int rowSpan, int colSpan);
+    void addLayer(Layer *layer, int row = 0, int col = 0,
+                  int rowSpan = 1, int colSpan = 1);
 
     virtual void setLimits(QRectF limits) {
       if (limits != _limits) {
