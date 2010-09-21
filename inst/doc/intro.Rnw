@@ -393,6 +393,16 @@ of the parent. They default to zero. The \Rfunarg{rowSpan} and
 or columns are spanned by the layer, where \Rfunarg{row} and
 \Rfunarg{col} represent the top-left coordinate of the rectangle.
 
+It is also possible to specify the layout after constructing the
+layers, using the familiar \Rfunction{[<-} function. We construct
+the same layout as before with existing layers:
+<<layout-layers-addLayer>>=
+figLayer[0, 0, rowSpan=2] <- titleLayer
+figLayer[1, 0] <- yaxis
+figLayer[1, 1] <- plotLayer
+figLayer[2, 1] <- xaxis
+@ 
+
 The second step of layout specification is telling the layout object
 our preferred (default) height and width (in scene units) for
 each row and column, respectively:
