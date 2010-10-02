@@ -46,7 +46,7 @@ low-level interaction with the \Qt{} toolkit. It is meant for
 experienced R users, who are familiar with GUI and graphics
 programming. It is expected that a number of packages will wrap
 \qtpaint{} to provide a more convenient and user-friendly interface
-for the most common tasks. 
+for the most common tasks.
 
 The interface provided by \qtpaint{} is intentionally barebones,
 essentially covering only the functions necessary for efficient
@@ -115,7 +115,7 @@ flexible as in \R.
 
 In \qtpaint, layers draw everything and handle all input events. A
 layer is represented by an instance of the C++ \Rclass{Qanviz::Layer}
-class, which descends from the \Qt \Rclass{QGraphicsItem} class. 
+class, which descends from the \Qt \Rclass{QGraphicsItem} class.
 
 It is possible to draw directly to the scene, but, by default,
 \qtpaint{} asks \Qt{} to cache the drawing at the pixel level. The
@@ -152,7 +152,7 @@ particular portion of the scene, at a particular scale. For plotting
 data, \qtpaint{} provides the \Rclass{PlotView} class, an extension of
 \Rclass{QGraphicsView}. \Rclass{PlotView} adds two key functions:
 special rescaling behavior when the view is resized, and overlay
-support. 
+support.
 
 Normally, when a \Rclass{QGraphicsView} is resized, it simply shows
 more of the scene. This is different from the \R{} graphics device,
@@ -189,7 +189,7 @@ normally-distributed values in conventional base graphics fashion:
 <<conventional-scatterplot, eval=FALSE>>=
 x <- rnorm(100)
 plot(x)
-@ 
+@
 
 In the event driven model, the \Rcode{plot(x)} command is not issued
 immediately by the script; rather, it forms the body of a function
@@ -201,7 +201,7 @@ x <- rnorm(100)
 drawScatterplot <- function() { plot(x) }
 # <code that registers drawScatterplot with event loop>
 # control is then passed to event loop
-@ 
+@
 The reasons for this will become clear as we discuss each type of
 logic in the following sections.
 
@@ -235,12 +235,12 @@ normally omitted, but it is useful for some optimizations.  Below, we
 define a callback function that will call \Rclass{Painter} functions
 to paint a basic scatterplot on a layer:
 <<drawing-basics-paintFun>>=
-df <- data.frame(x = rnorm(100, 300, 100), 
+df <- data.frame(x = rnorm(100, 300, 100),
                  y = rnorm(100, 200, 80))
 scatterPainter <- function(layer, painter) {
   qdrawCircle(painter, df$x, df$y, 5)
 }
-@ 
+@
 The \Rfunction{qdrawCircle} function will draw circles on the
 layer. Like every other \Rfunction{qdraw} function, the
 \Rclass{Painter} must be passed as the first argument. This differs
@@ -255,7 +255,7 @@ painting. The convenience constructor of \Rclass{Layer} is \Rfunction{qlayer}:
 library(qtpaint)
 scene <- qscene()
 scatterLayer <- qlayer(scene, paintFun = scatterPainter)
-@ 
+@
 In the above, we first create a scene for the layer and then create
 the layer. The first argument to \Rfunction{qlayer} is for the
 ``parent,'' which can be either the scene (for a root layer) or
@@ -267,7 +267,7 @@ scene and ``printing'' it to the screen.
 <<drawing-basics-scene-view>>=
 view <- qplotView(scene = scene)
 print(view)
-@ 
+@
 
 The circles in our scatterplot are drawn with an efficient algorithm,
 but each circle is drawn from scatch. Since they all look the same, we
@@ -277,7 +277,7 @@ provides \Rfunction{qdrawGlyph} for this purpose. The first step is to
 define our circle glyph, optimally outside of the paint callback.
 <<drawing-basics-glyph>>=
 circle <- qglyphCircle()
-@ 
+@
 The \Rfunction{qglyphCircle} function creates a vector
 representation of a (by default) radius 5 circle. Other glyph shapes
 are included; see \Rclass{QPainterPath} for creating a custom glyph.
@@ -287,7 +287,7 @@ To use the glyph, we redefine our paint callback:
 scatterPainter <- function(layer, painter) {
   qdrawGlyph(painter, circle, df$x, df$y)
 }
-@ 
+@
 The plot should appear the same, but when there are many glyphs, it
 will be drawn much more quickly.
 
@@ -333,10 +333,10 @@ simple. The limits of the data need to be passed as a rectangle to the
 after construction. Below, we recreate our layer with limits:
 <<drawing-coords-limits>>=
 scene <- qscene()
-scatterLayer <- qlayer(scene, paintFun = scatterPainter, 
+scatterLayer <- qlayer(scene, paintFun = scatterPainter,
                        limits = qrect(0, 0, 600, 400))
 print(qplotView(scene = scene))
-@ 
+@
 Although the plot will look the same initially, the plot now scales as
 the widget is resized.
 
@@ -358,7 +358,7 @@ axes or other plot decorations. Such simplicity often works well for
 exploring data through interactive graphics. However, for
 presentation, decorations and guides become a necessity. Such complex
 plots consist of multiple components, almost always laid out on a
-grid, as supported by the \Rpackage{grid} package. 
+grid, as supported by the \Rpackage{grid} package.
 
 The layout strategy in \qtpaint{} is also grid-based, and is managed
 by an instance of the \Rclass{QGraphicsGridLayout} class, not the
@@ -383,7 +383,7 @@ titleLayer <- qlayer(figLayer, titlePainter, rowSpan = 2)
 yaxis <- qlayer(figLayer, yAxisPainter, row = 1)
 plotLayer <- qlayer(figLayer, plotPainter, row = 1, col = 1)
 xaxis <- qlayer(figLayer, xAxisPainter, row = 2, col = 1)
-@ 
+@
 We skip implementation of the paint callback functions above, as we
 are only illustrating the configuration of the layout. The
 \Rfunarg{row} and \Rfunarg{col} arguments specify the zero-based row
@@ -396,12 +396,12 @@ or columns are spanned by the layer, where \Rfunarg{row} and
 It is also possible to specify the layout after constructing the
 layers, using the familiar \Rfunction{[<-} function. We construct
 the same layout as before with existing layers:
-<<layout-layers-addLayer>>=
+<<layout-layers-addLayer,eval=FALSE>>=
 figLayer[0, 0, rowSpan=2] <- titleLayer
 figLayer[1, 0] <- yaxis
 figLayer[1, 1] <- plotLayer
 figLayer[2, 1] <- xaxis
-@ 
+@
 
 The second step of layout specification is telling the layout object
 our preferred (default) height and width (in scene units) for
@@ -413,7 +413,7 @@ layout$setRowPreferredHeight(1, 400)
 layout$setRowPreferredHeight(2, 75)
 layout$setColumnPreferredWidth(0, 75)
 layout$setColumnPreferredWidth(1, 600)
-@ 
+@
 It is also possible to set the maximum and mininum heights and widths
 by simply replacing \texttt{Preferred} with \texttt{Maximum} or
 \texttt{Minimum} in the calls above.
@@ -443,7 +443,7 @@ the row and column stretch parameters on the layout object:
 layout$setRowStretchFactor(0, 0)
 layout$setRowStretchFactor(2, 0)
 layout$setColumnStretchFactor(0, 0)
-@ 
+@
 The stretch factor indicates the proportion of the newly available
 space that should be allocated to the row or column relative to the
 others. For example, if a column has a stretch factor of two, then it
@@ -458,7 +458,7 @@ layers to coexist with the same grid cell of the layout. This only
 works for layers with a single cell, and even then \Qt{} will emit an
 annoying error message (but everything still works, apparently). Thus,
 stacking layers in a multi-cell layout will require some creative
-nesting of layers. 
+nesting of layers.
 
 \subsection{Performance Tips}
 
@@ -525,7 +525,7 @@ pointAdder <- function(layer, event) {
   df <<- rbind(df, event$pos())
   qupdate(scene)
 }
-@ 
+@
 The above imagines that we have a two-column \Rclass{data.frame} named
 \Robject{df} that is being drawn as a scatterplot. We retrieve the
 position (already mapped from screen to data coordinates) using
@@ -541,9 +541,9 @@ For the event callback to be invoked in response to an event, it must
 be attached to a specific event type, on a specific layer. This occurs
 at construction time, as shown below:
 <<input-basic-qlayer>>=
-pointAddingLayer <- qlayer(paintFun = scatterPainter, 
+pointAddingLayer <- qlayer(paintFun = scatterPainter,
                            mouseReleaseFun = pointAdder)
-@ 
+@
 
 \subsection{Mapping Coordinates to Data Records}
 
@@ -553,7 +553,7 @@ not adding a new record to the dataset, but performing some operation
 on an existing record, like changing one of its visual
 attributes. \qtpaint{} leverages an efficient BSP tree algorithm,
 implemented by \Qt, to quickly return the indices of the records that
-are drawn within some region of the plot. 
+are drawn within some region of the plot.
 
 The query, like everything else at the layer level, is specified in
 layer coordinates. However, it is often necessary to define the query
