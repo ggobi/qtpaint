@@ -50,7 +50,7 @@ qdeviceTransform <- function(x) {
   if (!is.matrix(color) || !is.integer(color) || nrow(color) != 4)
     color <- col2rgb(color, TRUE)
   if (!missing(len)) # might drop to vector here, much faster, C code is OK
-    color <- recycleVector(color, 4L*len) 
+    color <- recycleVector(color, 4L*len)
   color
 }
 
@@ -261,6 +261,11 @@ qstrWidth <- function(p, text) {
   ## FIXME: optimize by directly asking for widths, heights are expensive
   extents <- qtextExtents(p, text)
   extents[,3] - extents[,1]
+}
+
+qstrHeight <- function(p, text) {
+    extents <- qtextExtents(p, text)
+    extents[,4] - extents[,2]
 }
 
 qdrawImage <- function(p, image, x, y) {
