@@ -1,16 +1,6 @@
-
-
-This package is intended to be the provider of a low-level API
-allowing the manipulation of Qt widgets from R.  Of course, various
-high-level extensions are possible.  Those of particular interest to
-me are (1) a high-level static graphics interface, with capabilities
-similar to lattice, and (2) a high-level dynamic graphics interface,
-similar to Ggobi (?), presumably using Qt's Graphics View framework.
-
-The low-level tools for (2) are not even in the planning stages yet,
-and would benefit from discussions with Michael.  The tools for a
-rudimentary implementation of (1) are already there, and is used by 
-the qtplot package.
-
-
-
+The qtpaint package provides a low-level canvas for interactive
+statistical graphics. It is a thin layer on top of the QGraphicsView
+framework of Qt. Key features include: OpenGL renderer optimized for
+statistical graphics, layered buffering strategy for efficient
+updates, and rapid querying of graphical elements within a screen
+region. Plots may respond to a wide range of user inputs.
