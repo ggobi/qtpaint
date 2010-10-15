@@ -157,15 +157,18 @@ namespace Qanviz {
     {
       QVector<QRectF> rects(n);
       QFontMetrics metrics = QFontMetrics(font());
-      QTransform rtform;
-      rtform.scale(fabs(1 / transform().m11()), fabs(1 / transform().m22()));
+      QTransform rtform = transform().inverted();
       for (int i = 0; i < n; i++) {
         QString qstr = QString::fromLocal8Bit(strs[i]);
-        if (qstr.count(QChar::LineSeparator))
+        if (qstr.count('\n'))
           rects[i] = metrics.boundingRect(0, 0, 0, 0, alignment, qstr);
         // Apparently this is necessary for good vertical bounds
         // It's noted to be slow on Windows, so might want strWidth method
-        else rects[i] = metrics.tightBoundingRect(qstr);
+        else {
+          rects[i] = metrics.tightBoundingRect(qstr);
+          // align with boundingRect()
+          rects[i].translate(0, -rects[i].top());
+        }
         rects[i] = rtform.mapRect(rects[i]); // map from pixels
       }
       return rects;
