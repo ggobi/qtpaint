@@ -60,6 +60,8 @@ RLayer::RLayer(QGraphicsItem *parent,
   if (mousePressEvent == R_NilValue && mouseMoveEvent == R_NilValue &&
       mouseReleaseEvent == R_NilValue && mouseDoubleClickEvent == R_NilValue)
     setAcceptedMouseButtons(0);
+  if (sizeHint != R_NilValue)
+    updateGeometry();
   /* preserve every callback */
   PRESERVE_CALLBACK(paintEvent);
   PRESERVE_CALLBACK(keyPressEvent);
@@ -266,9 +268,9 @@ void RLayer::focusOutEvent ( QFocusEvent * event ) {
   else dispatchEvent(this, focusOutEvent_R, event, "QFocusEvent");
 }
 
-QSizeF RLayer::sizeHint ( Qt::SizeHint hint, QSizeF &constraint ) {
+QSizeF RLayer::sizeHint ( Qt::SizeHint hint, const QSizeF &constraint ) {
   SEXP e, etmp, ans;
-
+  qDebug("size hint");
   if (sizeHint_R == R_NilValue) {
     return QGraphicsWidget::sizeHint(hint, constraint);
   }

@@ -9,7 +9,7 @@ include_directories( ../inst/local/include/smoke
 
 include(${QT_USE_FILE})
 
-set(qtpaint_LIB_SRCS Layer.cpp QtPainter.cpp imports.cpp
+set(qtpaint_LIB_SRCS Layer.cpp Painter.cpp QtPainter.cpp imports.cpp
     OpenGLPainter.cpp RLayer.cpp init.cpp PainterWrappers.cpp
     ScenePainter.cpp paintUtils.cpp PlotView.cpp
     scene.cpp QtBasePainter.cpp convert.cpp TestWidget.cpp

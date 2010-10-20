@@ -1,4 +1,7 @@
 #include "paintUtils.hpp"
+
+#include <QColor>
+
 #include <R_ext/Arith.h>
 
 using namespace Qanviz;

@@ -227,7 +227,7 @@ qdrawText <- function(p, text, x, y, halign = c("center", "left", "right"),
       ascent <- ascent / 2
     else if (valign == "center") {
       extents <- qtextExtents(p, text)
-      adj <- -(extents[,"y1"] - extents[,"y0"]) / 2 + extents[,"y1"]
+      adj <- -(extents[,"y1"] - extents[,"y0"]) / 2
     }
     adj <- adj + ascent
     ## fix adjustment for rotation

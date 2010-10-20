@@ -1,11 +1,13 @@
 #ifndef PAINTER_H
 #define PAINTER_H
 
-#include <QRectF>
-#include <QImage>
-#include <QColor>
-#include <QFont>
-#include <QFontMetrics>
+class QRectF;
+class QColor;
+class QImage;
+class QFont;
+class QPainterPath;
+
+#include <QTransform>
 
 #include <math.h> // for fabs()
 
@@ -27,37 +29,11 @@ namespace Qanviz {
     // accessors
     virtual QRectF deviceRect() const = 0;
 
-    void setLimits(QRectF limits, bool combined = false) {
-      QTransform tform;
-      QRectF device = deviceRect();
-      tform.scale(device.width() / limits.width(),
-                  -device.height() / limits.height());
-      tform.translate(-limits.left(), -limits.bottom());
-      setTransform(tform, combined);
-    }
-    virtual void setTransform(const QTransform& tform, bool combined = false) {
-      Q_UNUSED(combined);
-      // just checks for rotated matrices, which are unsupported
-      // (they cannot map text extents to user space, and besides,
-      // there are currently no use cases for rotation).
-      if (tform.isRotating()) {
-        qWarning("Painter::setTransform: rotating matrices not supported");
-      }
-    }
+    void setLimits(QRectF limits, bool combined = false);
+    virtual void setTransform(const QTransform& tform, bool combined=false) = 0;
     virtual const QTransform& transform() const = 0;
 
-    void setTransformEnabled(bool enabled = true) {
-      if (enabled == _transformEnabled)
-        return;
-      _transformEnabled = enabled;
-      if (enabled)
-        setTransform(savedTransform);
-      else {
-        QTransform ident;
-        savedTransform = transform();
-        setTransform(ident);
-      }
-    }
+    void setTransformEnabled(bool enabled = true);
     bool transformEnabled() { return _transformEnabled; }
     
     // stroke/fill
@@ -143,36 +119,11 @@ namespace Qanviz {
                           int n, Qt::Alignment flags, double rot) = 0;
     
     // overall font metrics
-    // FIXME: is there any way to reverse scale when tform is
-    // rotated? (any way to unrotate a matrix?)
-    void fontMetrics(float *ascent, float *descent) {
-      QFontMetrics metrics = QFontMetrics(font());
-      float yscale = fabs(transform().m22());
-      *ascent = metrics.ascent() / yscale;
-      *descent = metrics.descent() / yscale;
-    }
+    void fontMetrics(float *ascent, float *descent);
+    
     // necessary for centering/aligning text
     QVector<QRectF> textExtents(const char * const *strs, int n,
-                                Qt::Alignment alignment = 0)
-    {
-      QVector<QRectF> rects(n);
-      QFontMetrics metrics = QFontMetrics(font());
-      QTransform rtform = transform().inverted();
-      for (int i = 0; i < n; i++) {
-        QString qstr = QString::fromLocal8Bit(strs[i]);
-        if (qstr.count('\n'))
-          rects[i] = metrics.boundingRect(0, 0, 0, 0, alignment, qstr);
-        // Apparently this is necessary for good vertical bounds
-        // It's noted to be slow on Windows, so might want strWidth method
-        else {
-          rects[i] = metrics.tightBoundingRect(qstr);
-          // align with boundingRect()
-          rects[i].translate(0, -rects[i].top());
-        }
-        rects[i] = rtform.mapRect(rects[i]); // map from pixels
-      }
-      return rects;
-    }
+                                Qt::Alignment alignment = 0);
     
     // image
     virtual void drawImage(const QImage &image, double x, double y, int sx = 0,
@@ -187,24 +138,15 @@ namespace Qanviz {
                             QColor *fill, int n) = 0;
     
     virtual void drawGlyphs(const QImage &image, double *x, double *y,
-                            int n)
-    {
-      prepareDrawGlyphs();
-      drawSomeGlyphs(image, x, y, n);
-      finishDrawGlyphs();
-    }
-
+                            int n);
+    
     virtual QImage rasterizeGlyph(const QPainterPath &path) = 0;
 
   protected:
     virtual void prepareDrawGlyphs(void) { }
     virtual void finishDrawGlyphs(void) { }
     virtual void drawSomeGlyphs(const QImage &image, double *x, double *y,
-                                int n)
-    {
-      for (int i = 0; i < n; i++)
-        drawImage(image, x[i], y[i]);
-    }
+                                int n);
 
   };
 }

@@ -39,7 +39,6 @@ namespace Qanviz {
     virtual ~RLayer();
     
     void paintPlot(Painter *painter, QRectF exposed);
-    QSizeF sizeHint (Qt::SizeHint hint, QSizeF &constraint);
     
   protected:
     void hoverMoveEvent ( QGraphicsSceneHoverEvent * event );
@@ -59,6 +58,7 @@ namespace Qanviz {
     void dropEvent ( QGraphicsSceneDragDropEvent * event );
     void focusInEvent ( QFocusEvent * event );
     void focusOutEvent ( QFocusEvent * event );
+    QSizeF sizeHint (Qt::SizeHint hint, const QSizeF &constraint = QSizeF());
 
   };
 }

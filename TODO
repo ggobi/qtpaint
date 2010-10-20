@@ -1,17 +1,9 @@
 Immediate TODO:
 
+- RLayer::sizeHint is never called -- why?
 - Investigate indexing bug that does not handle rectangle query that
   spans positive and negative values
-- Painter's drawLine and drawPolygon need to be vectorized, by taking
-  a sentinel value as a parameter.
-- Each primitive function in Painter should have a vectorized (over
-  colors, sizes, etc) variant. The default implementation should call
-  prepare*, call drawSome* in a loop, and call finish* at the end. The
-  default non-vectorized version can just call the vectorized version
-  with NULL's.
 - Documentation.
-- Prevent calling callbacks while in code browser on Mac and Windows.
-  Need to somehow block (queue up) events while in the browser.
 
 Long term thoughts:
 

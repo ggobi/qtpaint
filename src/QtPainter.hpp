@@ -47,7 +47,6 @@ namespace Qanviz {
     
     // scaling
     void setTransform(const QTransform& tform, bool combined = false) {
-      Painter::setTransform(tform, combined);
       painter->setWorldTransform(tform, combined);
       // force update
       painter->save();
