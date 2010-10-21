@@ -75,6 +75,11 @@ namespace Qanviz {
     }
 
     void setOpenGL(bool opengl);
+
+    // When rescaleMode == Geometry, we are responsible for the scene
+    // geometry. Sometimes, like when the transform changes, we need
+    // to recalcuate it.
+    void updateSceneGeometry();
     
   protected:
 
@@ -91,7 +96,7 @@ namespace Qanviz {
     OverlayScene *_overlay;
     bool _isPainting;
 
-    void updateGeometry(QGraphicsScene *scene);
+    void updateSceneGeometry(QGraphicsScene *scene);
     void drawMetaScene(OverlayScene *scene, QPainter *painter, QRectF rect);
   };
 }

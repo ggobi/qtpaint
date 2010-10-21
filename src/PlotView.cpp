@@ -105,15 +105,22 @@ void PlotView::resizeEvent (QResizeEvent * event)
         oldSize = size;
       }
     } else if (_rescaleMode == WidgetGeometry) {
-      updateGeometry(scene());
+      updateSceneGeometry(scene());
     }
   }
-  updateGeometry(overlay());
+  updateSceneGeometry(overlay());
 }
 
-void PlotView::updateGeometry(QGraphicsScene *scene) {
+void PlotView::updateSceneGeometry() {
+  if (_rescaleMode == WidgetGeometry)
+    updateSceneGeometry(scene());
+}
+
+void PlotView::updateSceneGeometry(QGraphicsScene *scene) {
   QList<QGraphicsItem *> items = scene->items();
   QRectF geometry = viewport()->rect();
+  if (this->scene() == scene) // i.e., not the overlay
+    geometry = mapToScene(viewport()->rect()).boundingRect();
   scene->setSceneRect(geometry);
   for (int i = 0; i < items.size(); i++) {
     QGraphicsWidget *widget =
