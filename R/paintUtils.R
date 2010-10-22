@@ -11,7 +11,7 @@ qglyphCircle <- function(r = 5) {
 qglyphSquare <- function(x = 5) {
   glyph <- Qt$QPainterPath()
   glyph$addRect(-x, -x, 2*x, 2*x)
-  glyph  
+  glyph
 }
 
 qglyphTriangle <- function(x = 5, direction = c("up", "down")) {
@@ -23,6 +23,23 @@ qglyphTriangle <- function(x = 5, direction = c("up", "down")) {
   glyph$lineTo(x, x)
   glyph$lineTo(0, -x)
   glyph$closeSubpath()
+  glyph
+}
+
+##' Create a segment glyph with specified length and slope
+##'
+##' Create a segment glyph with specified length and slope
+##' @title Create a segment glyph with specified length and slope
+##' @param x length
+##' @param b slope
+##' @return a glyph
+##' @author Yihui Xie <\url{http://yihui.name}>
+qglyphSegment <- function(x = 5, b = 0) {
+  glyph <- Qt$QPainterPath()
+  x0 <- x * cos(atan(b))
+  y0 <- x * sin(atan(b))
+  glyph$moveTo(-x0, -y0)
+  glyph$lineTo(x0, y0)
   glyph
 }
 
