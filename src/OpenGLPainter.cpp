@@ -236,6 +236,21 @@ void OpenGLPainter::drawRectangles(double *x, double *y, double *w, double *h,
     } else QtPainter::drawRectangles(x, y, w, h, n);
 }
 
+// We force the glyph into a square by copying to square image with offset
+QImage OpenGLPainter::rasterizeGlyph(const QPainterPath &path) {
+  QImage glyph = QtBasePainter::rasterizeGlyph(path);
+  int width = glyph.width(), height = glyph.height();
+  if (width != height) {
+    int maxDim = qMax(width, height);
+    QImage square(maxDim, maxDim, glyph.format());
+    square.fill(0);
+    QPainter painter(&square);
+    painter.drawImage((maxDim - width)/2, (maxDim - height)/2, glyph);
+    glyph = square;
+  }
+  return glyph;
+}
+
 // possible fast path for multiple colors, if stroke/fill the same:
 // push colors into array, draw picture in white, use texture modulation
 // we only draw the glyph once

@@ -60,7 +60,8 @@ namespace Qanviz {
     // GL_QUADS optimization for filled rectangles
     void drawRectangles(double *x, double *y, double *w, double *h, int n);
 
-    
+
+    QImage rasterizeGlyph(const QPainterPath &path);
     void drawGlyphs(const QPainterPath &path, double *x, double *y,
                     double *size, QColor *stroke,
                     QColor *fill, int n);
