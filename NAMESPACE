@@ -45,7 +45,7 @@ export("qantialias<-",
 export(qlayer, qplotView, qscene)
 
 ## glyph generators
-export(qglyphCircle, qglyphSquare, qglyphTriangle, qglyphText)
+export(qglyphCircle, qglyphSquare, qglyphTriangle, qglyphText, qglyphSegment)
 
 ## some transformation conveniences
 export(qmap, qflipY)
