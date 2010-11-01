@@ -283,6 +283,8 @@ void OpenGLPainter::drawGlyphs(const QPainterPath &path, double *x, double *y,
       QColor prevStroke = strokeColor(), prevFill = fillColor();
       if (do_stroke) setStrokeColor(Qt::white);
       if (do_fill) setFillColor(Qt::white);
+      qreal prevOpacity = opacity();
+      setOpacity(1.0);
       QImage glyph = rasterizeGlyph(path);
       /*      
       for (int i = 0; i < glyph.height(); i++)
@@ -291,6 +293,7 @@ void OpenGLPainter::drawGlyphs(const QPainterPath &path, double *x, double *y,
       */
       if (do_stroke) setStrokeColor(prevStroke);
       if (do_fill) setFillColor(prevFill);
+      setOpacity(prevOpacity);
       prepareDrawGlyphs();
       // override the env mode for modulation
       glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -300,7 +303,7 @@ void OpenGLPainter::drawGlyphs(const QPainterPath &path, double *x, double *y,
         stroke = fill;
       for (int i = 0; i < n; i++, tmp += 4) {
         //printf("%x\n", stroke[i].rgba());
-        float alpha = stroke[i].alphaF();
+        float alpha = stroke[i].alphaF() * opacity();
         tmp[3] = alpha;
         tmp[2] = stroke[i].blueF() * alpha;
         tmp[1] = stroke[i].greenF() * alpha;

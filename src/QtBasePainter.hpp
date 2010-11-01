@@ -36,6 +36,9 @@ namespace Qanviz {
     }
     void setFillColor(QColor color);
 
+    // opacity (just a getter for now)
+    virtual qreal opacity() { return 1.0; }
+
     // line aesthetics  
     void setLineWidth(uint width);
     uint lineWidth() const {

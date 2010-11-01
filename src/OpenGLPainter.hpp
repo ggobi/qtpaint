@@ -15,7 +15,7 @@ namespace Qanviz {
     QGLContext *context;
     
     void setColor(QColor c) {
-      float alpha = c.alphaF();
+      float alpha = c.alphaF() * painter->opacity();
       glColor4f(c.redF() * alpha, c.greenF() * alpha, c.blueF() * alpha, alpha);
     }
     GLfloat maxPointSize() {

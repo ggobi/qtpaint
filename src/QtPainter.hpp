@@ -44,7 +44,11 @@ namespace Qanviz {
     QRectF deviceRect() const {
       return QRectF(0, 0, device()->width(), device()->height());
     }
-    
+
+    // opacity
+    qreal opacity() { return painter->opacity(); }
+    void setOpacity(qreal opacity) { painter->setOpacity(opacity); }
+
     // scaling
     void setTransform(const QTransform& tform, bool combined = false) {
       painter->setWorldTransform(tform, combined);

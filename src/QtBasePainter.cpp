@@ -111,6 +111,7 @@ QImage QtBasePainter::rasterizeGlyph(const QPainterPath &path) {
   imagePainter.setBrush(brush());
   imagePainter.setPen(pen());
   imagePainter.setFont(font());
+  imagePainter.setOpacity(opacity());
   imagePainter.drawPath(path);
   return image;
 }
