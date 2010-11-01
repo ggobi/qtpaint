@@ -189,7 +189,11 @@ void QtPainter::drawSomeGlyphs(const QImage &image, double *x, double *y, int n)
 
 void QtPainter::finishDrawGlyphs(void) {
   painter->setWorldMatrixEnabled(false);
+  qreal prevOpacity = painter->opacity();
+  // The glyph already incorporates opacity, so we blit with 1.0 here
+  painter->setOpacity(1.0);
   painter->drawImage(0, 0, *glyphBuffer);
+  painter->setOpacity(prevOpacity);
   delete glyphBuffer;
   glyphBuffer = NULL;
 }
