@@ -197,7 +197,7 @@ qdrawText <- function(p, text, x, y, halign = c("center", "left", "right"),
   x <- recycleVector(x, m)
   y <- recycleVector(y, m)
   rot <- recycleVector(rot, m)
-  drawText <- function(text)
+  drawText <- function(text, x, y, rot, color)
     invisible(.Call("qt_qdrawText_Painter", p, as.character(text),
                     as.numeric(x), as.numeric(y), as.integer(hflag + vflag),
                     as.numeric(rot), .normArgStroke(p, color, m)))
@@ -212,10 +212,12 @@ qdrawText <- function(p, text, x, y, halign = c("center", "left", "right"),
   if (valign == "center") {
     multi <- grepl("\n", text, fixed=TRUE)
     if (any(multi)) { ## draw the multilines immediately
-      drawText(text[multi])
+      drawText(text[multi], x[multi], y[multi], rot[multi], color[multi])
       text <- text[!multi]
       x <- x[!multi]
       y <- y[!multi]
+      rot <- rot[!multi]
+      color <- color[!multi]
     }
     vflag <- NA
   }
@@ -241,7 +243,7 @@ qdrawText <- function(p, text, x, y, halign = c("center", "left", "right"),
     x <- x + mapToX(adj) - mapToX(0)
     y <- y + cos(rads)*adj
   }
-  drawText(text)
+  drawText(text, x, y, rot, color)
 }
 
 qfontMetrics <- function(p) {
