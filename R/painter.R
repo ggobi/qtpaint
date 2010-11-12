@@ -190,17 +190,18 @@ qdrawPath <- function(p, path, stroke = NULL, fill = NULL) {
 qdrawText <- function(p, text, x, y, halign = c("center", "left", "right"),
                       valign = c("center", "basecenter", "baseline", "bottom",
                         "top"),
-                      rot = rep.int(0, length(text)), color = NULL)
+                      rot = 0, color = NULL, cex = 1.0)
 {
   m <- max(length(text), length(x), length(y))
   text <- recycleVector(text, m)
   x <- recycleVector(x, m)
   y <- recycleVector(y, m)
   rot <- recycleVector(rot, m)
-  drawText <- function(text, x, y, rot, color)
+  cex <- recycleVector(as.numeric(cex), m)
+  drawText <- function(text, x, y, rot, color, cex)
     invisible(.Call("qt_qdrawText_Painter", p, as.character(text),
                     as.numeric(x), as.numeric(y), as.integer(hflag + vflag),
-                    as.numeric(rot), .normArgStroke(p, color, m)))
+                    as.numeric(rot), .normArgStroke(p, color, m), cex))
   stopifnot(inherits(p, "Painter"))
   hflags <- c(left = 0x1, right = 0x2, center = 0x4)
   halign <- match.arg(halign)
@@ -212,12 +213,10 @@ qdrawText <- function(p, text, x, y, halign = c("center", "left", "right"),
   if (valign == "center") {
     multi <- grepl("\n", text, fixed=TRUE)
     if (any(multi)) { ## draw the multilines immediately
-      drawText(text[multi], x[multi], y[multi], rot[multi], color[multi])
-      text <- text[!multi]
-      x <- x[!multi]
-      y <- y[!multi]
-      rot <- rot[!multi]
-      color <- color[!multi]
+      drawText(text[multi], x[multi], y[multi], rot[multi], color[multi],
+               cex[multi])
+      text <- text[!multi]; x <- x[!multi]; y <- y[!multi]
+      rot <- rot[!multi]; color <- color[!multi]; cex <- cex[!multi]
     }
     vflag <- NA
   }
@@ -243,7 +242,7 @@ qdrawText <- function(p, text, x, y, halign = c("center", "left", "right"),
     x <- x + mapToX(adj) - mapToX(0)
     y <- y + cos(rads)*adj
   }
-  drawText(text, x, y, rot, color)
+  drawText(text, x, y, rot, color, cex)
 }
 
 qfontMetrics <- function(p) {

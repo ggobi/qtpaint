@@ -95,7 +95,7 @@ namespace Qanviz {
     
     // draw text
     void drawText(const char * const *strs, double *x, double *y, int n,
-                  Qt::Alignment flags, double rot);
+                  Qt::Alignment flags = 0, double rot = 0, double cex = 1.0);
       
     // image
     void drawImage(const QImage &image, double x, double y, int sx = 0,

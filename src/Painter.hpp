@@ -99,7 +99,6 @@ namespace Qanviz {
     virtual void drawPoints(double *x, double *y, int n) = 0;
     
     // draw shapes
-    // NOTE: if drawing many shapes of same size, use drawGlyphs
     virtual void drawRectangles(double *x, double *y, double *w, double *h,
                                 int n) = 0;
     // NOTE: radius is in pixels, as it is not associated with an
@@ -116,7 +115,8 @@ namespace Qanviz {
        multi-lined block, positioned by its bounding top-left corner.
     */
     virtual void drawText(const char * const *strs, double *x, double *y,
-                          int n, Qt::Alignment flags, double rot) = 0;
+                          int n, Qt::Alignment flags = 0, double rot = 0,
+                          double cex = 1.0) = 0;
     
     // overall font metrics
     void fontMetrics(float *ascent, float *descent);

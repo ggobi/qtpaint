@@ -131,7 +131,7 @@ void ScenePainter::drawPolygon(double *x, double *y, int n) {
     
 // draw text
 void ScenePainter::drawText(const char * const *strs, double *x, double *y,
-                            int n, Qt::Alignment flags, double rot)
+                            int n, Qt::Alignment flags, double rot, double cex)
 {
   if (indexMode()) {
     QVector<QRectF> rects = textExtents(strs, n, flags);
@@ -152,6 +152,7 @@ void ScenePainter::drawText(const char * const *strs, double *x, double *y,
     item->setFlag(QGraphicsItem::ItemIgnoresTransformations);
     item->setPos(tform.map(QPointF(x[i], y[i])));
     item->rotate(-rot);
+    item->scale(cex, cex);
   }
 }
     
