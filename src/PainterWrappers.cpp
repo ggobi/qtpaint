@@ -298,7 +298,7 @@ extern "C" {
   
   // draw text
   SEXP qt_qdrawText_Painter(SEXP rp, SEXP rstrs, SEXP rx, SEXP ry, SEXP rflags,
-                            SEXP rrot, SEXP rcolor, SEXP rcex)
+                            SEXP rrot, SEXP rcolor, SEXP rhcex, SEXP rvcex)
   {
     PAINTER_P();
     int i, n = length(rx), j = 0;
@@ -307,12 +307,13 @@ extern "C" {
     double *rot = REAL(rrot), prevRot;
     double *x = REAL(rx);
     double *y = REAL(ry);
-    double *cex = REAL(rcex), prevCex;
+    double *hcex = REAL(rhcex), *vcex = REAL(rvcex), prevHCex, prevVCex;
     const char * const *strs = asStringArray(rstrs);
     Qt::Alignment flags = (Qt::Alignment)asInteger(rflags);
     if (n) {
       prevRot = rot[0];
-      prevCex = cex[0];
+      prevHCex = hcex[0];
+      prevVCex = vcex[0];
       if (color) {
         p->setStrokeColor(color[0]);
         prevColor = color[0];
@@ -329,17 +330,22 @@ extern "C" {
         prevRot = rot[i];
         changed = true;
       }
-      if (cex[i] != prevCex) {
-        prevCex = cex[i];
+      if (hcex[i] != prevHCex) {
+        prevHCex = hcex[i];
+        changed = true;
+      }
+      if (vcex[i] != prevVCex) {
+        prevVCex = vcex[i];
         changed = true;
       }
       if (changed) {
-        p->drawText(strs + j, x + j, y + j, i - j, flags, rot[j], cex[j]);
+        p->drawText(strs + j, x + j, y + j, i - j, flags, rot[j], hcex[j],
+                    vcex[j]);
         j = i;
       }
     }
     if (color) p->setStrokeColor(color[i-1]);
-    p->drawText(strs + j, x + j, y + j, i - j, flags, rot[j], cex[j]);
+    p->drawText(strs + j, x + j, y + j, i - j, flags, rot[j], hcex[j], vcex[j]);
     return rp;
   }
 

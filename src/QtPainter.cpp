@@ -136,7 +136,8 @@ void QtPainter::drawPolygon(double *x, double *y, int n) {
 }
 
 void QtPainter::drawText(const char * const *strs, double *x, double *y,
-                         int n, Qt::Alignment flags, double rot, double cex)
+                         int n, Qt::Alignment flags, double rot, double hcex,
+                         double vcex)
 {
   QTransform tform = transform();
   for (int i = 0; i < n; i++) {
@@ -149,7 +150,7 @@ void QtPainter::drawText(const char * const *strs, double *x, double *y,
     painter->resetTransform();
     painter->translate(origin);
     painter->rotate(-rot);
-    painter->scale(cex, cex);
+    painter->scale(hcex, vcex);
     QRectF rect = painter->boundingRect(0, 0, 0, 0, flags, qstr);
     //printf("bounds: %f %f %f %f\n", rect.left(), rect.top(), rect.right(),
     //       rect.bottom());
