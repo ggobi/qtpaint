@@ -98,7 +98,8 @@ SEXP qt_qsetItemFlags(SEXP x, SEXP flag, SEXP status)
 {
   QList<QGraphicsItem*> ilist = unwrapSmoke(x, QGraphicsScene)->items();
   bool bstatus = (bool) asLogical(status);
-  QGraphicsItem::GraphicsItemFlags bflag = asInteger(flag);
+  QGraphicsItem::GraphicsItemFlag bflag =
+    (QGraphicsItem::GraphicsItemFlag) asInteger(flag);
   for (int i = 0; i < ilist.size(); ++i) {
       ilist[i]->setFlag(bflag, bstatus);
   }
