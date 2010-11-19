@@ -14,11 +14,11 @@
 ##' \code{layer} argument is a C++ \code{RLayer} object, the same
 ##' instance that was created by calling the constructor. All painting
 ##' is performed through the \code{painter} argument, which is a C++
-##' \code{Painter} object. See the \code{\link[paint
-##' functions]{paintFunctions}} for more details. The \code{paintFun}
-##' may take one additional, optional argument, conventionally named
-##' \code{exposed}, which is the rectangle, in layer coordinates, that
-##' needs to be drawn.
+##' \code{Painter} object. See the
+##' \code{\link[qdrawGlyph]{paint functions}} for more details. The
+##' \code{paintFun} may take one additional, optional argument,
+##' conventionally named \code{exposed}, which is the rectangle, in
+##' layer coordinates, that needs to be drawn.
 ##'
 ##' All of the other callbacks, except for \code{sizeHintFun}, are
 ##' event handlers. Two arguments are passed, conventionally named
