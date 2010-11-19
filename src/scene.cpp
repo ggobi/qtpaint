@@ -98,15 +98,9 @@ SEXP qt_qsetItemFlags(SEXP x, SEXP flag, SEXP status)
 {
   QList<QGraphicsItem*> ilist = unwrapSmoke(x, QGraphicsScene)->items();
   bool bstatus = (bool) asLogical(status);
-  if (sexp2qstring(flag) == "movable") {
-    for (int i = 0; i < ilist.size(); ++i) {
-      ilist[i]->setFlag(QGraphicsItem::ItemIsMovable, bstatus);
-    }
-  }
-  else if (sexp2qstring(flag) == "selectable") {
-    for (int i = 0; i < ilist.size(); ++i) {
-      ilist[i]->setFlag(QGraphicsItem::ItemIsSelectable, bstatus);
-    }
+  QGraphicsItem::GraphicsItemFlags bflag = asInteger(flag);
+  for (int i = 0; i < ilist.size(); ++i) {
+      ilist[i]->setFlag(bflag, bstatus);
   }
   return R_NilValue;
 }

@@ -3,26 +3,56 @@
 
 ## should be called 'qtransform', but qtbase already uses that for a
 ## convenience constructor (would rather not make it generic)
+
+##' Access the user to device coordinate transform of the paint context.
+##'
+##' @title User to device transform
+##' @param x The paint context
+##' @param p The paint context
+##' @param value The desired user to device transform, as a C++
+##' \code{QTransform} object, or a logical scalar for
+##' \code{qdeviceTransformEnabled}.
+##' @return The user to device transform, as a C++ \code{QTransform} object
+##' @author Michael Lawrence
+##' @rdname transform
 qdeviceTransform <- function(x) {
   stopifnot(inherits(x, "Painter"))
   .Call("qt_qtransform_Painter", x)
 }
+##' @rdname transform
+##' @usage qdeviceTransform(x) <- value
 `qdeviceTransform<-` <- function(x, value) {
   stopifnot(inherits(x, "Painter"))
   stopifnot(inherits(value, "QTransform"))
   .Call("qt_qsetTransform_Painter", x, value, PACKAGE = "qtpaint")
 }
 
+##' @rdname transform
+##' @usage qdeviceTransformEnabled(p) <- value
 `qdeviceTransformEnabled<-` <- function(p, value) {
   stopifnot(inherits(p, "Painter"))
   invisible(.Call("qt_qsetTransformEnabled_Painter", p, as.logical(value)))
 }
 
+##' Functions for controlling the stroke and fill colors, including
+##' the ability to disable or enable stroking and filling.
+##'
+##' @title Stroke and fill colors
+##' @param p The paint context
+##' @param value The stroke or fill color, or a logical value for
+##' \code{qHasStroke<-} and \code{qHasFill<-}. 
+##' @return The stroke or fill color, or a logical value for
+##' \code{qHasStroke} and \code{qHasFill}.
+##' @rdname stroke-fill
+##' @author Michael Lawrence
+##' @usage qhasStroke(p) <- value
 `qhasStroke<-` <- function(p, value) {
   stopifnot(inherits(p, "Painter"))
   invisible(.Call("qt_qsetHasStroke_Painter", p, as.logical(value)))
 }
 
+##' @rdname stroke-fill
+##' @usage qhasFill(p) <- value
 `qhasFill<-` <- function(p, value) {
   stopifnot(inherits(p, "Painter"))
   invisible(.Call("qt_qsetHasFill_Painter", p, as.logical(value)))
@@ -54,19 +84,30 @@ qdeviceTransform <- function(x) {
   color
 }
 
+##' @rdname stroke-fill
+##' @usage qstrokeColor(x) <- value
 `qstrokeColor<-` <- function(x, value) {
   stopifnot(inherits(x, "Painter"))
   color <- .normArgColor(value)
   invisible(.Call("qt_qsetStrokeColor_Painter", x, color))
 }
 
+##' @rdname stroke-fill
+##' @usage qfileColor(x) <- value
 `qfillColor<-` <- function(x, value) {
   stopifnot(inherits(x, "Painter"))
   color <- .normArgColor(value)
   invisible(.Call("qt_qsetFillColor_Painter", x, color))
 }
 
-## 'value' is a QFont
+##' Sets the font.
+##'
+##' @title Fonts
+##' @param x The paint context
+##' @param value The font, as a C++ \code{QFont} object
+##' @author Michael Lawrence
+##' @name fontReplace
+##' @usage qfont(x) <- value
 `qfont<-` <- function(x, value)
 {
   stopifnot(inherits(x, "Painter"))
@@ -74,21 +115,61 @@ qdeviceTransform <- function(x) {
   invisible(.Call("qt_qsetFont_Painter", x, value))
 }
 
+##' Sets the line width
+##'
+##' @title Line width
+##' @param x The paint context
+##' @param value A numeric value indicating the line width, in device coords
+##' @author Michael Lawrence
+##' @name lineWidthReplace
+##' @usage qlineWidth(x) <- value
 `qlineWidth<-` <- function(x, value) {
   stopifnot(inherits(x, "Painter"))
   invisible(.Call("qt_qsetLineWidth_Painter", x, as.integer(value)))
 }
 
+##' Sets the dash pattern
+##'
+##' @title Dash patterns
+##' @param x The paint context
+##' @param value A numeric vector indicating the pattern; each element
+##' is the length of the corresponding segment
+##' @name dashReplace
+##' @author Michael Lawrence
+##' @usage qdash(x) <- value
 `qdash<-` <- function(x, value) {
   stopifnot(inherits(x, "Painter"))
   invisible(.Call("qt_qsetDashes_Painter", x, as.numeric(value)))
 }
 
+##' Enables or disables antialiasing
+##'
+##' @title Antialiasing
+##' @param x The paint context
+##' @param value A logical indicating whether antialiasing is enabled
+##' @author Michael Lawrence
+##' @name antialiasReplace
+##' @usage qantialias(x) <- value
 `qantialias<-` <- function(x, value) {
   stopifnot(inherits(x, "Painter"))
   invisible(.Call("qt_qsetAntialias_Painter", x, as.logical(value)))
 }
 
+##' These functions constitute the primary drawing API. There is
+##' support for drawing points, polylines, segments, circles, rectangles,
+##' polygons, vector paths, text, images and plot glyphs.
+##'
+##' @title Drawing API
+##' @param p The paint context
+##' @param x The X coordinate vector, recycled. For polygons and
+##' polylines, NA values separate the graphical primitives.
+##' @param y The Y coordinate vector, recycled. For polygons and
+##' polylines, NA values separate the graphical primitives.
+##' @param stroke The vector of stroke colors, either a C++
+##' \code{QColor} object, a matrix returned by \code{\link{col2rgb}}
+##' or any valid input to \code{col2rgb}, recycled
+##' @author Michael Lawrence
+##' @rdname painting
 qdrawLine <- function(p, x, y, stroke = NULL) {
   stopifnot(inherits(p, "Painter"))
   m <- max(length(x), length(y))
@@ -98,6 +179,11 @@ qdrawLine <- function(p, x, y, stroke = NULL) {
                   .normArgStroke(p, stroke, m)))
 }
 
+##' @param x0 The vector of first X coordinates, recycled
+##' @param y0 The vector of first Y coordinates, recycled
+##' @param x1 The vector of second X coordinates, recycled
+##' @param y1 The vector of second Y coordinates, recycled
+##' @rdname painting
 qdrawSegment <- function(p, x0, y0, x1, y1, stroke = NULL) {
   stopifnot(inherits(p, "Painter"))
   m <- max(length(x0), length(y0), length(x1), length(y1))
@@ -110,6 +196,7 @@ qdrawSegment <- function(p, x0, y0, x1, y1, stroke = NULL) {
                   .normArgStroke(p, stroke, m)))
 }
 
+##' @rdname painting 
 qdrawPoint <- function(p, x, y, stroke = NULL) {
   stopifnot(inherits(p, "Painter"))
   m <- max(length(x), length(y))
@@ -119,6 +206,14 @@ qdrawPoint <- function(p, x, y, stroke = NULL) {
                   .normArgStroke(p, stroke, m)))
 }
 
+##' @param fill The vector of fill colors, either a C++
+##' \code{QColor} object, a matrix returned by \code{\link{col2rgb}}
+##' or any valid input to \code{col2rgb}, recycled
+##' @param xleft The vector of left X coordinates for a rectangle, recycled
+##' @param ybottom The vector of bottom Y coordinates for a rectangle, recycled
+##' @param xright The vector of right X coordinates for a rectangle, recycled
+##' @param ytop The vector of top Y coordinates for a rectangle, recycled
+##' @rdname painting
 qdrawRect <- function(p, xleft, ybottom, xright, ytop, stroke = NULL,
                       fill = NULL)
 {
@@ -134,6 +229,8 @@ qdrawRect <- function(p, xleft, ybottom, xright, ytop, stroke = NULL,
                   .normArgFill(p, fill, m)))
 }
 
+##' @param r The radius of the circle, in device coordinates, recycled
+##' @rdname painting 
 qdrawCircle <- function(p, x, y, r, stroke = NULL, fill = NULL) {
   stopifnot(inherits(p, "Painter"))
   m <- max(length(x), length(y), length(r))
@@ -145,6 +242,7 @@ qdrawCircle <- function(p, x, y, r, stroke = NULL, fill = NULL) {
                   .normArgFill(p, fill, m)))
 }
 
+##' @rdname painting 
 qdrawPolygon <- function(p, x, y, stroke = NULL, fill = NULL) {
   stopifnot(inherits(p, "Painter"))
   m <- max(length(x), length(y))
@@ -154,6 +252,9 @@ qdrawPolygon <- function(p, x, y, stroke = NULL, fill = NULL) {
                   .normArgStroke(p, stroke, m), .normArgFill(p, fill, m)))
 }
 
+##' @rdname painting 
+##' @param path A C++ \code{QPainterPath} object describing the glyph,
+##' or a list of such objects for \code{qdrawPath}.
 qdrawPath <- function(p, path, stroke = NULL, fill = NULL) {
   stopifnot(inherits(p, "Painter"))
   if (inherits(path, "QPainterPath"))
@@ -187,6 +288,23 @@ qdrawPath <- function(p, path, stroke = NULL, fill = NULL) {
 
 ## For multiple lines, each line is aligned the same as the block.
 
+##' @param text The vector of strings to draw, recycled
+##' @param halign The side of the text to horizontally align to the coordinate
+##' @param valign The side of the text to vertically align to the
+##' coordinate. Besides the obvious alignment options, there are two
+##' different ways to center the text: according to the entire text
+##' extents ("center") or only according to the region above the
+##' baseline ("basecenter"). The former may be better for plotting
+##' text, while the latter may be better for labeling.
+##' @param rot The vector of the text rotations, in degrees, recycled
+##' @param cex The vector of numeric expansion factors of the glyphs, recycled
+##' @param hcex The vector of numeric horizontal expansion factors of
+##' the glyphs, recycled. Overrides the \code{cex} in the horizontal
+##' direction.
+##' @param vcex The vector of numeric vertical expansion factors of
+##' the glyphs, recycled. Overrides the \code{cex} in the vertical
+##' direction.
+##' @rdname painting 
 qdrawText <- function(p, text, x, y, halign = c("center", "left", "right"),
                       valign = c("center", "basecenter", "baseline", "bottom",
                         "top"),
@@ -247,30 +365,8 @@ qdrawText <- function(p, text, x, y, halign = c("center", "left", "right"),
   drawText(text, x, y, rot, color, hcex, vcex)
 }
 
-qfontMetrics <- function(p) {
-  stopifnot(inherits(p, "Painter"))
-  ans <- .Call("qt_qfontMetrics_Painter", p)
-  names(ans) <- c("ascent", "descent")
-  ans
-}
-
-qtextExtents <- function(x, text) {
-  ans <- .Call("qt_qtextExtents_Painter", x, as.character(text))
-  colnames(ans) <- c("x0", "y0", "x1", "y1")
-  ans
-}
-
-qstrWidth <- function(p, text) {
-  ## FIXME: optimize by directly asking for widths, heights are expensive
-  extents <- qtextExtents(p, text)
-  extents[,3] - extents[,1]
-}
-
-qstrHeight <- function(p, text) {
-    extents <- qtextExtents(p, text)
-    extents[,4] - extents[,2]
-}
-
+##' @rdname painting 
+##' @param image A C++ \code{QImage} object
 qdrawImage <- function(p, image, x, y) {
   stopifnot(inherits(p, "Painter"))
   stopifnot(inherits(image, "QImage"))
@@ -281,6 +377,7 @@ qdrawImage <- function(p, image, x, y) {
                   as.numeric(y)))
 }
 
+##' @rdname painting 
 qdrawGlyph <- function(p, path, x, y, cex = NULL, stroke = NULL, fill = NULL) {
   stopifnot(inherits(p, "Painter"))
   stopifnot(inherits(path, "QPainterPath"))
@@ -292,4 +389,42 @@ qdrawGlyph <- function(p, path, x, y, cex = NULL, stroke = NULL, fill = NULL) {
   invisible(.Call("qt_qdrawGlyphs_Painter", p, path, as.numeric(x),
                   as.numeric(y), cex, .normArgStroke(p, stroke, m),
                   .normArgFill(p, fill, m)))
+}
+
+##' Get text extents and font metrics
+##'
+##' @title Text extents
+##' @param p The paint context
+##' @param text The text to analyze
+##' @return A matrix representing the text bounds for
+##' \code{qtextExtents}), a number for \code{qstrWidth} and
+##' \code{qstrHeight}, or a vector with the ascent and descent for
+##' \code{qfontMetrics}
+##' @rdname text-extents
+##' @author Michael Lawrence
+qtextExtents <- function(p, text) {
+  ans <- .Call("qt_qtextExtents_Painter", p, as.character(text))
+  colnames(ans) <- c("x0", "y0", "x1", "y1")
+  ans
+}
+
+##' @rdname text-extents
+qstrWidth <- function(p, text) {
+  ## FIXME: optimize by directly asking for widths, heights are expensive
+  extents <- qtextExtents(p, text)
+  extents[,3] - extents[,1]
+}
+
+##' @rdname text-extents
+qstrHeight <- function(p, text) {
+  extents <- qtextExtents(p, text)
+  extents[,4] - extents[,2]
+}
+
+##' @rdname text-extents
+qfontMetrics <- function(p) {
+  stopifnot(inherits(p, "Painter"))
+  ans <- .Call("qt_qfontMetrics_Painter", p)
+  names(ans) <- c("ascent", "descent")
+  ans
 }
