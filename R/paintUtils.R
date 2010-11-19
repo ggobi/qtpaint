@@ -134,21 +134,6 @@ qflipY.QRectF <- function(ymax, ymin = 0) qflipY(as.matrix(ymax))
 ##' @rdname qflipy
 qflipY.QRect <- qflipY.QRectF
 
-##' Get the dimensions of rectangles and rectangular objects
-##' 
-##' @method dim QRectF
-##' @rdname dim-methods
-dim.QRectF <- function(x) c(x$width(), x$height())
-##' @method dim QGraphicsScene
-##' @rdname dim-methods
-dim.QGraphicsScene <- function(x) dim(x$sceneRect)
-##' @method dim QGraphicsItem
-##' @rdname dim-methods
-dim.QGraphicsItem <- function(x) dim(x$boundingRect)
-##' @method dim QGraphicsView
-##' @rdname dim-methods
-dim.QGraphicsView <- function(x) dim(x$viewport()$rect)
-
 ##' Force a redraw of a layer or scene, clearing the cache. This needs
 ##' to be called whenever the drawing would change, e.g., if the data
 ##' or some visual attribute has changed. There is no automatic way
