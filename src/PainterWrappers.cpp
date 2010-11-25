@@ -19,7 +19,7 @@ using namespace Qanviz;
     for (i = 0; i < n; i++) {                                           \
       if (stroke[i] != prevStroke) {                                    \
         p->setStrokeColor(stroke[i-1]);                                 \
-        prevStroke = stroke[i-1];                                       \
+        prevStroke = stroke[i];                                         \
         p->op;                                                          \
         j = i;                                                          \
       }                                                                 \
@@ -234,12 +234,12 @@ extern "C" {
         bool changed = false;
         if (stroke && stroke[i] != prevStroke) {
           p->setStrokeColor(stroke[i-1]);
-          prevStroke = stroke[i-1];
+          prevStroke = stroke[i];
           changed = true;
         }
         if (fill && fill[i] != prevFill) {
           p->setFillColor(fill[i-1]);
-          prevFill = fill[i-1];
+          prevFill = fill[i];
           changed = true;
         }                                                                 
         if (changed) {
@@ -322,7 +322,7 @@ extern "C" {
     for (i = 0; i < n; i++) {
       bool changed = false;
       if (color && color[i] != prevColor) {
-        p->setStrokeColor(color[i]);
+        p->setStrokeColor(color[i-1]);
         prevColor = color[i];
         changed = true;
       }
@@ -344,7 +344,8 @@ extern "C" {
         j = i;
       }
     }
-    if (color) p->setStrokeColor(color[i-1]);
+    if (color)
+      p->setStrokeColor(color[i-1]);
     p->drawText(strs + j, x + j, y + j, i - j, flags, rot[j], hcex[j], vcex[j]);
     return rp;
   }
