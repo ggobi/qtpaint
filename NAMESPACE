@@ -10,7 +10,7 @@ importFrom(qtbase, qlibrary)
 importFrom(qtbase, Qt)
 
 ## simple constructors from qtbase
-importFrom(qtbase, qrect, qfont)
+importFrom(qtbase, qrect, qfont, qpoint)
 
 ## the Painter API
 export("qantialias<-",
