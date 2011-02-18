@@ -40,18 +40,15 @@
 ##' \code{QWidget} to contain the view
 ##' @param rescale The rescale mode, see details
 ##' @param opengl If \code{TRUE}, use OpenGL, otherwise the software driver
-##' @param deleteOnClose Whether the view should be destroyed when it is closed
 ##' @return A C++ \code{PlotView} object
 ##' @author Michael Lawrence
 qplotView <- function(scene, parent = NULL,
                       rescale = c("geometry", "transform", "none"),
-                      opengl = TRUE, deleteOnClose = TRUE)
+                      opengl = TRUE)
 {
   rescale <- c(none = 0L, geometry = 1L, transform = 2L)[match.arg(rescale)]
   view <- Qanviz$PlotView(scene, parent, rescale, opengl)
   if (is.null(scene$parent())) # view becomes default parent of scene
     scene$setParent(view)
-  if (deleteOnClose)
-    view$setAttribute(Qt$Qt$WA_DeleteOnClose)
   view
 }
