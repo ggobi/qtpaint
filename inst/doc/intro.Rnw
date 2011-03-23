@@ -52,7 +52,7 @@ The interface provided by \qtpaint{} is intentionally barebones,
 essentially covering only the functions necessary for efficient
 drawing. Implementing anything beyond a basic static graphic will
 require use of the \Rpackage{qtbase} package and its complete, direct
-interface to the \Qt{} library.
+interface to the \Qt{} library.  Most of the time you will need to load both \Rpackage{qtbase} and \Rpackage{qtpaint} packages.
 
 \subsection{Features}
 
@@ -253,6 +253,7 @@ Next, we construct a layer that will delegate to our callback for
 painting. The convenience constructor of \Rclass{Layer} is \Rfunction{qlayer}:
 <<drawing-basics-qlayer>>=
 library(qtpaint)
+library(qtbase)
 scene <- qscene()
 scatterLayer <- qlayer(scene, paintFun = scatterPainter)
 @
