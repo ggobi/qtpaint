@@ -40,7 +40,10 @@ qdeviceTransform <- function(x) {
 ##' @title Stroke and fill colors
 ##' @param p The paint context
 ##' @param value The stroke or fill color, or a logical value for
-##' \code{qHasStroke<-} and \code{qHasFill<-}. 
+##' \code{qHasStroke<-} and \code{qHasFill<-}. A stroke and fill color
+##' should either be a C++ \code{QColor} object, a matrix like that
+##' returned by \code{\link{col2rgb}} or something coercible to one,
+##' like a color name.
 ##' @return The stroke or fill color, or a logical value for
 ##' \code{qHasStroke} and \code{qHasFill}.
 ##' @rdname stroke-fill
@@ -60,14 +63,14 @@ qdeviceTransform <- function(x) {
 
 .normArgStroke <- function(p, color, len) {
   if (length(color) == 1) {
-    qstrokeColor(p) <- .normArgColor(color)
+    qstrokeColor(p) <- color
     NULL
   } else .normArgColor(color, len)
 }
 
 .normArgFill <- function(p, color, len) {
   if (length(color) == 1) {
-    qfillColor(p) <- .normArgColor(color)
+    qfillColor(p) <- color
     NULL
   } else .normArgColor(color, len)
 }
@@ -89,6 +92,8 @@ qdeviceTransform <- function(x) {
 `qstrokeColor<-` <- function(x, value) {
   stopifnot(inherits(x, "Painter"))
   color <- .normArgColor(value)
+  if (is.null(color))
+    stop("Cannot set a 'NULL' stroke color, use 'NA' for transparent")
   invisible(.Call("qt_qsetStrokeColor_Painter", x, color))
 }
 
@@ -97,6 +102,8 @@ qdeviceTransform <- function(x) {
 `qfillColor<-` <- function(x, value) {
   stopifnot(inherits(x, "Painter"))
   color <- .normArgColor(value)
+  if (is.null(color))
+    stop("Cannot set a 'NULL' fill color, use 'NA' for transparent")
   invisible(.Call("qt_qsetFillColor_Painter", x, color))
 }
 
