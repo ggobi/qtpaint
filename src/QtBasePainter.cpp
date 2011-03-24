@@ -99,13 +99,13 @@ QImage QtBasePainter::rasterizeGlyph(const QPainterPath &path) {
   double size = glyphSize();
   int lw = lineWidth() - 1;
   if (lw < 0) lw = 0;
-  QImage image(bounds.width()*size + 2 + lw, bounds.height()*size + 2 + lw,
+  QImage image((bounds.width() + 2 + lw)*size, (bounds.height() + 2 + lw)*size,
                QImage::Format_ARGB32_Premultiplied);
   image.fill(0);
   QPainter imagePainter(&image);
   int boundsAdj = lw / 2.0 + 1.5;
-  imagePainter.translate(-bounds.x() + boundsAdj, -bounds.y() + boundsAdj);  
   imagePainter.scale(size, size);
+  imagePainter.translate(-bounds.x() + boundsAdj, -bounds.y() + boundsAdj);
   // all glyphs are antialiased
   imagePainter.setRenderHint(QPainter::Antialiasing);
   imagePainter.setBrush(brush());
