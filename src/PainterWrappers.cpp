@@ -147,6 +147,13 @@ extern "C" {
     p->setDashes(REAL(rdashes), length(rdashes));
     return rp;
   }
+
+  // glyph size
+  SEXP qt_qsetGlyphExpansion_Painter(SEXP rp, SEXP rsize) {
+    PAINTER_P();
+    p->setGlyphSize(asReal(rsize));
+    return rp;
+  }
   
   // antialiasing option
   SEXP qt_qsetAntialias_Painter(SEXP rp, SEXP rantialias) {

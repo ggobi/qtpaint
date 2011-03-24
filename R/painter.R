@@ -149,6 +149,18 @@ qdeviceTransform <- function(x) {
   invisible(.Call("qt_qsetDashes_Painter", x, as.numeric(value)))
 }
 
+##' Sets the glyph expansion, equivalent to \code{cex} in base R
+##'
+##' @title Glyph expansion
+##' @param x The paint context
+##' @param value Floating point multiplier of the glyph size
+##' @author Michael Lawrence
+##' @usage qglyphExpansion(x) <- value
+`qglyphExpansion<-` <- function(x, value) {
+  stopifnot(inherits(x, "Painter"))
+  invisible(.Call("qt_qsetGlyphExpansion_Painter", x, as.numeric(value)))
+}
+
 ##' Enables or disables antialiasing
 ##'
 ##' @title Antialiasing
