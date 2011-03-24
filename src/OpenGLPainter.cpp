@@ -259,6 +259,7 @@ void OpenGLPainter::drawGlyphs(const QPainterPath &path, double *x, double *y,
                                double *size, QColor *stroke,
                                QColor *fill, int n)
 {
+  // FIXME: could we make this work even if size != NULL?
   if (!size && (stroke || fill)) {
     bool do_stroke = stroke || hasStroke(), do_fill = fill || hasFill();
     bool fast = !do_stroke || !do_fill;

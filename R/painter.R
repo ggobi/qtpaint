@@ -403,8 +403,12 @@ qdrawGlyph <- function(p, path, x, y, cex = NULL, stroke = NULL, fill = NULL) {
   m <- max(length(x), length(y))
   x <- recycleVector(x, m)
   y <- recycleVector(y, m)
-  if (!is.null(cex))
-    cex <- recycleVector(as.numeric(cex), m)
+  if (!is.null(cex)) {
+    if (length(cex) == 1) {
+      qglyphExpansion(p) <- cex
+      cex <- NULL
+    } else cex <- recycleVector(as.numeric(cex), m)
+  }
   invisible(.Call("qt_qdrawGlyphs_Painter", p, path, as.numeric(x),
                   as.numeric(y), cex, .normArgStroke(p, stroke, m),
                   .normArgFill(p, fill, m)))
