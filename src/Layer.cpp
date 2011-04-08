@@ -169,10 +169,12 @@ Layer::~Layer() {
 void Layer::ensureIndex() {
   if (scenePainter)
     return;
+  indexScene->setItemIndexMethod(QGraphicsScene::NoIndex);
   indexScene->clear();
   scenePainter = new ScenePainter(indexScene);
   scenePainter->setIndexMode(true);
   paintPlot(scenePainter, boundingRect());
+  indexScene->setItemIndexMethod(QGraphicsScene::BspTreeIndex);
 }
     
 void Layer::invalidateIndex() {
