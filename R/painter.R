@@ -377,7 +377,7 @@ qdrawText <- function(p, text, x, y, halign = c("center", "left", "right"),
     ## 'adj' is a magnitude, so we have to subtract the origin (0)
     ## this works around the flipped Y axis
     mapToX <- function(y)
-      qmap(tf$inverted(), qmap(tf, 0, sin(rads) * y)[,2], 0)[,1]
+      qvmap(tf$inverted(), qvmap(tf, 0, sin(rads) * y)[,2], 0)[,1]
     x <- x + mapToX(adj) - mapToX(0)
     y <- y + cos(rads)*adj
   }

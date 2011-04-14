@@ -1,7 +1,7 @@
-\name{qmap}
-\alias{qmap}
+\name{qvmap}
+\alias{qvmap}
 \title{Mapping coordinates}
-\usage{qmap(m, x, y)
+\usage{qvmap(m, x, y)
 }
 \description{Transforms X and Y coordinates with a Qt-style transformation
 matrix. The advantage over direct use of Qt is vectorization.}

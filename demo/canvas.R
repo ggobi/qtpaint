@@ -1,6 +1,7 @@
 ## tests/demonstrations for the interactive canvas
 
 library(qtpaint)
+library(qtbase)
 
 options(warn=2)
 options(error=recover)
@@ -39,7 +40,7 @@ scatterplot <- function(item, painter) {
 labeled <- rep(FALSE, nrow(df))
 labeler <- function(item, painter) {
   mat <- qdeviceTransform(painter)
-  off <- qmap(mat, c(5, 5)) - qmap(mat, c(0, 0))
+  off <- qvmap(mat, c(5, 5)) - qvmap(mat, c(0, 0))
   df <- df[labeled,]
   qdrawText(painter, rownames(df), df[,1]+off[1], df[,2]+off[2], "left",
             "bottom")

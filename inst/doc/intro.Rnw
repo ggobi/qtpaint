@@ -346,7 +346,7 @@ into account pixels when drawing. An example is labeling a point. The
 \Rfunction{qdeviceTransform} function retrieves the
 \Rclass{QTransform} used by \Rclass{Painter} to convert data to device
 coordinates. Vectorized mapping of data points through the
-\Rclass{QTransform} is performed by the \Rfunction{qmap} function. The
+\Rclass{QTransform} is performed by the \Rfunction{qvmap} function. The
 \Rclass{QTransform} can be queried, modified, inverted, etc, using the
 \Rpackage{qtbase} package; see the \Qt{} documentation for more
 details.

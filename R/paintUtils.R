@@ -76,7 +76,7 @@ qglyphSegment <- function(x = 5, b = 0) {
 ##' unless \code{y} is missing, in which case an attempt is made to
 ##' coerce the result to the class of \code{x}, if any.
 ##' @author Michael Lawrence
-qmap <- function(m, x, y) {
+qvmap <- function(m, x, y) {
   m <- as.matrix(m)
   cl <- NULL
   if (missing(y)) {
@@ -114,7 +114,7 @@ qmap <- function(m, x, y) {
 ##' @param ymin Minimum Y value
 ##' @return A \code{QTransform} object that will transform points by
 ##' flipping the axis.
-##' @seealso \code{\link{qmap}}
+##' @seealso \code{\link{qvmap}}
 ##' @author Michael Lawrence
 ##' @rdname qflipy
 qflipY <- function(ymax, ymin = 0) UseMethod("qflipY")

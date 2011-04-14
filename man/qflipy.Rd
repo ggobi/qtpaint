@@ -10,7 +10,7 @@
 flipping the axis.
 
 }
-\seealso{\code{\link{qmap}}}
+\seealso{\code{\link{qvmap}}}
 \author{Michael Lawrence}
 \arguments{\item{ymax}{Maximum Y value or a rectangle (\code{QRect} or matrix)}
 \item{ymin}{Minimum Y value}

@@ -47,7 +47,7 @@ export(qlayer, qplotView, qscene)
 export(qglyphCircle, qglyphSquare, qglyphTriangle, qglyphText, qglyphSegment)
 
 ## some transformation conveniences
-export(qmap, qflipY)
+export(qvmap, qflipY)
 S3method(qflipY, QRect)
 S3method(qflipY, QRectF)
 S3method(qflipY, numeric)
