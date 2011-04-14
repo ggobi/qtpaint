@@ -2,6 +2,8 @@ recycleVector <- function(x, len) {
   xlen <- length(x)
   if (xlen == len)
     return(x)
+  if (!len)
+    return(rep(x, 0))
   if (xlen > len) {
     warning("the length of 'x' is already longer than 'len'")
     return(x)
