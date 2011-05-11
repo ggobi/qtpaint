@@ -170,7 +170,7 @@ qlayer <- function(parent = NULL, paintFun = NULL, keyPressFun = NULL,
 "[.Qanviz::Layer" <-
   function (x, i = 0, j = 0)
 {
-  qinvoke(x, "layout")$itemAt(i, j)
+  x$gridLayout()$itemAt(i, j)
 }
 
 ## wrappers that could be added by anyone interested in maintaining them:
