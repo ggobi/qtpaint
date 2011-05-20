@@ -170,7 +170,7 @@ qlayer <- function(parent = NULL, paintFun = NULL, keyPressFun = NULL,
 "[.Qanviz::Layer" <-
   function (x, i = 0, j = 0)
 {
-  x$gridLayout()$itemAt(i, j)
+  qcast(x$gridLayout()$itemAt(i, j), "Qanviz::Layer")
 }
 
 ## wrappers that could be added by anyone interested in maintaining them:
