@@ -64,9 +64,12 @@ namespace Qanviz {
     
     QGraphicsGridLayout *gridLayout() const;
 
+    Layer *layerAt(int row = 0, int col = 0);
+    
     void addLayer(Layer *layer, int row = 0, int col = 0,
                   int rowSpan = 1, int colSpan = 1);
 
+    
     virtual void setLimits(QRectF limits) {
       if (limits != _limits) {
         prepareGeometryChange();
@@ -96,8 +99,7 @@ namespace Qanviz {
     }
     
     QVector<int> locate(const QRectF & rectangle,
-                            Qt::ItemSelectionMode mode =
-                            Qt::IntersectsItemShape)
+                        Qt::ItemSelectionMode mode = Qt::IntersectsItemShape)
     {
       ensureIndex();
       return itemIndices(indexScene->items(rectangle, mode));
@@ -105,16 +107,14 @@ namespace Qanviz {
 
     
     QVector<int> locate(const QPolygonF & polygon,
-                            Qt::ItemSelectionMode mode =
-                            Qt::IntersectsItemShape)
+                        Qt::ItemSelectionMode mode = Qt::IntersectsItemShape)
     {
       ensureIndex();
       return itemIndices(indexScene->items(polygon, mode));
     }
     
     QVector<int> locate(const QPainterPath & path,
-                            Qt::ItemSelectionMode mode =
-                            Qt::IntersectsItemShape)
+                        Qt::ItemSelectionMode mode = Qt::IntersectsItemShape)
     {
       ensureIndex();
       return itemIndices(indexScene->items(path, mode));

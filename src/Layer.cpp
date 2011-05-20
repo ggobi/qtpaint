@@ -182,6 +182,10 @@ void Layer::invalidateIndex() {
   scenePainter = NULL;
 }
 
+Layer *Layer::layerAt(int row, int col) {
+  static_cast<Layer *>(gridLayout()->itemAt(row, col));
+}
+
 void Layer::addLayer(Layer *layer, int row, int col,
                      int rowSpan, int colSpan)
 {
