@@ -183,7 +183,14 @@ void Layer::invalidateIndex() {
 }
 
 Layer *Layer::layerAt(int row, int col) {
-  static_cast<Layer *>(gridLayout()->itemAt(row, col));
+  QGraphicsLayoutItem *layout_item = gridLayout()->itemAt(row, col);
+  Layer *layer = NULL;
+  if (layout_item && layout_item->graphicsItem()->isWidget()) {
+    QGraphicsWidget *widget =
+      static_cast<QGraphicsWidget *>(layout_item->graphicsItem());
+    layer = qobject_cast<Layer *>(widget);
+  }
+  return layer;
 }
 
 void Layer::addLayer(Layer *layer, int row, int col,

@@ -8,10 +8,10 @@ options(error=recover)
 
 circle <- qglyphCircle()
 
-circle <- qglyphCircle(r = 0.04)
+##circle <- qglyphCircle(r = 0.04)
 paths <- lapply(seq(0, by=0.1, length=10), circle$translated, 0)
 
-n <- 10
+n <- 100000
 x <- rnorm(n) #, 50, 25)
 y <- rnorm(n) #, 50, 25)
 df <- data.frame(X = x, Y = y)
@@ -33,8 +33,8 @@ scatterplot <- function(item, painter) {
   ##qdrawText(painter, "x", df[,1], df[,2], color = fill)
   ##qdrawPoint(painter, df[,1], df[,2], stroke = fill)
   ##qdrawCircle(painter, df[,1], df[,2], 5, fill = fill)
-  qdrawPath(painter, paths, fill = fill)
-  ##qdrawGlyph(painter, circle, df[,1], df[,2], fill = fill)
+  ##qdrawPath(painter, paths, fill = fill)
+  print(system.time(qdrawGlyph(painter, circle, df[,1], df[,2], fill = fill)))
 }
 
 labeled <- rep(FALSE, nrow(df))

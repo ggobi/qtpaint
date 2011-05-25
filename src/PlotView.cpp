@@ -224,11 +224,12 @@ PlotView *PlotView::paintingView(QGraphicsScene *scene) {
 }
 
 void PlotView::setOpenGL(bool opengl) {
-  if (opengl)
+  if (opengl) {
 #ifdef QT_OPENGL_LIB
     setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
+    setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 #else
     qWarning("OpenGL not supported by this build of Qt and/or qtpaint");
 #endif
-  else setViewport(new QWidget);
+  } else setViewport(new QWidget);
 }
