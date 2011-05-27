@@ -42,20 +42,14 @@ qglyphText <- function(text = "X", size = 12) {
   glyph$addText(-size / 2, size / 2, qfont(pointsize = size), text)
   glyph
 }
-
-##' Create a segment glyph with specified length and slope
-##'
-##' Create a segment glyph with specified length and slope
-##' @title Create a segment glyph with specified length and slope
-##' @param x length
-##' @param b slope
-##' @return a glyph
-##' @author Yihui Xie <\url{http://yihui.name}>
-qglyphSegment <- function(x = 5, b = 0) {
+##' @param d direction of the segment (radian)
+##' @param symm symmetric around (0, 0) or only draw on a single side
+##' @rdname qglyphs
+qglyphSegment <- function(x = 5, d = 0, symm = TRUE) {
   glyph <- Qt$QPainterPath()
-  x0 <- x * cos(atan(b))
-  y0 <- x * sin(atan(b))
-  glyph$moveTo(-x0, -y0)
+  x0 <- x * cos(d)
+  y0 <- x * sin(d)
+  if (symm) glyph$moveTo(-x0, -y0) else glyph$moveTo(0, 0)
   glyph$lineTo(x0, y0)
   glyph
 }
