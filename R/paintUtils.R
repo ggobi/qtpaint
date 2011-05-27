@@ -14,14 +14,15 @@ qglyphCircle <- function(r = 5) {
   glyph$addEllipse(qpoint(0, 0), r, r)
   glyph
 }
-##' @param x Length of one side of the square or triangle
+##' @param x Length of one side of the square or triangle or the segment
 ##' @rdname qglyphs
 qglyphSquare <- function(x = 5) {
   glyph <- Qt$QPainterPath()
   glyph$addRect(-x, -x, 2*x, 2*x)
   glyph
 }
-##' @param direction Whether the triangle is pointing up or down
+##' @param direction Whether the triangle is pointing up or down, or
+##' the direction of the segment (unit: radian)
 ##' @rdname qglyphs
 qglyphTriangle <- function(x = 5, direction = c("up", "down")) {
   direction <- match.arg(direction)
@@ -42,14 +43,12 @@ qglyphText <- function(text = "X", size = 12) {
   glyph$addText(-size / 2, size / 2, qfont(pointsize = size), text)
   glyph
 }
-##' @param d direction of the segment (radian)
-##' @param symm symmetric around (0, 0) or only draw on a single side
 ##' @rdname qglyphs
-qglyphSegment <- function(x = 5, d = 0, symm = TRUE) {
+qglyphSegment <- function(x = 5, direction = 0) {
   glyph <- Qt$QPainterPath()
-  x0 <- x * cos(d)
-  y0 <- x * sin(d)
-  if (symm) glyph$moveTo(-x0, -y0) else glyph$moveTo(0, 0)
+  x0 <- x * cos(direction)
+  y0 <- x * sin(direction)
+  glyph$moveTo(-x0, -y0)
   glyph$lineTo(x0, y0)
   glyph
 }

@@ -5,7 +5,7 @@
 qglyphSquare(x=5)
 qglyphTriangle(x=5, direction=c("up", "down"))
 qglyphText(text="X", size=12)
-qglyphSegment(x=5, d=0, symm=TRUE)
+qglyphSegment(x=5, direction=0)
 }
 \description{Some glyph constructors for simple glyphs like circle, square and
 triangle. For use with \code{\link{qdrawGlyph}}.}
@@ -15,12 +15,10 @@ triangle. For use with \code{\link{qdrawGlyph}}.}
 }
 \author{Michael Lawrence}
 \arguments{\item{r}{Radius of the circle}
-\item{x}{Length of one side of the square or triangle}
-\item{direction}{Whether the triangle is pointing up or down}
+\item{x}{Length of one side of the square or triangle or the segment}
+\item{direction}{Whether the triangle is pointing up or down, or the direction of the segment (unit: radian)}
 \item{text}{The text of the text glyph}
 \item{size}{The font size of the text glyph}
-\item{d}{direction of the segment (radian)}
-\item{symm}{symmetric around (0, 0) or only draw on a single side}
 }
 \alias{qglyphSquare}
 \alias{qglyphTriangle}
