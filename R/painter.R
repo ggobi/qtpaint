@@ -186,7 +186,8 @@ qdeviceTransform <- function(x) {
 ##' polylines, NA values separate the graphical primitives.
 ##' @param stroke The vector of stroke colors, either a C++
 ##' \code{QColor} object, a matrix returned by \code{\link{col2rgb}}
-##' or any valid input to \code{col2rgb}, recycled
+##' or any valid input to \code{col2rgb}, recycled, or \code{NULL} to
+##' disable stroking.
 ##' @author Michael Lawrence
 ##' @rdname painting
 qdrawLine <- function(p, x, y, stroke = NULL) {
@@ -225,9 +226,10 @@ qdrawPoint <- function(p, x, y, stroke = NULL) {
                   .normArgStroke(p, stroke, m)))
 }
 
-##' @param fill The vector of fill colors, either a C++
-##' \code{QColor} object, a matrix returned by \code{\link{col2rgb}}
-##' or any valid input to \code{col2rgb}, recycled
+##' @param fill The vector of fill colors, either a C++ \code{QColor}
+##' object, a matrix returned by \code{\link{col2rgb}} or any valid
+##' input to \code{col2rgb}, recycled, or \code{NULL} to disable
+##' filling.
 ##' @param xleft The vector of left X coordinates for a rectangle, recycled
 ##' @param ybottom The vector of bottom Y coordinates for a rectangle, recycled
 ##' @param xright The vector of right X coordinates for a rectangle, recycled
