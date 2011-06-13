@@ -1,0 +1,93 @@
+Qt: Is it the appropriate backend?
+-----------------
+
+We currently use the QGraphicsView framework as the basis of
+qtpaint. Now that we know Qt is moving towards Qt Quick, and away from
+QWidget/QGraphicsView, is there an alternative to Qt? There is
+GTK+/Cairo/Clutter. Would that meet our requirements as well as Qt?
+
+Here is how the basic requirements align:
+
+Requirement  GTK       Qt
+------------------------------------
+Canvas       Clutter   QGraphicsView
+Painting     Cairo     QPainter
+Toolkit      GTK+      QWidget
+
+Canvas requirements:
+
+Requirement    Clutter       QGraphicsView
+------------------------------------------
+Caching        No            Yes
+Grid Layout    Yes           Yes
+Spatial Index  No            Yes
+Coordinates    Item/View     Item/Scene/View(port)
+Multiple Views No            Yes
+Offscreen      No            Yes
+Active         Yes           No
+
+Qt still has the edge in the canvas department. QGraphicsView simply
+has no equal. Then again, the spatial index probably does not buy that
+much, and the caching is fairly easy to implement. Multiple views may
+not be that important, as it may be that it is better to share data at
+the pipeline, rather than the scene. Sharing the same scene is fairly
+inflexible, i.e., does the user really want the same brush moving
+around in two different plots? For off-screen drawing, Clutter would
+need better integration with Cairo, which might need not be too hard.
+
+Clutter is still evolving, while QGraphicsView is in maintenance-mode,
+so it might evolve, but its current direction does not align well with
+our needs.
+
+
+Painting comparison:
+
+Requirement    Cairo        QPainter
+-----------------------------------------
+Primitives     Not really   Yes
+Backends       All          SVG unmaintained
+Performance    Ok           Better (but getting slower)
+Active         Yes          No
+
+Cairo is improving, while QPainter is regressing. In terms of
+performance, we really only care about the OpenGL backend. It looks
+like Qt and Cairo are becoming pretty similar in that department (need
+to test). In the long run, we will have to implement more OpenGL fast
+paths (we already have quite a few). An important question is whether
+cairo-gl plays nicely with native GL calls. For off-screen rendering,
+performance is not an issue, and Cairo seems to be the better library.
+
+Widgets: pretty similar, but GTK+ is still evolving, Qt is stagnant.
+
+In short, GTK+ seems to have a brighter GUI feature, because they are
+not taking the QML course. Qt is also moving away from being a
+graphics library, so Cairo will probably end up on top. Clutter still
+has a ways to go before it reaches QGraphicsView, and it's not clear
+if it is developing in that direction.
+
+----------------------------
+Qt/GTK and the future of UIs
+----------------------------
+
+There are probably two types of GUIs:
+
+- Desktop
+- Web
+
+Mobile is excluded, because that is probably best served by the web
+(easy integration with the cloud, compatibility with the desktop,
+etc). Desktop apps tend to be more complex and graphics-intensive than
+web apps, although this is changing.
+
+Suitability of a library for desktop applications comes down to
+features like graphics, network access, desktop integration,
+etc. Here, Qt is currently the winner, because of its nice graphics.
+
+What about the web? On the client side, Qt (and GTK+) have nice WebKit
+ports for displaying the web in a desktop application. Access to the
+Javascript engine from Qt is especially useful for hybrid
+applications. On the server, GTK+ has the very interesting Broadway
+HTML5 backend. GTK+ has no access to Javascript, but perhaps one could
+create a binding to the WebKit JavaScriptCore? This should not be the
+domain of the WebKit port anyway. It is not clear how QML is useful
+for web app development; seems only for simple mobile apps.
