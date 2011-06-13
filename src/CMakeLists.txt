@@ -18,11 +18,25 @@ set(qtpaint_LIB_SRCS Layer.cpp Painter.cpp QtPainter.cpp imports.cpp
   
 QT4_WRAP_CPP ( qtpaint_MOC_FILES Layer.hpp RLayer.hpp PlotView.hpp )
 
+if(WIN32) # Toughest Win32 part: generating the defs file for the DLL
+foreach(qtpaint_lib_src ${qtpaint_LIB_SRCS})
+  list(APPEND qtpaint_LIB_OBJS "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/qtpaint.dir/${qtpaint_lib_src}${CMAKE_CXX_OUTPUT_EXTENSION}")
+endforeach(qtpaint_lib_src ${qtpaint_LIB_SRCS})
+add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/qtpaint.def 
+                   COMMAND sh ARGS ${CMAKE_CURRENT_SOURCE_DIR}/mkdef.sh
+                   DEPENDS ${qtpaint_LIB_OBJS}) 
+SET(CMAKE_LINK_DEF_FILE_FLAG "qtpaint.def ") # space needs to be there
+add_library(qtpaint SHARED qtpaint.def ${qtpaint_LIB_SRCS} ${qtpaint_MOC_FILES})
+else(WIN32)
 add_library(qtpaint SHARED ${qtpaint_LIB_SRCS} ${qtpaint_MOC_FILES})
+endif(WIN32)
 
 target_link_libraries(qtpaint ${QT_LIBRARIES} ${R_LIBRARIES})
 
 set_target_properties(qtpaint PROPERTIES PREFIX "")
+if(NOT WIN32) # Need to force .so on Mac, but Windows needs to be .dll
 set_target_properties(qtpaint PROPERTIES SUFFIX ".so")
-
-install(TARGETS qtpaint DESTINATION . )
+install(TARGETS qtpaint LIBRARY DESTINATION . )
+else(NOT WIN32)
+install(TARGETS qtpaint RUNTIME DESTINATION . )
+endif(NOT WIN32)
