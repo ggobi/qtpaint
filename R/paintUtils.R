@@ -18,7 +18,7 @@ qglyphCircle <- function(r = 5) {
 ##' @rdname qglyphs
 qglyphSquare <- function(x = 5) {
   glyph <- Qt$QPainterPath()
-  glyph$addRect(-x, -x, 2*x, 2*x)
+  glyph$addRect(-x / 2, -x / 2, x, x)
   glyph
 }
 ##' @param direction Whether the triangle is pointing up or down, or
