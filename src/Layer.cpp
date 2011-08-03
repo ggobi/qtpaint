@@ -196,6 +196,13 @@ Layer *Layer::layerAt(int row, int col) {
 void Layer::addLayer(Layer *layer, int row, int col,
                      int rowSpan, int colSpan)
 {
+  if (!layer) {
+    qWarning("Layer::addLayer: cannot add null layer");
+    return;
+  }
+  if (scene() && layer->scene() != scene()) {
+    scene()->addItem(layer);
+  }
   gridLayout()->addItem(layer, row, col, rowSpan, colSpan);
   layer->setZValue(childItems().size());
 }
