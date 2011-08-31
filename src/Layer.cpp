@@ -193,6 +193,25 @@ Layer *Layer::layerAt(int row, int col) {
   return layer;
 }
 
+void hideCellAlreadyTakenHandler(QtMsgType type, const char *msg)
+{
+  switch (type) {
+  case QtDebugMsg:
+    fprintf(stderr, "Debug: %s\n", msg);
+    break;
+  case QtWarningMsg:
+    if (strcmp(msg, "QGridLayoutEngine::addItem: Cell (1, 1) already taken"))
+      fprintf(stderr, "Warning: %s\n", msg);
+    break;
+  case QtCriticalMsg:
+    fprintf(stderr, "Critical: %s\n", msg);
+    break;
+  case QtFatalMsg:
+    fprintf(stderr, "Fatal: %s\n", msg);
+    abort();
+  }
+}
+
 void Layer::addLayer(Layer *layer, int row, int col,
                      int rowSpan, int colSpan)
 {
@@ -203,7 +222,11 @@ void Layer::addLayer(Layer *layer, int row, int col,
   if (scene() && layer->scene() != scene()) {
     scene()->addItem(layer);
   }
+  // FIXME: we hide this message, but it is a serious one: we are
+  // using Qt in an unsupported manner.
+  qInstallMsgHandler(hideCellAlreadyTakenHandler);
   gridLayout()->addItem(layer, row, col, rowSpan, colSpan);
+  qInstallMsgHandler(0);
   layer->setZValue(childItems().size());
 }
 
