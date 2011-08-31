@@ -200,7 +200,7 @@ void hideCellAlreadyTakenHandler(QtMsgType type, const char *msg)
     fprintf(stderr, "Debug: %s\n", msg);
     break;
   case QtWarningMsg:
-    if (strcmp(msg, "QGridLayoutEngine::addItem: Cell (1, 1) already taken"))
+    if (!QRegExp("QGridLayoutEngine::addItem: Cell \\(\\d+, \\d+\\) already taken").exactMatch(msg))
       fprintf(stderr, "Warning: %s\n", msg);
     break;
   case QtCriticalMsg:
