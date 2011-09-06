@@ -90,11 +90,12 @@ void OpenGLPainter::drawCircle(double x, double y, int r) {
     d += lineWidth;
 
   if (pen.style() == Qt::CustomDashLine || (has_pen && has_fill && !same_color)
-      || ((!has_fill || mps < d) && (lineWidth > 1 || antialias())))
+      || ((!has_fill || mps < d) && lineWidth > 1))
     QtPainter::drawCircle(x, y, r);
   else if (has_fill && mps >= d) {
     enableTransform();
     beginCustom();
+    // FIXME: need to check for POINT_SMOOTH support
     glEnable(GL_POINT_SMOOTH);
     setColor(brush.color());
     glPointSize(d);
