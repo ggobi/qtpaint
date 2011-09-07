@@ -14,14 +14,23 @@ using namespace Qanviz;
 
 static bool fboMultisamplingFailed = false;
 
+static QtMsgHandler prevMsgHandler = NULL;
+
 void fboDebugMsgCatcher(QtMsgType type, const char *msg)
 {
+  qInstallMsgHandler(prevMsgHandler);
   switch (type) {
   case QtDebugMsg:
     fboMultisamplingFailed = true;
     break;
-  default:
-    fprintf(stderr, "%s\n", msg);
+  case QtWarningMsg:
+    qWarning("%s", msg);
+    break;
+  case QtCriticalMsg:
+    qCritical("%s", msg);
+    break;
+  case QtFatalMsg:
+    qFatal("%s", msg);
   }
 }
 
@@ -73,9 +82,9 @@ void Layer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
         QGLFramebufferObjectFormat fboFormat;
         fboFormat.setAttachment(QGLFramebufferObject::CombinedDepthStencil);
         fboFormat.setSamples(4); // 4X antialiasing should be enough?
-        qInstallMsgHandler(fboDebugMsgCatcher);
+        prevMsgHandler = qInstallMsgHandler(fboDebugMsgCatcher);
         fbo = new QGLFramebufferObject(size, fboFormat);
-        qInstallMsgHandler(0);
+        qInstallMsgHandler(prevMsgHandler);
         if (fboMultisamplingFailed) {
           delete fbo;
           fbo = NULL;
@@ -195,20 +204,20 @@ Layer *Layer::layerAt(int row, int col) {
 
 void hideCellAlreadyTakenHandler(QtMsgType type, const char *msg)
 {
+  qInstallMsgHandler(prevMsgHandler);
   switch (type) {
   case QtDebugMsg:
-    fprintf(stderr, "Debug: %s\n", msg);
+    qDebug("%s", msg);
     break;
   case QtWarningMsg:
     if (!QRegExp("QGridLayoutEngine::addItem: Cell \\(\\d+, \\d+\\) already taken").exactMatch(msg))
-      fprintf(stderr, "Warning: %s\n", msg);
+      qWarning("%s", msg);
     break;
   case QtCriticalMsg:
-    fprintf(stderr, "Critical: %s\n", msg);
+    qCritical("%s", msg);
     break;
   case QtFatalMsg:
-    fprintf(stderr, "Fatal: %s\n", msg);
-    abort();
+    qFatal("%s", msg);
   }
 }
 
@@ -224,9 +233,9 @@ void Layer::addLayer(Layer *layer, int row, int col,
   }
   // FIXME: we hide this message, but it is a serious one: we are
   // using Qt in an unsupported manner.
-  qInstallMsgHandler(hideCellAlreadyTakenHandler);
+  prevMsgHandler = qInstallMsgHandler(hideCellAlreadyTakenHandler);
   gridLayout()->addItem(layer, row, col, rowSpan, colSpan);
-  qInstallMsgHandler(0);
+  qInstallMsgHandler(prevMsgHandler);
   layer->setZValue(childItems().size());
 }
 
