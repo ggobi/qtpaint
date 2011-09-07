@@ -251,12 +251,13 @@ recycling rule applies for the radius argument.
 
 Next, we construct a layer that will delegate to our callback for
 painting. The convenience constructor of \Rclass{Layer} is \Rfunction{qlayer}:
-<<drawing-basics-qlayer>>=
+<<drawing-basics-qlayer, eval=FALSE>>=
 library(qtpaint)
 library(qtbase)
 scene <- qscene()
 scatterLayer <- qlayer(scene, paintFun = scatterPainter)
 @
+%
 In the above, we first create a scene for the layer and then create
 the layer. The first argument to \Rfunction{qlayer} is for the
 ``parent,'' which can be either the scene (for a root layer) or
@@ -265,20 +266,21 @@ time, but it is usually most convenient.
 
 To display the layer, there is one final step: creating a view of the
 scene and ``printing'' it to the screen.
-<<drawing-basics-scene-view>>=
+<<drawing-basics-scene-view, eval=FALSE>>=
 view <- qplotView(scene = scene)
 print(view)
 @
-
+%
 The circles in our scatterplot are drawn with an efficient algorithm,
 but each circle is drawn from scatch. Since they all look the same, we
 should be able to render a single circle and copy its pixels wherever
 we need a circle in our plot. This would be much faster. \qtpaint{}
 provides \Rfunction{qdrawGlyph} for this purpose. The first step is to
 define our circle glyph, optimally outside of the paint callback.
-<<drawing-basics-glyph>>=
+<<drawing-basics-glyph, eval=FALSE>>=
 circle <- qglyphCircle()
 @
+%
 The \Rfunction{qglyphCircle} function creates a vector
 representation of a (by default) radius 5 circle. Other glyph shapes
 are included; see \Rclass{QPainterPath} for creating a custom glyph.
@@ -332,12 +334,13 @@ Configuring the layer to scene transform for plotting data is
 simple. The limits of the data need to be passed as a rectangle to the
 \Rfunction{qlayer} constructor. It is also possible to modify this
 after construction. Below, we recreate our layer with limits:
-<<drawing-coords-limits>>=
+<<drawing-coords-limits, eval=FALSE>>=
 scene <- qscene()
 scatterLayer <- qlayer(scene, paintFun = scatterPainter,
                        limits = qrect(0, 0, 600, 400))
 print(qplotView(scene = scene))
 @
+%
 Although the plot will look the same initially, the plot now scales as
 the widget is resized.
 
@@ -541,7 +544,7 @@ can respond to the user action.
 For the event callback to be invoked in response to an event, it must
 be attached to a specific event type, on a specific layer. This occurs
 at construction time, as shown below:
-<<input-basic-qlayer>>=
+<<input-basic-qlayer, eval=FALSE>>=
 pointAddingLayer <- qlayer(paintFun = scatterPainter,
                            mouseReleaseFun = pointAdder)
 @
