@@ -1,5 +1,5 @@
 \name{dashReplace}
-\alias{dashReplace}
+\alias{qdash<-}
 \alias{dashReplace}
 \title{Dash patterns}
 \usage{qdash(x) <- value}

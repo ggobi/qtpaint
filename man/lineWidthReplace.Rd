@@ -1,5 +1,5 @@
 \name{lineWidthReplace}
-\alias{lineWidthReplace}
+\alias{qlineWidth<-}
 \alias{lineWidthReplace}
 \title{Line width}
 \usage{qlineWidth(x) <- value}

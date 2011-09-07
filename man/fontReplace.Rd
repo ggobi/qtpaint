@@ -1,5 +1,5 @@
 \name{fontReplace}
-\alias{fontReplace}
+\alias{qfont<-}
 \alias{fontReplace}
 \title{Fonts}
 \usage{qfont(x) <- value}

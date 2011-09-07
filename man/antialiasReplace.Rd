@@ -1,5 +1,5 @@
 \name{antialiasReplace}
-\alias{antialiasReplace}
+\alias{qantialias<-}
 \alias{antialiasReplace}
 \title{Antialiasing}
 \usage{qantialias(x) <- value}
