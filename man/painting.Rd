@@ -49,6 +49,7 @@ extents ("center") or only according to the region above the
 baseline ("basecenter"). The former may be better for plotting
 text, while the latter may be better for labeling.}
 \item{rot}{The vector of the text rotations, in degrees, recycled}
+\item{color}{The stroke color of the text}
 \item{cex}{The vector of numeric expansion factors of the glyphs, recycled}
 \item{hcex}{The vector of numeric horizontal expansion factors of
 the glyphs, recycled. Overrides the \code{cex} in the horizontal

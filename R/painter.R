@@ -318,6 +318,7 @@ qdrawPath <- function(p, path, stroke = NULL, fill = NULL) {
 ##' baseline ("basecenter"). The former may be better for plotting
 ##' text, while the latter may be better for labeling.
 ##' @param rot The vector of the text rotations, in degrees, recycled
+##' @param color The stroke color of the text
 ##' @param cex The vector of numeric expansion factors of the glyphs, recycled
 ##' @param hcex The vector of numeric horizontal expansion factors of
 ##' the glyphs, recycled. Overrides the \code{cex} in the horizontal
