@@ -8,7 +8,6 @@
 ##'
 ##' @title User to device transform
 ##' @param x The paint context
-##' @param p The paint context
 ##' @param value The desired user to device transform, as a C++
 ##' \code{QTransform} object, or a logical scalar for
 ##' \code{qdeviceTransformEnabled}.
@@ -28,17 +27,17 @@ qdeviceTransform <- function(x) {
 }
 
 ##' @rdname transform
-##' @usage qdeviceTransformEnabled(p) <- value
-`qdeviceTransformEnabled<-` <- function(p, value) {
-  stopifnot(inherits(p, "Painter"))
-  invisible(.Call("qt_qsetTransformEnabled_Painter", p, as.logical(value)))
+##' @usage qdeviceTransformEnabled(x) <- value
+`qdeviceTransformEnabled<-` <- function(x, value) {
+  stopifnot(inherits(x, "Painter"))
+  invisible(.Call("qt_qsetTransformEnabled_Painter", x, as.logical(value)))
 }
 
 ##' Functions for controlling the stroke and fill colors, including
 ##' the ability to disable or enable stroking and filling.
 ##'
 ##' @title Stroke and fill colors
-##' @param p The paint context
+##' @param x The paint context
 ##' @param value The stroke or fill color, or a logical value for
 ##' \code{qHasStroke<-} and \code{qHasFill<-}. A stroke and fill color
 ##' should either be a C++ \code{QColor} object, a matrix like that
@@ -48,17 +47,17 @@ qdeviceTransform <- function(x) {
 ##' \code{qHasStroke} and \code{qHasFill}.
 ##' @rdname stroke-fill
 ##' @author Michael Lawrence
-##' @usage qhasStroke(p) <- value
-`qhasStroke<-` <- function(p, value) {
-  stopifnot(inherits(p, "Painter"))
-  invisible(.Call("qt_qsetHasStroke_Painter", p, as.logical(value)))
+##' @usage qhasStroke(x) <- value
+`qhasStroke<-` <- function(x, value) {
+  stopifnot(inherits(x, "Painter"))
+  invisible(.Call("qt_qsetHasStroke_Painter", x, as.logical(value)))
 }
 
 ##' @rdname stroke-fill
-##' @usage qhasFill(p) <- value
-`qhasFill<-` <- function(p, value) {
-  stopifnot(inherits(p, "Painter"))
-  invisible(.Call("qt_qsetHasFill_Painter", p, as.logical(value)))
+##' @usage qhasFill(x) <- value
+`qhasFill<-` <- function(x, value) {
+  stopifnot(inherits(x, "Painter"))
+  invisible(.Call("qt_qsetHasFill_Painter", x, as.logical(value)))
 }
 
 .normArgStroke <- function(p, color, len) {
