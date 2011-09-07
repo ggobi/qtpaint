@@ -3,7 +3,7 @@ Version: 0.8.0
 Title: Qt-based painting infrastructure
 Author: Michael Lawrence, Deepayan Sarkar
 Depends: R (>= 2.6.0), utils
-Imports: qtbase (>= 0.9-1)
+Imports: qtbase (>= 0.99.2)
 Maintainer: Michael Lawrence <michafla@gene.com>,
             Deepayan Sarkar <deepayan.sarkar@gmail.com>
 Description: Low-level interface to functionality in Qt for efficiently drawing
