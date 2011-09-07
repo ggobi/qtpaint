@@ -1,8 +1,9 @@
 \name{layout-accessors}
 \alias{[<-.Qanviz::Layer}
 \title{Grid layout accessors}
-\usage{\method{"[<-"}{Qanviz::Layer}(x, i=0, j=0, rowSpan=1, colSpan=1, value)
-\method{"["}{Qanviz::Layer}(x, i=0, j=0)
+\usage{
+\method{[}{`Qanviz::Layer`}(x, i=0, j=0, rowSpan=1, colSpan=1) <- value
+\method{[}{`Qanviz::Layer`}(x, i=0, j=0)
 }
 \description{Add or retrieve a layer to or from the grid layout of another layer}
 \author{Michael Lawrence}

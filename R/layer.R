@@ -158,7 +158,7 @@ qlayer <- function(parent = NULL, paintFun = NULL, keyPressFun = NULL,
 ##' @param value The layer to add to the layout
 ##' @author Michael Lawrence
 ##' @rdname layout-accessors
-##' @method "[<-" Qanviz::Layer
+##' @method [<- `Qanviz::Layer`
 "[<-.Qanviz::Layer" <- function (x, i = 0, j = 0, rowSpan = 1, colSpan = 1,
                                  value)
 {
@@ -166,7 +166,7 @@ qlayer <- function(parent = NULL, paintFun = NULL, keyPressFun = NULL,
   x
 }
 ##' @rdname layout-accessors
-##' @method "[" Qanviz::Layer
+##' @method [ `Qanviz::Layer`
 "[.Qanviz::Layer" <-
   function (x, i = 0, j = 0)
 {
