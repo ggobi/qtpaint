@@ -90,6 +90,6 @@ dynamic ones}
 \examples{scene <- qscene()
 layer <- qlayer(scene, function(layer, painter) {
 qdrawCircle(1:10, 1:10)
-}, limits = qrect(0, 0, 11, 11))
+}, limits = qtbase::qrect(0, 0, 11, 11))
 qplotView(scene)}
 
