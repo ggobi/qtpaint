@@ -186,7 +186,7 @@ qdeviceTransform <- function(x) {
 ##' @param stroke The vector of stroke colors, either a C++
 ##' \code{QColor} object, a matrix returned by \code{\link{col2rgb}}
 ##' or any valid input to \code{col2rgb}, recycled, or \code{NULL} to
-##' disable stroking.
+##' disable stroking. Recycled to match the number of primitives.
 ##' @author Michael Lawrence
 ##' @rdname painting
 qdrawLine <- function(p, x, y, stroke = NULL) {
@@ -194,8 +194,9 @@ qdrawLine <- function(p, x, y, stroke = NULL) {
   m <- max(length(x), length(y))
   x <- recycleVector(x, m)
   y <- recycleVector(y, m)
+  n <- sum(is.na(x)) + 1L
   invisible(.Call("qt_qdrawPolyline_Painter", p, as.numeric(x), as.numeric(y),
-                  .normArgStroke(p, stroke, m)))
+                  .normArgStroke(p, stroke, n)))
 }
 
 ##' @param x0 The vector of first X coordinates, recycled
@@ -228,7 +229,7 @@ qdrawPoint <- function(p, x, y, stroke = NULL) {
 ##' @param fill The vector of fill colors, either a C++ \code{QColor}
 ##' object, a matrix returned by \code{\link{col2rgb}} or any valid
 ##' input to \code{col2rgb}, recycled, or \code{NULL} to disable
-##' filling.
+##' filling. Recycled to match the number of primitives.
 ##' @param xleft The vector of left X coordinates for a rectangle, recycled
 ##' @param ybottom The vector of bottom Y coordinates for a rectangle, recycled
 ##' @param xright The vector of right X coordinates for a rectangle, recycled
@@ -268,8 +269,9 @@ qdrawPolygon <- function(p, x, y, stroke = NULL, fill = NULL) {
   m <- max(length(x), length(y))
   x <- recycleVector(x, m)
   y <- recycleVector(y, m)
+  n <- sum(is.na(x)) + 1L
   invisible(.Call("qt_qdrawPolygon_Painter", p, as.numeric(x), as.numeric(y),
-                  .normArgStroke(p, stroke, m), .normArgFill(p, fill, m)))
+                  .normArgStroke(p, stroke, n), .normArgFill(p, fill, n)))
 }
 
 ##' @rdname painting 
