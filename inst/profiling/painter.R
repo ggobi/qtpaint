@@ -20,4 +20,4 @@ writeLines("op,ogl,aa,filled,time", "painter.csv")
 
 for (i in seq(nrow(params))) do.call(test, params[i,])
 
-timings <- read.csv("painter.csv")
+timings <- read.csv("painter-ogl2.csv")

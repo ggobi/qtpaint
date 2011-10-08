@@ -8,16 +8,11 @@ General notes:
 
 - the QGLWidget seems to receive two paint events per
   resize, while the ordinary QWidget only receives one.
-- antialiasing for QGL is via the HighQualityAntialiasing render hint,
-  as the ordinary antialiasing does not appear to be so.
-- antialiased QGL has a significant pause (perhaps 7 seconds?) before
-  refreshing the screen, and this has no bearing on whether any graphics were
-  actually drawn antialiased. Might be due to multisampling...
 
 Open Circles (r = 5)
 --------------------
 Qt: 0.7/38, 2.4/38 non-aligned
-QGL: 1.2/1.2/4.9 
+QGL: 1.2/1.2/4.9
 OGL: 0.38/0.51/NA
 
 The Qt software is fastest with aliased circles when
@@ -67,6 +62,7 @@ Points (single pixels)
 ---------------------
 Qt: 0.03
 QGL: 0.03 (Qt 4.4: 0.007)
+OGL: 0.01
 
 One would expect OpenGL to do a lot better here, but for some reason,
 in Qt 4.5, they draw points as triangles.
@@ -77,23 +73,31 @@ L = 10000 lines, 30 segments each, zigzag pattern
 
 Qt: 0.43/71
 QGL: 0.03/0.03/0.06
+QGL2: 1.5/1.5
 
 The lines are obviously tough to profile due to their complexity. This
 test gets at something like a parallel coordinate plot. OpenGL clearly
 wins out here.
 
+We see a 50X slowdown for these in QGL2.
+
 Segments (N, diagonal across window)
 --------
 Qt: 0.6/319
 QGL: 0.02/0.06/0.08
+QGL2: 0.6/0.6
 
 Again, OpenGL wins out. Qt/X11 slows down relative to polylines, as
 X11 lacks a fast path for segments.
+
+We see a 30X slowdown for QGL2 here. Much faster to use segments
+instead of polylines.
 
 Open Rectangles
 ---------------
 Qt: 1.2/36
 QGL: 0.37/2.6
+QGL2: 5/5
 
 Filled Rectangles
 ----------
@@ -115,11 +119,13 @@ Open Polygons (triangles)
 --------------------
 Qt: 1.3/40
 QGL: 0.4/0.9
+QGL2: 5/5
 
 Filled Polygons (triangles)
 --------------------
 Qt: 4.7/58
 QGL: 2.4/1.7
+QGL2: 8/9
 
 The margin here for OpenGL is surprisingly small, but it may be
 explained by the individual drawing of polygons, rather than relying
@@ -129,6 +135,8 @@ faster. Another surprise is the low cost of antialiasing -- it is in
 fact faster to draw antialiased filled triangles. Open polygons might
 be faster if drawn as segments. An important note: OpenGL will
 perform much worse on concave polyons, probably about as well as X11.
+
+We see a 5X slowdown with the move to QGL2.
 
 =========
 Glyphs (10x10)
@@ -164,3 +172,8 @@ optimizations. Now on to linking this to R.
 UPDATE: turns out using multisampling antialiasing in OpenGL is almost
 free, and looks great! And it applies to anything drawn via OpenGL,
 including the midpoint circle.
+
+UPDATE: The OpenGL2 engine is frustratingly slow. We see a 5X slowdown
+in filled polygon drawing, and a 30X slowdown for segments (and 50X
+for polylines). Obviously one should favor segments over polylines if
+we move to this.
