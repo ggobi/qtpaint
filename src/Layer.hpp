@@ -134,6 +134,9 @@ namespace Qanviz {
 
     void hoverEnterEvent ( QGraphicsSceneHoverEvent * event );
     void hoverLeaveEvent ( QGraphicsSceneHoverEvent * event );
+    void focusInEvent ( QFocusEvent * event );
+    void focusOutEvent ( QFocusEvent * event );
+
     bool event ( QEvent * event );
     
   };

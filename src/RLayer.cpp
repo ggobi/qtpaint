@@ -203,17 +203,17 @@ void RLayer::wheelEvent ( QGraphicsSceneWheelEvent * event ) {
 }
 
 void RLayer::hoverEnterEvent ( QGraphicsSceneHoverEvent * event ) {
-  /* do not chain up, because it leads to needless cache purging */
-  if (hoverEnterEvent_R != R_NilValue)  
-    dispatchEvent(this, hoverEnterEvent_R, event,
-                  "QGraphicsSceneHoverEvent");
+  if (hoverEnterEvent_R == R_NilValue)
+    Layer::hoverEnterEvent(event);
+  else dispatchEvent(this, hoverEnterEvent_R, event,
+                     "QGraphicsSceneHoverEvent");
 }
 
 void RLayer::hoverLeaveEvent ( QGraphicsSceneHoverEvent * event ) {
-  /* do not chain up, because it leads to needless cache purging */
-  if (hoverLeaveEvent_R != R_NilValue)      
-    dispatchEvent(this, hoverLeaveEvent_R, event,
-                  "QGraphicsSceneHoverEvent");
+  if (hoverLeaveEvent_R == R_NilValue)
+    Layer::hoverLeaveEvent(event);
+  else dispatchEvent(this, hoverLeaveEvent_R, event,
+                     "QGraphicsSceneHoverEvent");
 }
 
 void RLayer::hoverMoveEvent ( QGraphicsSceneHoverEvent * event ) {
@@ -258,13 +258,13 @@ void RLayer::dropEvent ( QGraphicsSceneDragDropEvent * event ) {
 
 void RLayer::focusInEvent ( QFocusEvent * event ) {
   if (focusInEvent_R == R_NilValue)  
-    QGraphicsItem::focusInEvent(event);
+    Layer::focusInEvent(event);
   else dispatchEvent(this, focusInEvent_R, event, "QFocusEvent");
 }
 
 void RLayer::focusOutEvent ( QFocusEvent * event ) {
   if (focusOutEvent_R == R_NilValue)  
-    QGraphicsItem::focusOutEvent(event);
+    Layer::focusOutEvent(event);
   else dispatchEvent(this, focusOutEvent_R, event, "QFocusEvent");
 }
 

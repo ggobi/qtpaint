@@ -261,13 +261,18 @@ QGraphicsGridLayout *Layer::gridLayout() const {
   return static_cast<QGraphicsGridLayout *>(layout());
 }
 
-/* Block hover enter/leave, because it calls update() needlessly */
+/* Block events that call update() (usually needlessly) */
 void Layer::hoverEnterEvent ( QGraphicsSceneHoverEvent * event ) {
   Q_UNUSED(event);
 }
 void Layer::hoverLeaveEvent ( QGraphicsSceneHoverEvent * event ) {
   Q_UNUSED(event);
 }
+void Layer::focusInEvent ( QFocusEvent * event ) {
+}
+void Layer::focusOutEvent ( QFocusEvent * event ) {
+}
+
 
 bool Layer::event(QEvent *event) {
   switch (event->type()) {
