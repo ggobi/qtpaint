@@ -260,3 +260,23 @@ QGraphicsView *Layer::viewForEvent(QGraphicsSceneEvent *event) {
 QGraphicsGridLayout *Layer::gridLayout() const {
   return static_cast<QGraphicsGridLayout *>(layout());
 }
+
+/* Block hover enter/leave, because it calls update() needlessly */
+void Layer::hoverEnterEvent ( QGraphicsSceneHoverEvent * event ) {
+  Q_UNUSED(event);
+}
+void Layer::hoverLeaveEvent ( QGraphicsSceneHoverEvent * event ) {
+  Q_UNUSED(event);
+}
+
+bool Layer::event(QEvent *event) {
+  switch (event->type()) {
+    /* do not redraw (update) when activation state changes */
+  case QEvent::WindowActivate:
+  case QEvent::WindowDeactivate:
+    return(true);
+  default:
+    break;
+  }
+  return QGraphicsWidget::event(event);
+}

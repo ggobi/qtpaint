@@ -130,6 +130,12 @@ namespace Qanviz {
 
     static QGraphicsView *viewForEvent(QGraphicsSceneEvent *event);
 
+  protected:
+
+    void hoverEnterEvent ( QGraphicsSceneHoverEvent * event );
+    void hoverLeaveEvent ( QGraphicsSceneHoverEvent * event );
+    bool event ( QEvent * event );
+    
   };
 }
 

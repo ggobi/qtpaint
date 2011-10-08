@@ -270,7 +270,6 @@ void RLayer::focusOutEvent ( QFocusEvent * event ) {
 
 QSizeF RLayer::sizeHint ( Qt::SizeHint hint, const QSizeF &constraint ) {
   SEXP e, etmp, ans;
-  qDebug("size hint");
   if (sizeHint_R == R_NilValue) {
     return QGraphicsWidget::sizeHint(hint, constraint);
   }
