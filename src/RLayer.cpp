@@ -43,7 +43,8 @@ RLayer::RLayer(QGraphicsItem *parent,
     focusInEvent_R(focusInEvent), focusOutEvent_R(focusOutEvent),
     sizeHint_R(sizeHint)
 {
-  if (keyPressEvent != R_NilValue || keyReleaseEvent != R_NilValue)
+  if (keyPressEvent != R_NilValue || keyReleaseEvent != R_NilValue ||
+      focusInEvent != R_NilValue || focusOutEvent != R_NilValue)
     setFocusPolicy(Qt::StrongFocus);
   if (hoverMoveEvent != R_NilValue || hoverEnterEvent != R_NilValue ||
       hoverLeaveEvent != R_NilValue)
