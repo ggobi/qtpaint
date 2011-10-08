@@ -203,17 +203,17 @@ void RLayer::wheelEvent ( QGraphicsSceneWheelEvent * event ) {
 }
 
 void RLayer::hoverEnterEvent ( QGraphicsSceneHoverEvent * event ) {
-  if (hoverEnterEvent_R == R_NilValue)  
-    QGraphicsItem::hoverEnterEvent(event);
-  else dispatchEvent(this, hoverEnterEvent_R, event,
-                     "QGraphicsSceneHoverEvent");
+  /* do not chain up, because it leads to needless cache purging */
+  if (hoverEnterEvent_R != R_NilValue)  
+    dispatchEvent(this, hoverEnterEvent_R, event,
+                  "QGraphicsSceneHoverEvent");
 }
 
 void RLayer::hoverLeaveEvent ( QGraphicsSceneHoverEvent * event ) {
-  if (hoverLeaveEvent_R == R_NilValue)  
-    QGraphicsItem::hoverLeaveEvent(event);
-  else dispatchEvent(this, hoverLeaveEvent_R, event,
-                     "QGraphicsSceneHoverEvent");
+  /* do not chain up, because it leads to needless cache purging */
+  if (hoverLeaveEvent_R != R_NilValue)      
+    dispatchEvent(this, hoverLeaveEvent_R, event,
+                  "QGraphicsSceneHoverEvent");
 }
 
 void RLayer::hoverMoveEvent ( QGraphicsSceneHoverEvent * event ) {
