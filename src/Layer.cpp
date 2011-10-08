@@ -107,7 +107,6 @@ void Layer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
   if (!qvpainter) // fallback to Qt renderer
     qvpainter = new QtPainter(painter);
 
-  // NOTE: in QT 4.6 exposedRect will just be the bounding rect, by default
   paintPlot(qvpainter, option->exposedRect);
 
   delete qvpainter;

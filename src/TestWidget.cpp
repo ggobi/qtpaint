@@ -15,7 +15,7 @@ using namespace Qanviz;
 static const char * opNames[] =
   { "Glyph", "Polygon", "Rectangle", "Point", "Line", "Segment", "Circle" };
 
-#define OUTFILE "painter.csv"
+#define OUTFILE "painter-ogl2.csv"
 
 #define BEGIN_TIMING gettimeofday(&before, NULL)
 #define END_TIMING   gettimeofday(&after, NULL);                        \

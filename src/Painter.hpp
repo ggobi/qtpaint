@@ -9,8 +9,6 @@ class QPainterPath;
 
 #include <QTransform>
 
-#include <math.h> // for fabs()
-
 namespace Qanviz {
   class Painter {
 
