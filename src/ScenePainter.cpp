@@ -105,8 +105,11 @@ void ScenePainter::drawRectangles(double *x, double *y, double *w, double *h,
   QPen pen = this->pen();
   for (int i = 0; i < n; i++) {
     QPointF point = QPointF(x[i], y[i]);
-    QRectF rect = QRectF(tform.map(point), QSizeF(w[i], h[i]));
-    STORE_INDEX(_scene->addRect(rect, pen));
+    QRectF rect = tform.mapRect(QRectF(point, QSizeF(w[i], h[i])));
+    if (!tform.isRotating()) {
+      STORE_INDEX(_scene->addRect(tform.mapRect(rect), pen));
+    }
+    else STORE_INDEX(_scene->addPolygon(tform.map(QPolygonF(rect))));
   }
 }
 
