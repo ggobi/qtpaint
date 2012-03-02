@@ -1,5 +1,6 @@
 LIBR = "-L$(R_HOME)/bin/i386 -lR"
 QTBASE_DIR := $(shell $(R_HOME)/bin/Rscript --vanilla -e 'cat(system.file(package="qtbase"))')
+PATH := ${PATH};${QTBASE_QT_PATH};${CMAKE_PATH}
 
 all:
 	mkdir -p ../kdebindings-build;
@@ -23,3 +24,4 @@ clean:
 	rm -rf ../kdebindings-build
 	rm -rf ../src-build
 	rm -rf ../inst/local
+	rm -rf src/qtpaint.dll
