@@ -28,7 +28,8 @@ qscene <- function(parent = NULL) Qt$QGraphicsScene(parent)
 qscene.points <- function(s, x, y, radius = 1)
 {
   xy <- xy.coords(x, y, recycle = TRUE)
-  .Call(scene_addPoints, s, as.double(xy$x), as.double(xy$y), as.double(radius))
+  .Call("scene_addPoints", s, as.double(xy$x), as.double(xy$y),
+        as.double(radius), PACKAGE = "qtpaint")
 }
 
 ##' @rdname add-scene-items
@@ -36,7 +37,8 @@ qscene.points <- function(s, x, y, radius = 1)
 qscene.lines <- function(s, x, y, lwd = 0)
 {
   xy <- xy.coords(x, y, recycle = TRUE)
-  .Call(scene_addLines, s, as.double(xy$x), as.double(xy$y), as.double(lwd))
+  .Call("scene_addLines", s, as.double(xy$x), as.double(xy$y), as.double(lwd),
+        PACKAGE = "qtpaint")
 }
 
 ##' @param x1 The first X coordinates, recycled
@@ -47,13 +49,14 @@ qscene.lines <- function(s, x, y, lwd = 0)
 qscene.segments <- function(s, x1, y1, x2, y2, lwd = 0)
 {
   n <- max(length(x1), length(x2), length(y1), length(y2))
-  .Call(scene_addSegments,
+  .Call("scene_addSegments",
         s,
         rep(as.double(x1), length.out = n),
         rep(as.double(y1), length.out = n),
         rep(as.double(x2), length.out = n),
         rep(as.double(y2), length.out = n),
-        as.double(lwd))
+        as.double(lwd),
+        PACKAGE = "qtpaint")
 }
 
 ##' @param w Vector of rectangle widths, recycled
@@ -62,8 +65,8 @@ qscene.segments <- function(s, x1, y1, x2, y2, lwd = 0)
 qscene.rect <- function(s, x, y, w = 1, h = 1)
 {
   xy <- xy.coords(x, y, recycle = TRUE)
-  .Call(scene_addRect, s, as.double(xy$x), as.double(xy$y), as.double(w),
-        as.double(h))
+  .Call("scene_addRect", s, as.double(xy$x), as.double(xy$y), as.double(w),
+        as.double(h), PACKAGE = "qtpaint")
 }
 
 ##' Set properties of all items in a scene. Fast path for when a scene
@@ -79,7 +82,7 @@ qscene.rect <- function(s, x, y, w = 1, h = 1)
 qsetItemFlags <- function(x, flag = Qt$QGraphicsItem$ItemIsMovable,
                           status = FALSE)
 {
-  .Call(qt_qsetItemFlags, x, flag, status)
+  .Call("qt_qsetItemFlags", x, flag, status, PACKAGE = "qtpaint")
 }
 
 ##' @param mode Whether a text item (C++ \code{QGraphicsTextItem})
@@ -89,5 +92,5 @@ qsetItemFlags <- function(x, flag = Qt$QGraphicsItem$ItemIsMovable,
 qsetTextItemInteraction <- function(x, mode = c("none", "editor", "browser"))
 {
   mode <- match.arg(mode)
-  .Call(qt_qsetTextItemInteraction, x, mode)
+  .Call("qt_qsetTextItemInteraction", x, mode, PACKAGE = "qtpaint")
 }
