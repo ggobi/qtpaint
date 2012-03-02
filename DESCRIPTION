@@ -4,8 +4,7 @@ Title: Qt-based painting infrastructure
 Author: Michael Lawrence, Deepayan Sarkar
 Depends: R (>= 2.6.0), utils, qtbase
 Imports: qtbase (>= 0.99.2)
-Maintainer: Michael Lawrence <michafla@gene.com>,
-            Deepayan Sarkar <deepayan.sarkar@gmail.com>
+Maintainer: Michael Lawrence <michafla@gene.com>
 Description: Low-level interface to functionality in Qt for efficiently drawing
              dynamic graphics and handling basic user input.
 License: GPL version 2 or later
