@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 2.8)
 
 find_package(Qt4 4.4.0 COMPONENTS QtCore QtGui QtOpenGL REQUIRED )
 
+## FindQt4 does not add the include directory for OpenGL
+find_package(OpenGL REQUIRED)
+include_directories(${OPENGL_INCLUDE_DIR})
+
 include_directories( ../inst/local/include/smoke
                      ${R_INCLUDES} ${QTBASE_DIR}/local/include
                      ${QTBASE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}
