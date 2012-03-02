@@ -8,7 +8,7 @@ all:
               -DCMAKE_INSTALL_PREFIX=../inst/local -DQTBASE_DIR=$(QTBASE_DIR) \
               -DCMAKE_RC_COMPILER=${RC_COMPILER} \
               -DR_INCLUDE_DIR=$(R_INCLUDE_DIR); \
-        LD_LIBRARY_PATH=${QTBASE_DIR}/local/lib make install
+        make install
 	mkdir -p ../src-build;
 	cd ../src-build; \
 	cmake -G "Unix Makefiles" ../src \
