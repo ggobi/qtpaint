@@ -22,3 +22,4 @@ clean:
 	rm -rf ../kdebindings-build
 	rm -rf ../src-build
 	rm -rf ../inst/local
+	rm qtpaint.so
