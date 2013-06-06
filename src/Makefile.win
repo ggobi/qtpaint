@@ -1,27 +1,8 @@
-LIBR = "-L$(R_HOME)/bin/i386 -lR"
-QTBASE_DIR := $(shell $(R_HOME)/bin/Rscript --vanilla -e 'cat(system.file(package="qtbase"))')
-PATH := ${PATH};${QTBASE_QT_PATH};${CMAKE_PATH}
+LIBR = "-L$(R_HOME)/bin/$(R_ARCH) -lR"
+CMAKE_ARGS = -G "Unix Makefiles" \
+             -DCMAKE_RC_COMPILER="$(subst \,/,$(RC_COMPILER))" \
+             -DR_LIBRARIES=${LIBR} \
+             -DQT_QMAKE_EXECUTABLE=$(QTBASE_QMAKE)
+CMAKE := "/cygdrive/$(subst :,,$(subst \,/,$(CMAKE)))"
 
-all:
-	mkdir -p ../kdebindings-build;
-	cd ../kdebindings-build; \
-	cmake -G "Unix Makefiles" ../kdebindings \
-              -DCMAKE_INSTALL_PREFIX=../inst/local -DQTBASE_DIR=$(QTBASE_DIR) \
-              -DCMAKE_RC_COMPILER=${RC_COMPILER} \
-              -DR_INCLUDE_DIR=$(R_INCLUDE_DIR); \
-        make install
-	mkdir -p ../src-build;
-	cd ../src-build; \
-	cmake -G "Unix Makefiles" ../src \
-	      -DR_LIBRARIES="${SHLIB_CXXLDFLAGS} ${LIBR}" \
-	      -DR_INCLUDES=${R_INCLUDE_DIR} \
-	      -DCMAKE_INSTALL_PREFIX=../src \
-              -DCMAKE_RC_COMPILER=${RC_COMPILER} \
-              -DQTBASE_DIR=${QTBASE_DIR}; \
-	make install
-
-clean:
-	rm -rf ../kdebindings-build
-	rm -rf ../src-build
-	rm -rf ../inst/local
-	rm -rf src/qtpaint.dll
+include Makefile.common

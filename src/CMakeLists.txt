@@ -7,7 +7,7 @@ find_package(OpenGL REQUIRED)
 include_directories(${OPENGL_INCLUDE_DIR})
 
 include_directories( ../inst/local/include/smoke
-                     ${R_INCLUDES} ${QTBASE_DIR}/local/include
+                     ${R_INCLUDE_DIR} ${QTBASE_DIR}/local/include
                      ${QTBASE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}
                      ${CMAKE_CURRENT_BINARY_DIR} )
 
