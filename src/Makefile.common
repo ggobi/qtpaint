@@ -1,6 +1,6 @@
 CXX := $(shell ${RBIN} CMD config CXX)
 CXX_BIN := $(firstword ${CXX})
-CXX_ARGS := $(filter-out $(CXX_BIN), $(CXX)) 
+CXX_ARGS := $(filter-out $(CXX_BIN), $(CXX))
 
 CMAKE_ARGS += -DR_CXX="${CXX_BIN}" \
 	      -DCMAKE_CXX_FLAGS="${CXX_ARGS}" \
