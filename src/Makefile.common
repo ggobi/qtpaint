@@ -19,14 +19,14 @@ all:
 	$(CMAKE) ../kdebindings $(CMAKE_ARGS) \
 	      -DCMAKE_INSTALL_PREFIX=../inst/local; \
 	DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${QTBASE_DIR}/local/lib \
-	LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${QTBASE_DIR}/local/lib make install
+	LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${QTBASE_DIR}/local/lib make install VERBOSE=1
 
 	cd ../src-build; \
 	$(CMAKE) ../src $(CMAKE_ARGS) \
 	      -DCMAKE_INSTALL_PREFIX=../src \
 	      -DR_LIBRARIES="${SHLIB_CXXLDFLAGS} ${LIBR}" \
 	      -DR_INCLUDE_DIR=${R_INCLUDE_DIR}; \
-	make install
+	make install VERBOSE=1
 
 clean:
 	rm -rf ../kdebindings-build
