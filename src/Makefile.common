@@ -24,7 +24,7 @@ all:
 	cd ../src-build; \
 	$(CMAKE) ../src $(CMAKE_ARGS) \
 	      -DCMAKE_INSTALL_PREFIX=../src \
-	      -DR_LIBRARIES="${SHLIB_CXXLDFLAGS} ${LIBR}" \
+	      -DR_LIBRARIES=${LIBR} \
 	      -DR_INCLUDE_DIR=${R_INCLUDE_DIR}; \
 	make install VERBOSE=1
 
