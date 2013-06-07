@@ -23,3 +23,6 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/smokedata.cpp
 	${CMAKE_CURRENT_BINARY_DIR}/x_1.cpp
         qanviz_includes.h
         DESTINATION ${CMAKE_SOURCE_DIR}/../src-build)
+
+INCLUDE(CMakeForceCompiler)
+CMAKE_FORCE_CXX_COMPILER(${R_CXX} R_CXX)
