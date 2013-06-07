@@ -2,7 +2,7 @@ LIBR = "-L$(R_HOME)/bin/$(R_ARCH) -lR"
 CMAKE_ARGS = -G "Unix Makefiles" \
              -DCMAKE_RC_COMPILER="$(subst \,/,$(RC_COMPILER))" \
              -DR_LIBRARIES=${LIBR} \
-             -DQT_QMAKE_EXECUTABLE=$(QTBASE_QMAKE)
+             -DQT_QMAKE_EXECUTABLE="${QMAKE}"
 CMAKE := "/cygdrive/$(subst :,,$(subst \,/,$(CMAKE)))"
 
 include Makefile.common
