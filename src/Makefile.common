@@ -7,7 +7,7 @@ CMAKE_ARGS += -DR_CXX="${CXX_BIN}" \
 	      -DCMAKE_SHARED_LINKER_FLAGS="${CXX_ARGS}" \
               -DQTBASE_DIR=$(QTBASE_DIR)
 
-QTBASE_DIR := $(shell $(R_HOME)/bin/Rscript --vanilla -e \
+QTBASE_DIR := $(shell $(R_HOME)/bin/Rscript -e \
                 "cat(system.file(package='qtbase'))")
 
 all:
