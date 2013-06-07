@@ -17,8 +17,7 @@ all:
 	mkdir -p ../src-build;
 	cd ../kdebindings-build; \
 	$(CMAKE) ../kdebindings $(CMAKE_ARGS) \
-	      -DCMAKE_INSTALL_PREFIX=../inst/local \
-	      -DR_INCLUDE_DIR=$(R_INCLUDE_DIR); \
+	      -DCMAKE_INSTALL_PREFIX=../inst/local; \
 	DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:${QTBASE_DIR}/local/lib \
 	LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${QTBASE_DIR}/local/lib make install
 
