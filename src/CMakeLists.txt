@@ -24,7 +24,8 @@ QT4_WRAP_CPP ( qtpaint_MOC_FILES Layer.hpp RLayer.hpp PlotView.hpp )
 
 if(WIN32) # Toughest Win32 part: generating the defs file for the DLL
 foreach(qtpaint_lib_src ${qtpaint_LIB_SRCS})
-  list(APPEND qtpaint_LIB_OBJS "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/qtpaint.dir/${qtpaint_lib_src}${CMAKE_CXX_OUTPUT_EXTENSION}")
+  get_filename_component(qtpaint_lib_src_basename ${qtpaint_lib_src} NAME)
+  list(APPEND qtpaint_LIB_OBJS "${CMAKE_CURRENT_BINARY_DIR}/CMakeFiles/qtpaint.dir/${qtpaint_lib_src_basename}${CMAKE_CXX_OUTPUT_EXTENSION}")
 endforeach(qtpaint_lib_src ${qtpaint_LIB_SRCS})
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/qtpaint.def 
                    COMMAND sh ARGS ${CMAKE_CURRENT_SOURCE_DIR}/mkdef.sh
