@@ -1,3 +1,5 @@
+RBIN := "${R_HOME}/bin/R"
+
 CXX := $(shell ${RBIN} CMD config CXX)
 CXX_BIN := $(firstword ${CXX})
 CXX_ARGS := $(filter-out $(CXX_BIN), $(CXX))
