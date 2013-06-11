@@ -36,7 +36,7 @@ else(WIN32)
 add_library(qtpaint SHARED ${qtpaint_LIB_SRCS} ${qtpaint_MOC_FILES})
 endif(WIN32)
 
-target_link_libraries(qtpaint ${QT_LIBRARIES} ${R_LIBRARIES})
+target_link_libraries(qtpaint ${QT_LIBRARIES} ${R_LIBRARIES} ${OPENGL_LIBRARIES})
 
 set_target_properties(qtpaint PROPERTIES PREFIX "")
 if(NOT WIN32) # Need to force .so on Mac, but Windows needs to be .dll
