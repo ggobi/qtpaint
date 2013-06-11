@@ -39,7 +39,7 @@ static void draw(Painter *painter, Operation op, bool opengl, bool antialias,
   QTextStream stream(&file);
   
   switch(op) {
-  case Glyph: {
+  case Qanviz::Glyph: {
     QPainterPath path;
     path.addEllipse(45, 45, 10, 10);
     //uint circle = painter->registerPath(path);
@@ -61,7 +61,7 @@ static void draw(Painter *painter, Operation op, bool opengl, bool antialias,
     */
   }
     break;
-  case Polygon: {
+  case Qanviz::Polygon: {
     double x[3], y[3];
     x[0] = 45; y[0] = 55;
     x[1] = 55; y[1] = 55;
@@ -72,7 +72,7 @@ static void draw(Painter *painter, Operation op, bool opengl, bool antialias,
     END_TIMING;
   }
     break;
-  case Rectangle: {  
+  case Qanviz::Rectangle: {  
     double *x = new double[N];
     double *y = new double[N];
     double *w = new double[N];
@@ -88,7 +88,7 @@ static void draw(Painter *painter, Operation op, bool opengl, bool antialias,
     END_TIMING;
   }
     break;
-  case Point: {
+  case Qanviz::Point: {
     double *x = new double[N];
     double *y = new double[N];
     for (int i = 0; i < N; i++) {
@@ -100,7 +100,7 @@ static void draw(Painter *painter, Operation op, bool opengl, bool antialias,
     END_TIMING;
   }
     break;
-  case Line: {
+  case Qanviz::Line: {
     int L = 10000;
     double *x = new double[N/L];
     double *y = new double[N/L];
@@ -116,7 +116,7 @@ static void draw(Painter *painter, Operation op, bool opengl, bool antialias,
     END_TIMING;
   }
     break;
-  case Segment: {
+  case Qanviz::Segment: {
     double *x0 = new double[N];
     double *y0 = new double[N];
     double *x1 = new double[N];
@@ -133,7 +133,7 @@ static void draw(Painter *painter, Operation op, bool opengl, bool antialias,
     END_TIMING;
   }
     break;
-  case Circle:
+  case Qanviz::Circle:
     BEGIN_TIMING;
     for (int i = 0; i < N; i++)
       painter->drawCircle(50, 50, 5);
