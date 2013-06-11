@@ -327,6 +327,22 @@ void OpenGLPainter::prepareDrawGlyphs(void) {
   glPushAttrib(GL_TEXTURE_BIT | GL_ENABLE_BIT | GL_POINT_BIT);
   glEnable(GL_TEXTURE_2D);
   glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+  /*
+    FIXME: point sprites, after a long period of deprecation, have
+    been removed with OpenGL 3.2. The alternative is to use a shader
+    program, like:
+    void main()
+    {
+    gl_FragColor = texture2D(Texture0, gl_PointCoord);
+    }
+   */
+  /*
+    FIXME: point sprites do not exist in OpenGL 1.1 (Windows). Need to
+    dynamically obtain the function pointers via the extensions API.
+    See:
+    * Checking OpenGL version: QGLFormat::openGLVersionFlags
+    * Getting a function pointer: QGLContext::getProcAddress
+   */
   glEnable(GL_POINT_SPRITE);
   glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
   glPointParameteri(GL_POINT_SPRITE_COORD_ORIGIN, GL_LOWER_LEFT);
