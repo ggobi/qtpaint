@@ -337,12 +337,14 @@ void OpenGLPainter::prepareDrawGlyphs(void) {
     }
    */
   /*
-    FIXME: point sprites do not exist in OpenGL 1.1 (Windows). Need to
+    Point sprites do not exist in OpenGL 1.1 (Windows). Need to
     dynamically obtain the function pointers via the extensions API.
-    See:
-    * Checking OpenGL version: QGLFormat::openGLVersionFlags
-    * Getting a function pointer: QGLContext::getProcAddress
    */
+  #ifdef Q_OS_WIN
+  PFNGLPOINTPARAMETERIPROC glPointParameteri;
+  glPointParameteri = (PFNGLPOINTPARAMETERIPROC)
+    QGLContext::currentContext()->getProcAddress("glPointParameteri");
+  #endif
   glEnable(GL_POINT_SPRITE);
   glTexEnvi(GL_POINT_SPRITE, GL_COORD_REPLACE, GL_TRUE);
   glPointParameteri(GL_POINT_SPRITE_COORD_ORIGIN, GL_LOWER_LEFT);
