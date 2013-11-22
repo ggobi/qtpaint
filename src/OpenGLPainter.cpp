@@ -252,9 +252,7 @@ QImage OpenGLPainter::rasterizeGlyph(const QPainterPath &path) {
   return glyph;
 }
 
-// possible fast path for multiple colors, if stroke/fill the same:
-// push colors into array, draw picture in white, use texture modulation
-// we only draw the glyph once
+/* FIXME: what about using z-level and GL_DEPTH_TEST? */
 
 void OpenGLPainter::drawGlyphs(const QPainterPath &path, double *x, double *y,
                                double *size, QColor *stroke,

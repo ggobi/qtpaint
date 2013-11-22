@@ -18,7 +18,9 @@ add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/smokedata.cpp
 add_custom_target(generate_smoke ALL
   DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/smokedata.cpp
           ${CMAKE_CURRENT_BINARY_DIR}/x_1.cpp)
-      
+
+qt5_use_modules(generate_smoke Widgets OpenGL)
+
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/smokedata.cpp
 	${CMAKE_CURRENT_BINARY_DIR}/x_1.cpp
         qanviz_includes.h

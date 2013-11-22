@@ -1,10 +1,10 @@
-#include <qtbase.h>
-
 #include <QFont>
 
 #include "Painter.hpp"
 #include "paintUtils.hpp"
 #include "convert.hpp"
+
+#include <qtbase.h>
 
 using namespace Qanviz;
 

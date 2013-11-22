@@ -14,23 +14,25 @@ using namespace Qanviz;
 
 static bool fboMultisamplingFailed = false;
 
-static QtMsgHandler prevMsgHandler = NULL;
+static QtMessageHandler prevMsgHandler = NULL;
 
-void fboDebugMsgCatcher(QtMsgType type, const char *msg)
+void fboDebugMsgCatcher(QtMsgType type, const QMessageLogContext &context,
+                        const QString &msg)
 {
-  qInstallMsgHandler(prevMsgHandler);
+  qInstallMessageHandler(prevMsgHandler);
+  const char *charMsg = msg.toLocal8Bit().constData();
   switch (type) {
   case QtDebugMsg:
     fboMultisamplingFailed = true;
     break;
   case QtWarningMsg:
-    qWarning("%s", msg);
+    qWarning("%s", charMsg);
     break;
   case QtCriticalMsg:
-    qCritical("%s", msg);
+    qCritical("%s", charMsg);
     break;
   case QtFatalMsg:
-    qFatal("%s", msg);
+    qFatal("%s", charMsg);
   }
 }
 
@@ -82,9 +84,9 @@ void Layer::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
         QGLFramebufferObjectFormat fboFormat;
         fboFormat.setAttachment(QGLFramebufferObject::CombinedDepthStencil);
         fboFormat.setSamples(4); // 4X antialiasing should be enough?
-        prevMsgHandler = qInstallMsgHandler(fboDebugMsgCatcher);
+        prevMsgHandler = qInstallMessageHandler(fboDebugMsgCatcher);
         fbo = new QGLFramebufferObject(size, fboFormat);
-        qInstallMsgHandler(prevMsgHandler);
+        qInstallMessageHandler(prevMsgHandler);
         if (fboMultisamplingFailed) {
           delete fbo;
           fbo = NULL;
@@ -201,22 +203,25 @@ Layer *Layer::layerAt(int row, int col) {
   return layer;
 }
 
-void hideCellAlreadyTakenHandler(QtMsgType type, const char *msg)
+void hideCellAlreadyTakenHandler(QtMsgType type,
+                                 const QMessageLogContext &context,
+                                 const QString &msg)
 {
-  qInstallMsgHandler(prevMsgHandler);
+  const char *charMsg = msg.toLocal8Bit().constData();
+  qInstallMessageHandler(prevMsgHandler);
   switch (type) {
   case QtDebugMsg:
-    qDebug("%s", msg);
+    qDebug("%s", charMsg);
     break;
   case QtWarningMsg:
-    if (!QRegExp("QGridLayoutEngine::addItem: Cell \\(\\d+, \\d+\\) already taken").exactMatch(msg))
-      qWarning("%s", msg);
+    if (!QRegExp("QGridLayoutEngine::addItem: Cell \\(\\d+, \\d+\\) already taken").exactMatch(charMsg))
+      qWarning("%s", charMsg);
     break;
   case QtCriticalMsg:
-    qCritical("%s", msg);
+    qCritical("%s", charMsg);
     break;
   case QtFatalMsg:
-    qFatal("%s", msg);
+    qFatal("%s", charMsg);
   }
 }
 
@@ -232,9 +237,9 @@ void Layer::addLayer(Layer *layer, int row, int col,
   }
   // FIXME: we hide this message, but it is a serious one: we are
   // using Qt in an unsupported manner.
-  prevMsgHandler = qInstallMsgHandler(hideCellAlreadyTakenHandler);
+  prevMsgHandler = qInstallMessageHandler(hideCellAlreadyTakenHandler);
   gridLayout()->addItem(layer, row, col, rowSpan, colSpan);
-  qInstallMsgHandler(prevMsgHandler);
+  qInstallMessageHandler(prevMsgHandler);
   layer->setZValue(childItems().size());
 }
 

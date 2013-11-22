@@ -1,6 +1,8 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.8)
 
-find_package(Qt4 4.4.0 COMPONENTS QtCore QtGui QtOpenGL REQUIRED )
+find_package(Qt5Core)
+
+set(CMAKE_AUTOMOC ON)
 
 ## FindQt4 does not add the include directory for OpenGL
 find_package(OpenGL REQUIRED)
@@ -11,16 +13,12 @@ include_directories( ../inst/local/include/smoke
                      ${QTBASE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}
                      ${CMAKE_CURRENT_BINARY_DIR} )
 
-include(${QT_USE_FILE})
-
 set(qtpaint_LIB_SRCS Layer.cpp Painter.cpp QtPainter.cpp imports.cpp
     OpenGLPainter.cpp RLayer.cpp init.cpp PainterWrappers.cpp
     ScenePainter.cpp paintUtils.cpp PlotView.cpp
     scene.cpp QtBasePainter.cpp convert.cpp TestWidget.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/smokedata.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/x_1.cpp)
-  
-QT4_WRAP_CPP ( qtpaint_MOC_FILES Layer.hpp RLayer.hpp PlotView.hpp )
 
 if(WIN32) # Toughest Win32 part: generating the defs file for the DLL
 foreach(qtpaint_lib_src ${qtpaint_LIB_SRCS})
@@ -35,6 +33,8 @@ add_library(qtpaint SHARED qtpaint.def ${qtpaint_LIB_SRCS} ${qtpaint_MOC_FILES})
 else(WIN32)
 add_library(qtpaint SHARED ${qtpaint_LIB_SRCS} ${qtpaint_MOC_FILES})
 endif(WIN32)
+
+qt5_use_modules(qtpaint Widgets OpenGL)
 
 target_link_libraries(qtpaint ${QT_LIBRARIES} ${R_LIBRARIES} ${OPENGL_LIBRARIES})
 
