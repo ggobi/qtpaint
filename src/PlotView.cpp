@@ -121,7 +121,9 @@ void PlotView::updateSceneGeometry(QGraphicsScene *scene) {
   QRectF geometry = viewport()->rect();
   if (this->scene() == scene) // i.e., not the overlay
     geometry = mapToScene(viewport()->rect()).boundingRect();
-  scene->setSceneRect(geometry);
+  if (items.size() > 0) {
+    scene->setSceneRect(geometry);
+  }
   for (int i = 0; i < items.size(); i++) {
     QGraphicsWidget *widget =
       qgraphicsitem_cast<QGraphicsWidget *>(items[i]);
