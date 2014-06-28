@@ -81,7 +81,13 @@ layer in data/layer coordinates}
 \item{geometry}{A \code{QRectF}, possibly created by
 \code{\link[qtbase]{qrect}}, indicating the position and size of
 the layer in figure/scene coordinates. This is overridden by the
-parent grid layout, so is really only useful for a top-level layer.}
+parent grid layout, so is really only useful for a top-level
+layer. A warning will be issued if the geometry is specified along
+with a parent layer. We also issue a warning if this argument is
+specified when the scene has a view in "geometry" rescale mode,
+because the view determines the geometry. The default geometry is
+the bounding rectangle of the scene, if not null, or 600x400
+otherwise.}
 \item{clip}{Logical indicating whether to clip drawing to within the layer}
 \item{cache}{Logical indicating whether to cache drawing, which
 helps performance for relatively static layers sitting under more
