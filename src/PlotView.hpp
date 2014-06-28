@@ -62,7 +62,7 @@ namespace Qanviz {
       }
       _rescaleMode = rescaleMode;
     }
-    bool rescaleMode() const {
+    RescaleMode rescaleMode() const {
       return _rescaleMode;
     }
 
