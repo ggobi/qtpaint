@@ -136,9 +136,11 @@ qlayer <- function(parent = NULL, paintFun = NULL, keyPressFun = NULL,
   layer <- .Call("qanviz_RLayer", args, PACKAGE="qtpaint")
   if (inherits(parent, "Qanviz::Layer")) {
     parent$addLayer(layer, row, col, rowSpan, colSpan)
-  } else if (inherits(parent, "QGraphicsScene"))
+    scene <- parent$scene()
+  } else if (inherits(parent, "QGraphicsScene")) {
     parent$addItem(layer)
-  else if (!is.null(parent)) stop("Unsupported parent type")
+    scene <- parent
+  } else if (!is.null(parent)) stop("Unsupported parent type")
   if (!is.null(parent) && !missing(geometry)) {
     warning("geometry will be overridden by parent layout")
   }
