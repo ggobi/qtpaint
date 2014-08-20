@@ -135,22 +135,20 @@ qlayer <- function(parent = NULL, paintFun = NULL, keyPressFun = NULL,
                .normArgCallback(sizeHintFun))
   layer <- .Call("qanviz_RLayer", args, PACKAGE="qtpaint")
   if (inherits(parent, "Qanviz::Layer")) {
+    if (!missing(geometry)) {
+      warning("geometry will be overridden by parent layout")
+    }
     parent$addLayer(layer, row, col, rowSpan, colSpan)
-    scene <- parent$scene()
   } else if (inherits(parent, "QGraphicsScene")) {
     parent$addItem(layer)
-    scene <- parent
-  } else if (!is.null(parent)) stop("Unsupported parent type")
-  if (!is.null(parent) && !missing(geometry)) {
-    warning("geometry will be overridden by parent layout")
-  }
-  viewGeometry <- viewGeometry(scene)
-  if (!is.null(viewGeometry)) {
-    if (!missing(geometry)) {
-      warning("geometry will be overridden by view in geometry rescale mode")
+    viewGeometry <- viewGeometry(parent)
+    if (!is.null(viewGeometry)) {
+      if (!missing(geometry)) {
+        warning("geometry will be overridden by view in geometry rescale mode")
+      }
+      geometry <- viewGeometry
     }
-    geometry <- viewGeometry
-  }
+  } else if (!is.null(parent)) stop("Unsupported parent type")
   layer$geometry <- geometry
   layer$setLimits(limits)
   layer$setFlag(Qt$QGraphicsItem$ItemClipsToShape, clip)
