@@ -7,6 +7,8 @@ CXX_ARGS := $(filter-out $(CXX_BIN), $(CXX))
 LIBR := $(subst $\",,$(LIBR))
 
 CMAKE_ARGS += -DR_CXX="${CXX_BIN}" \
+	      -DR_LIBRARIES="$(strip ${SHLIB_CXXLDFLAGS} ${LIBR})" \
+	      -DR_INCLUDE_DIR=${R_INCLUDE_DIR} \
 	      -DCMAKE_CXX_FLAGS="${CXX_ARGS}" \
 	      -DCMAKE_SHARED_LINKER_FLAGS="${CXX_ARGS}" \
               -DQTBASE_DIR="$(QTBASE_DIR)"
@@ -15,23 +17,13 @@ QTBASE_DIR := $(shell $(R_HOME)/bin/Rscript -e \
                 "cat(system.file(package='qtbase'))")
 
 all:
-	mkdir -p ../kdebindings-build;
 	mkdir -p ../src-build;
-	cd ../kdebindings-build; \
-	$(CMAKE) ../kdebindings $(CMAKE_ARGS) \
-	      -DCMAKE_INSTALL_PREFIX=../inst/local; \
+	cd ../src-build; \
+	$(CMAKE) ../src $(CMAKE_ARGS); \
 	DYLD_LIBRARY_PATH=${DYLD_LIBRARY_PATH}:"${QTBASE_DIR}"/local/lib \
 	LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:"${QTBASE_DIR}"/local/lib make install
 
-	cd ../src-build; \
-	$(CMAKE) ../src $(CMAKE_ARGS) \
-	      -DCMAKE_INSTALL_PREFIX=../src \
-	      -DR_LIBRARIES="$(strip ${SHLIB_CXXLDFLAGS} ${LIBR})" \
-	      -DR_INCLUDE_DIR=${R_INCLUDE_DIR}; \
-	make install
-
 clean:
-	rm -rf ../kdebindings-build
 	rm -rf ../src-build
 	rm -rf ../inst/local
 	rm -f qtpaint.so qtpaint.dll
