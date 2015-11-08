@@ -3,6 +3,10 @@ useDynLib(qtpaint)
 ## the core Smoke library
 export(Qanviz)
 
+## base R imports
+importFrom(grDevices, col2rgb, xy.coords)
+importFrom(methods, is, canCoerce, as)
+
 ## to load our library
 importFrom(qtbase, qlibrary)
 
