@@ -23,6 +23,8 @@ include_directories( ${CMAKE_SOURCE_DIR}/kdebindings/smoke
                      ${QTBASE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}
                      )
 
+include(${QT_USE_FILE})
+
 set(qtpaint_LIB_SRCS Layer.cpp Painter.cpp QtPainter.cpp imports.cpp
     OpenGLPainter.cpp RLayer.cpp init.cpp PainterWrappers.cpp
     ScenePainter.cpp paintUtils.cpp PlotView.cpp
