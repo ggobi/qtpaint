@@ -1,12 +1,17 @@
 \name{qlayer}
 \alias{qlayer}
 \title{Create a layer}
-\usage{qlayer(parent, paintFun, keyPressFun, keyReleaseFun, mouseDoubleClickFun,
-    mouseMoveFun, mousePressFun, mouseReleaseFun, wheelFun,
-    hoverMoveFun, hoverEnterFun, hoverLeaveFun, contextMenuFun,
-    dragEnterFun, dragLeaveFun, dragMoveFun, dropFun, focusInFun,
-    focusOutFun, sizeHintFun, limits=qrect(), row=0, col=0, rowSpan=1,
-    colSpan=1, geometry=qrect(0, 0, 600, 400), clip=cache, cache=FALSE)
+\usage{qlayer(parent=NULL, paintFun=NULL, keyPressFun=NULL,
+              keyReleaseFun=NULL, mouseDoubleClickFun=NULL,
+              mouseMoveFun=NULL, mousePressFun=NULL,
+              mouseReleaseFun=NULL, wheelFun=NULL,
+              hoverMoveFun=NULL, hoverEnterFun=NULL, hoverLeaveFun=NULL,
+              contextMenuFun=NULL, dragEnterFun=NULL, dragLeaveFun=NULL,
+              dragMoveFun=NULL, dropFun=NULL, focusInFun=NULL,
+              focusOutFun=NULL, sizeHintFun=NULL, limits=qrect(),
+              row=0, col=0, rowSpan=1,
+              colSpan=1, geometry=defaultLayerGeometry(parent),
+              clip=cache, cache=FALSE)
 }
 \description{This function constructs a Layer, an item in the canvas that may
 paint part of the plot and/or respond to user input. The behavior
