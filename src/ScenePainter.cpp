@@ -149,16 +149,14 @@ void ScenePainter::drawText(const char * const *strs, double *x, double *y,
     return;
   }
   // FIXME: alignment is ignored -- translate to HTML?
-  QTransform posTform = transform();
-  QTransform textTform;
-  textTform.rotate(-rot);
-  textTform.scale(hcex, vcex);
+  QTransform tform = transform();
   for (int i = 0; i < n; i++) {
     QString qstr = QString::fromLocal8Bit(strs[i]);
     QGraphicsItem *item = STORE_INDEX(_scene->addText(qstr, _scene->font()));
     item->setFlag(QGraphicsItem::ItemIgnoresTransformations);
-    item->setPos(posTform.map(QPointF(x[i], y[i])));
-    item->setTransform(textTform);
+    item->setPos(tform.map(QPointF(x[i], y[i])));
+    item->rotate(-rot);
+    item->scale(hcex, vcex);
   }
 }
     
@@ -200,7 +198,7 @@ void ScenePainter::drawGlyphs(const QPainterPath &path, double *x, double *y,
       item->setPos(tform.map(QPointF(x[i], y[i])));
       item->setFlag(QGraphicsItem::ItemIgnoresTransformations);
       if (size) curSize = size[i];
-      item->setScale(curSize);
+      item->scale(curSize, curSize);
     }
   } else QtBasePainter::drawGlyphs(path, x, y, size, stroke, fill, n);
 }

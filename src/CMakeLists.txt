@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.8)
+cmake_minimum_required(VERSION 2.6)
 
 ## because CMakeForceCompiler is using deprecated behavior
 cmake_policy(SET CMP0054 OLD)
@@ -11,11 +11,9 @@ add_subdirectory(kdebindings)
 
 set(CMAKE_INSTALL_PREFIX ..)
 
-find_package(Qt5Core)
+find_package(Qt4 4.4.0 COMPONENTS QtCore QtGui QtOpenGL REQUIRED)
 
-set(CMAKE_AUTOMOC ON)
-
-## find_package(Qt5Core) does not add the include directory for OpenGL
+## find_package() does not add the include directory for OpenGL
 find_package(OpenGL REQUIRED)
 include_directories(${OPENGL_INCLUDE_DIR})
 
@@ -30,6 +28,8 @@ set(qtpaint_LIB_SRCS Layer.cpp Painter.cpp QtPainter.cpp imports.cpp
     ScenePainter.cpp paintUtils.cpp PlotView.cpp
     scene.cpp QtBasePainter.cpp convert.cpp TestWidget.cpp
     ${smoke_srcs})
+
+QT4_WRAP_CPP (qtpaint_MOC_FILES Layer.hpp RLayer.hpp PlotView.hpp)
 
 SET_SOURCE_FILES_PROPERTIES(${smoke_srcs} PROPERTIES GENERATED 1)
  
@@ -48,8 +48,6 @@ add_library(qtpaint SHARED ${qtpaint_LIB_SRCS} ${qtpaint_MOC_FILES})
 endif(WIN32)
 
 ADD_DEPENDENCIES(qtpaint generate_smoke)
-
-qt5_use_modules(qtpaint Widgets OpenGL)
 
 target_link_libraries(qtpaint ${QT_LIBRARIES} ${R_LIBRARIES} ${OPENGL_LIBRARIES})
 

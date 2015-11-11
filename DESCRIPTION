@@ -1,8 +1,8 @@
 Package: qtpaint
-Version: 0.10.0
+Version: 0.9.1
 Title: Qt-based painting infrastructure
 Author: Michael Lawrence, Deepayan Sarkar
-Depends: R (>= 2.6.0), utils, qtbase (>= 1.1.0)
+Depends: R (>= 2.6.0), utils, qtbase (>= 0.99.2)
 Maintainer: Michael Lawrence <michafla@gene.com>
 SystemRequirements: GNU make
 Description: Low-level interface to functionality in Qt for efficiently drawing
