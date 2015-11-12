@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
-## because CMakeForceCompiler is using deprecated behavior
-cmake_policy(SET CMP0054 OLD)
+find_program(CMAKE_CXX_COMPILER ${R_CXX})
 
 set(smoke_srcs
     ${CMAKE_CURRENT_BINARY_DIR}/kdebindings/smoke/qanviz/smokedata.cpp
@@ -60,6 +59,3 @@ install(TARGETS qtpaint LIBRARY DESTINATION src )
 else(NOT WIN32)
 install(TARGETS qtpaint RUNTIME DESTINATION src )
 endif(NOT WIN32)
-
-INCLUDE(CMakeForceCompiler)
-CMAKE_FORCE_CXX_COMPILER(${R_CXX} R_CXX)
